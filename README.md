@@ -24,18 +24,23 @@ Pour la syntaxe à utiliser:
 
 Idées de syntaxe (juste ds idées)
 - `v/` pour la racine
+- `*` pour `\times`
+- `...` pour les dots
 - `/` pour les fractions (en infixe)
 - `%` pour la congruence
-- `||{` pour `\mathbb`
+- `||` pour `\mathbb`
+- `£`, `@` pour le calligraphié et le gothique
 - `__` pour `\underset` (peut être en infixe?)
 - `^^` pour `\overset`
 - `^_` pour `\overbar`
 - `!` pour barrer un truc
 - `->`, `-->`, `=>`, etc, pour les flèches
 - `inf` pour `\infty`
-- `?E` et `?A` pour `\forall`/ il existe
-- pas d'idée pour union, inter, inclusion, appartenance
+- `?E` et `?A` pour `\forall` et il existe
+- `?U ?I ?C` pour union, inter, inclusion
+- `€` pour l'appartenance
 - garder `&` et `\\` de latex, mais cette fois ci ca marchera tout le temps
+- `[|` et `|]` pour les intervalles entiers
 
 Pour le reste, on utilisera des balises html (par exemple `<matrix>1 & 2 & 3 \\ 4 & 5 & 6</matrix>`) qui pourront être définies par l'utilisateur
 
