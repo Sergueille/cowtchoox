@@ -41,6 +41,7 @@ Idées de syntaxe (juste ds idées)
 - `€` pour l'appartenance
 - garder `&` et `\\` de latex, mais cette fois ci ca marchera tout le temps
 - `[|` et `|]` pour les intervalles entiers
+- `~` pour équivalent
 
 Pour le reste, on utilisera des balises html (par exemple `<matrix>1 & 2 & 3 \\ 4 & 5 & 6</matrix>`) qui pourront être définies par l'utilisateur
 
