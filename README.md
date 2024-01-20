@@ -2,23 +2,16 @@
 
 Nom provisoire: __Cowtchoox__
 
-Ok, je commence par faire ce doc pour savoir ce qu'il faut faire (au secours trop de librairies)
+## Organisation du code
+- `main`: lire l'entrée, lire les fichiers
+- `parser`: transformer le fichier brut en une struct
 
+On va utiliser la crate headless_chrome pour la conversion en PDF
 
-
-Candidats pour convertir le HTML en PDF:
-- https://github.com/spipu/html2pdf: tourne sur un navigateur en PHP (un peu lourd), ne supporte pas toutes les fonctionnalités de HTML mais supporte bien les trucs de PDF
-- https://github.com/parallax/jsPDF: tourne sur un navigateur en JS (un peu lourd aussi), mais j'ai beaucoup de doutes sur la conversion (je crois qu'il génère un image de la page)
-- https://github.com/marcbachmann/node-html-pdf: nodejs, plus maintenu depuis longtemps, mais pas très grave vu ques les fichiers source envoyés seront générés par le programme (et donc on est sur qu'il ne va pas utiliser les dernières modifications de CSS)
-- https://github.com/rust-headless-chrome/rust-headless-chrome: (besoin d'un chromium installé?)
-
-Apparemment Firefox utilise Microsoft print to PDF, mais on va s'abaisser à utiliser un produit microsoft quand même...
-
-
-Pour la syntaxe à utiliser:
+## Syntaxe
 - je vois bien du HTML, mais en plus d'avoir un `<head>` et `<body>`, on aurait genre `<header>` `<footer>`
-- des balises supplémentaire comme `<pagebreak>` et `<maths>`
-- un truc qui remplace une balise `<name args...>` par le contenu d'un autre fichier (j'ai deja essayé de faire un truc comme ca c'est pas cure et c'est pratique, même pour implementer les trucs qui seront là par défaut)
+- des balises supplémentaire comme `<pagebreak>` et `<maths>`, et un alias `$` pour `<maths>`
+- un truc qui remplace une balise (avec majuscule, come React) `<Name args...>` par le contenu d'un autre fichier (j'ai deja essayé de faire un truc comme ca c'est pas dur et c'est pratique, même pour implementer les trucs qui seront là par défaut)
 - pour les maths, on se démerde pour avoir les opérateurs usuels (idéalement un ou deux caractères par opérateur, par exemple , ou), des trucs de layout (`^`, `_`), et `{}` pour le parenthésage 
 - garder tout le support des balises à l'intérieur des maths
 
@@ -49,7 +42,14 @@ Idées de syntaxe (juste des idées)
 - `_{` pour `\underbrace`
 - `^>` pour les vecteurs
 
-- `$` pour séparer les maths en plein de `<span>` et pouvoir aligner des trucs facilement grâce à CSS
+- `&` pour séparer les maths en plein de `<span>` et pouvoir aligner des trucs facilement grâce à CSS
 
 Pour le reste, on utilisera des balises html (par exemple `<matrix></matrix>`) qui pourront être définies par l'utilisateur
+
+
+### Autres candidats pour convertir le HTML en PDF:
+- https://github.com/spipu/html2pdf: tourne sur un navigateur en PHP (un peu lourd), ne supporte pas toutes les fonctionnalités de HTML mais supporte bien les trucs de PDF
+- https://github.com/parallax/jsPDF: tourne sur un navigateur en JS (un peu lourd aussi), mais j'ai beaucoup de doutes sur la conversion (je crois qu'il génère un image de la page)
+- https://github.com/marcbachmann/node-html-pdf: nodejs, plus maintenu depuis longtemps, mais pas très grave vu ques les fichiers source envoyés seront générés par le programme (et donc on est sur qu'il ne va pas utiliser les dernières modifications de CSS)
+- https://github.com/rust-headless-chrome/rust-headless-chrome: (besoin d'un chromium installé?)
 

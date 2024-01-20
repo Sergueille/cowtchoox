@@ -1,6 +1,9 @@
-// Interpret command line arguments
+
+mod parser;
 
 use clap;
+
+// Interpret command line arguments
 
 fn main() {
     let matches =
@@ -13,9 +16,29 @@ fn main() {
 
     // Get the filepath from arguments
     let filepath = matches.get_one::<String>("FILE").unwrap();
-
-    println!("The file is: {}", filepath)
     
-    // TODO: do the rest fo the entire program
+    let res = std::fs::read_to_string(filepath);
+    match res {
+        Ok(content) => {
+            compile_file(content);
+        },
+        Err(err) => {
+            println!("ERR: failed to read source file: {}", err);
+        },
+    }
+
+    println!("Finished!");
+}
+
+fn compile_file(content: String) {
+    // TEST: testing parser here
+
+    let res = parser::parse_file(&content.chars().collect());
+    match res {
+        Ok(node) => println!("Parsed file: {:?}", node),
+        Err(err) => println!("Failed to parse file: {:?}", err),
+    }
+
+    // TODO: do the actual work
 }
 
