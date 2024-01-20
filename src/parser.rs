@@ -3,7 +3,7 @@ use std::vec::Vec;
 
 // This file is parsing raw text into the Node struct
 
-// TODO: support quotes
+// TODO: support quotes around attributes
 // TODO: support \
 // TODO: pass a struct with position ifo that include {pos in file, line, etc.} instead of just the index of the char (useful for error reporting)
 // TODO: handle unexpected EOF (currently panics because accesses out of the bounds of the array)
@@ -12,6 +12,8 @@ use std::vec::Vec;
 
 // NOTE: currently auto-closing tags needs to include a / at the end (<br/>)
 //       should-it be mandatory?
+
+// NOTE: I think math parsing, and react-like tags will be implemented in another module, when reconstructing the document
 
 
 const WORD_CHARS: &str = "_-"; // Chars to make a word (tag name, attribute, ...). Alphanumeric characters also included. 
