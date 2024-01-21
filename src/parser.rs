@@ -191,6 +191,21 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut usize) -> Result<Node, P
 }
 
 
+/// Returns the inner content's inner text, ignoring inner tags
+pub fn get_node_content_as_str(node: &Node) -> String {
+    let mut res = String::with_capacity(node.content.len() - node.children.len());
+
+    for cont in &node.content {
+        match cont {
+            NodeContent::Character(c) => res.push(*c),
+            _ => {},
+        }
+    }
+
+    return res;
+}
+
+
 /// Advances the cursor until non-whitespace is found, then returns an error if the specified character isn't found
 fn expect(chars: &Vec<char>, pos: &mut usize, char: char) -> Result<(), ParseError> {
     advance_until_non_whitespace(chars, pos);
@@ -213,7 +228,7 @@ fn advance_until_non_whitespace(chars: &Vec<char>, pos: &mut usize) {
 }
 
 
-/// Reads a word and moves the cursor
+/// Reads a word and moves the cursor (case insensitive, return lowered chars!)
 fn read_word(chars: &Vec<char>, pos: &mut usize) -> String {
    advance_until_non_whitespace(chars, pos);
     let mut res = Vec::with_capacity(10);
@@ -223,7 +238,7 @@ fn read_word(chars: &Vec<char>, pos: &mut usize) -> String {
         *pos += 1;
     }
 
-    return res.into_iter().collect();
+    return res.into_iter().collect::<String>().to_lowercase();
 }
 
 

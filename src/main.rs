@@ -1,5 +1,7 @@
 
 mod parser;
+mod writer;
+mod doc_options;
 
 use clap;
 
@@ -33,12 +35,9 @@ fn main() {
 fn compile_file(content: String) {
     // TEST: testing parser here
 
-    let res = parser::parse_file(&content.chars().collect());
-    match res {
-        Ok(node) => println!("Parsed file: {:?}", node),
-        Err(err) => println!("Failed to parse file: {:?}", err),
-    }
+    let document = parser::parse_file(&content.chars().collect()).expect("Failed to parse file");
+    let text = writer::get_file_text(&document).expect("Failed to create HTML");
 
-    // TODO: do the actual work
+    println!("HTML output: \n{}", text);
 }
 
