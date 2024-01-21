@@ -15,6 +15,8 @@
         <!-- Contents of the rest of the document -->
         Hello, world!
         <br/>
-        Cowtchoox is better than latex!
+        <p test-attribute=test>
+            Cowtchoox is better than latex!
+        </p>
     </body>
 </document>

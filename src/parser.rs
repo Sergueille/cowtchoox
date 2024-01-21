@@ -5,7 +5,7 @@ use std::vec::Vec;
 
 // TODO: support quotes around attributes
 // TODO: support \
-// TODO: pass a struct with position ifo that include {pos in file, line, etc.} instead of just the index of the char (useful for error reporting)
+// TODO: copy the file position struct in th nodes, for later error reporting
 // TODO: handle unexpected EOF (currently panics because accesses out of the bounds of the array)
 // TODO: check for $
 // TODO: handle comments (currently it reads them as text)
@@ -39,8 +39,19 @@ pub struct Node {
 /// Describes what went wrong
 #[derive(Debug)]
 pub enum ParseError {
-    Expected(String, usize),
-    UnmatchedTag(String, usize),
+    Expected(String, FilePosition),
+    UnmatchedTag(String, FilePosition),
+}
+
+
+/// Indicates a position in a file
+/// All fields start at 0. Even lines.
+#[derive(Clone, Debug)]
+pub struct FilePosition {
+    pub file_path: String,
+    pub absolute_position: usize,
+    pub line: usize,
+    pub line_character: usize,
 }
 
 
@@ -52,8 +63,13 @@ pub enum ParseError {
 /// # Returns
 /// * the parsed node
 /// 
-pub fn parse_file(chars: &Vec<char>) -> Result<Node, ParseError> {
-    return parse_file_part(chars, &mut 0);
+pub fn parse_file(file_path: &String, chars: &Vec<char>) -> Result<Node, ParseError> {
+    return parse_file_part(chars, &mut FilePosition {
+        file_path: file_path.clone(),
+        absolute_position: 0,
+        line: 0,
+        line_character: 0
+    });
 }
 
 
@@ -66,7 +82,7 @@ pub fn parse_file(chars: &Vec<char>) -> Result<Node, ParseError> {
 /// # Returns
 /// * the parsed node
 /// 
-pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut usize) -> Result<Node, ParseError> {
+pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition) -> Result<Node, ParseError> {
     expect(chars, &mut pos, '<')?;
 
     // Read tag name
@@ -122,22 +138,21 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut usize) -> Result<Node, P
     let mut content: Vec<NodeContent> = Vec::with_capacity(100);
     
     loop {
-        let next = chars[*pos];
+        let next = chars[(*pos).absolute_position];
 
         // Opening a new tag?
         if next == '<' {
-            *pos += 1;
-
-            match chars[*pos] {
+            match chars[(*pos).absolute_position + 1] {
                 '/' => { // Actually, it's finished!
-                    *pos += 1;
+                    advance_position(pos, chars);
+                    advance_position(pos, chars);
                     break;
                 },
                 '!' => { // It's a comment
+                    advance_position(pos, chars);
                     // TODO: handle that
                 },
                 _ => { // It's a child
-                    *pos -= 1; // Get back one char, so that the recursive call can read the <
                     let child = parse_file_part(chars, pos)?;
 
                     children.push(child);
@@ -167,7 +182,7 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut usize) -> Result<Node, P
             content.push(NodeContent::Character(next));
         }
 
-        *pos += 1;
+        advance_position(pos, chars);
     }
 
     // Got out of the contents, now cursor is in closing tag
@@ -207,35 +222,35 @@ pub fn get_node_content_as_str(node: &Node) -> String {
 
 
 /// Advances the cursor until non-whitespace is found, then returns an error if the specified character isn't found
-fn expect(chars: &Vec<char>, pos: &mut usize, char: char) -> Result<(), ParseError> {
+fn expect(chars: &Vec<char>, pos: &mut FilePosition, char: char) -> Result<(), ParseError> {
     advance_until_non_whitespace(chars, pos);
 
-    if chars[*pos] != char {
+    if chars[(*pos).absolute_position] != char {
         return Err(ParseError::Expected(char.to_string(), pos.clone()));
     }
 
-    *pos += 1;
+    advance_position(pos, chars);
 
     return Ok(());
 }
 
 
 /// Advances the cursor until non-whitespace is found. The cursor will be on the first non-whitespace character
-fn advance_until_non_whitespace(chars: &Vec<char>, pos: &mut usize) {
-    while chars[*pos].is_whitespace() {
-        *pos += 1;
+fn advance_until_non_whitespace(chars: &Vec<char>, pos: &mut FilePosition) {
+    while chars[(*pos).absolute_position].is_whitespace() {
+        advance_position(pos, chars);
     }
 }
 
 
 /// Reads a word and moves the cursor (case insensitive, return lowered chars!)
-fn read_word(chars: &Vec<char>, pos: &mut usize) -> String {
+fn read_word(chars: &Vec<char>, pos: &mut FilePosition) -> String {
    advance_until_non_whitespace(chars, pos);
     let mut res = Vec::with_capacity(10);
 
-    while chars[*pos].is_alphanumeric() || WORD_CHARS.contains(chars[*pos]) {
-        res.push(chars[*pos]);
-        *pos += 1;
+    while chars[(*pos).absolute_position].is_alphanumeric() || WORD_CHARS.contains(chars[(*pos).absolute_position]) {
+        res.push(chars[(*pos).absolute_position]);
+        advance_position(pos, chars);
     }
 
     return res.into_iter().collect::<String>().to_lowercase();
@@ -243,8 +258,22 @@ fn read_word(chars: &Vec<char>, pos: &mut usize) -> String {
 
 
 /// Reads a word without moving the cursor
-fn lookahead_word(chars: &Vec<char>, pos: &mut usize) -> String {
+fn lookahead_word(chars: &Vec<char>, pos: &mut FilePosition) -> String {
     return read_word(chars, &mut pos.clone());
 }
 
+
+/// Advances a position, the character is used to take new line into account
+fn advance_position(pos: &mut FilePosition, file: &Vec<char>) {
+    (*pos).absolute_position += 1;
+    (*pos).line_character += 1;
+    
+    let character = file[pos.absolute_position - 1];
+
+    // FIXME: will increment the line number by 2 on windows. fuck microsoft
+    if character == '\n' || character == '\r' {
+        (*pos).line += 1;
+        (*pos).line_character = 0;
+    }
+}
 
