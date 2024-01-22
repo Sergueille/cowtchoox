@@ -33,6 +33,7 @@ Idées de syntaxe (juste des idées)
 - `[|` et `|]` pour les intervalles entiers
 - `~` pour équivalent
 - `~=` pour arrondis...
+- `|,` `,|` et `|'` `'|` pour \floor et \cel
 - `!]` pour indiquer que le ] doit matcher avec un autre dans le mauvais sens (intervalles `]a; b[` s'écrivent `!]a; b[!`)
 
 - `||` pour `\mathbb`
