@@ -26,12 +26,13 @@ Idées de syntaxe (juste des idées)
 - `!` pour barrer un truc
 - `->`, `-->`, `=>`, etc, pour les flèches
 - `inf` pour `\infty`
-- `?E` et `?A` pour `\forall` et il existe
-- `?U ?I ?C` pour union, inter, inclusion
+- `?E` (`?E!`) et `?A` pour `\forall` et il existe (un unique)
+- `?u ?i ?c` pour union, inter, inclusion
+- `?U` `?I` pour big_cup et big_hat
 - `€` pour l'appartenance
 - `[|` et `|]` pour les intervalles entiers
 - `~` pour équivalent
-- pas d'idée pour arrondis...
+- `~=` pour arrondis...
 - `!]` pour indiquer que le ] doit matcher avec un autre dans le mauvais sens (intervalles `]a; b[` s'écrivent `!]a; b[!`)
 
 - `||` pour `\mathbb`
@@ -56,4 +57,3 @@ Pour le reste, on utilisera des balises html (par exemple `<matrix></matrix>`) q
 - https://github.com/parallax/jsPDF: tourne sur un navigateur en JS (un peu lourd aussi), mais j'ai beaucoup de doutes sur la conversion (je crois qu'il génère un image de la page)
 - https://github.com/marcbachmann/node-html-pdf: nodejs, plus maintenu depuis longtemps, mais pas très grave vu ques les fichiers source envoyés seront générés par le programme (et donc on est sur qu'il ne va pas utiliser les dernières modifications de CSS)
 - https://github.com/rust-headless-chrome/rust-headless-chrome: (besoin d'un chromium installé?)
-
