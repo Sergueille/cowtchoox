@@ -18,13 +18,13 @@ pub fn get_file_text(document: &Node) -> Result<String, ()> {
     };
     let options = doc_options::get_options_form_head(head);
 
-    res.push_str("<document>"); // Quirks forever!
+    res.push_str("<html>"); // Quirks is better!
 
     res.push_str(&white_head(&options));
 
     res.push_str(&get_node_html(&try_get_children_with_name(document, "body").expect("The document has no body")));
 
-    res.push_str("</document>");
+    res.push_str("</html>");
 
     return Ok(res);
 }
@@ -34,7 +34,14 @@ pub fn white_head(options: &doc_options::DocOptions) -> String {
     let mut res = String::with_capacity(200);
     res.push_str("<head>");
 
+    // Document title
     res.push_str(format!("<title>{}</title>", options.title).as_str());
+
+    // Link JS script, so that it executes when the page loads
+    // FIXME: will NOT work if the JS dir isn't at th right place
+    //        should be like path_to_exe/JS/main.js when built, and /JS/main.js when running with cargo
+    //        but too lazy to do that
+    res.push_str("<script defer=\"defer\" src=\"JS/main.js\"></script>");
 
     res.push_str("</head>");
     return res;
@@ -63,7 +70,7 @@ pub fn get_node_html(node: &Node) -> String {
     res.push(' ');
     
     for (attr, val) in &node.attributes {
-        res.push_str(&format!("\"{}\"=\"{}\" ", &attr, &val));
+        res.push_str(&format!("{}=\"{}\" ", &attr, &val));
     }    
 
     if node.auto_closing {

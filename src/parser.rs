@@ -1,5 +1,6 @@
 
 use std::vec::Vec;
+use std::path::PathBuf;
 
 // This file is parsing raw text into the Node struct
 
@@ -49,7 +50,7 @@ pub enum ParseError {
 /// All fields start at 0. Even lines.
 #[derive(Clone, Debug)]
 pub struct FilePosition {
-    pub file_path: String,
+    pub file_path: PathBuf,
     pub absolute_position: usize,
     pub line: usize,
     pub line_character: usize,
@@ -64,7 +65,7 @@ pub struct FilePosition {
 /// # Returns
 /// * the parsed node
 /// 
-pub fn parse_file(file_path: &String, chars: &Vec<char>) -> Result<Node, ParseError> {
+pub fn parse_file(file_path: &PathBuf, chars: &Vec<char>) -> Result<Node, ParseError> {
     return parse_file_part(chars, &mut FilePosition {
         file_path: file_path.clone(),
         absolute_position: 0,
