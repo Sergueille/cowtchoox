@@ -34,7 +34,7 @@ Idées de syntaxe (juste des idées)
 - `inf` pour `\infty`
 - `?E` (`?E!`) et `?A` pour `\forall` et il existe (un unique)
 - `?u ?i ?c` pour union, inter, inclusion
-- `?U` `?I` pour big_cup et big_hat
+- `?U` `?I` pour big_cup et big_cap
 - `€` pour l'appartenance
 - `[|` et `|]` pour les intervalles entiers
 - `~` pour équivalent
