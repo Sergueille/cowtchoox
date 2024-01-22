@@ -31,6 +31,8 @@ Idées de syntaxe (juste des idées)
 - `€` pour l'appartenance
 - `[|` et `|]` pour les intervalles entiers
 - `~` pour équivalent
+- pas d'idée pour arrondis...
+- `!]` pour indiquer que le ] doit matcher avec un autre dans le mauvais sens (intervalles `]a; b[` s'écrivent `!]a; b[!`)
 
 - `||` pour `\mathbb`
 - `£`, `@` pour le calligraphié et le gothique
@@ -43,6 +45,8 @@ Idées de syntaxe (juste des idées)
 - `^>` pour les vecteurs
 
 - `&` pour séparer les maths en plein de `<span>` et pouvoir aligner des trucs facilement grâce à CSS
+
+- `//` pour un commentaire
 
 Pour le reste, on utilisera des balises html (par exemple `<matrix></matrix>`) qui pourront être définies par l'utilisateur
 
