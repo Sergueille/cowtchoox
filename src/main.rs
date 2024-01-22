@@ -38,7 +38,6 @@ fn compile_file(file_path: &String, content: String) {
     let document = parser::parse_file(file_path, &content.chars().collect()).expect("Failed to parse file");
     let text = writer::get_file_text(&document).expect("Failed to create HTML");
 
-    println!("Parsed struct: \n{:?}", document);
     println!("HTML output: \n{}", text);
 }
 

@@ -33,6 +33,7 @@ pub struct Node {
     pub attributes: Vec<(String, String)>,
     pub children: Vec<Node>,
     pub content: Vec<NodeContent>,
+    pub auto_closing: bool,
 }
 
 
@@ -126,6 +127,7 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition) -> Result<
                 attributes,
                 children: vec![],
                 content: vec![],
+                auto_closing: true,
             });
         },
         Err(_) => { 
@@ -200,6 +202,7 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition) -> Result<
         attributes,
         children,
         content,
+        auto_closing: false,
     };
 
     return Ok(res);

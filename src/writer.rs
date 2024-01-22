@@ -9,7 +9,7 @@ use crate::doc_options;
 pub fn get_file_text(document: &Node) -> Result<String, ()> {
     let mut res = String::new();
 
-    let head = match try_get_document_head(document) {
+    let head = match try_get_children_with_name(document, "head") {
         Ok(head) => head,
         Err(()) => {
             // TODO: warn
@@ -22,7 +22,7 @@ pub fn get_file_text(document: &Node) -> Result<String, ()> {
 
     res.push_str(&white_head(&options));
 
-    // TODO: write the body
+    res.push_str(&get_node_html(&try_get_children_with_name(document, "body").expect("The document has no body")));
 
     res.push_str("</document>");
 
@@ -42,13 +42,46 @@ pub fn white_head(options: &doc_options::DocOptions) -> String {
 
 
 /// Looks for the head of a document, returns Err if not found
-pub fn try_get_document_head<'a>(document: &'a Node) -> Result<&'a Node, ()> {
+pub fn try_get_children_with_name<'a>(document: &'a Node, name: &str) -> Result<&'a Node, ()> {
     for child in &document.children {
-        if child.name == "head" {
+        if child.name == name {
             return Ok(child);
         }
     }
 
     return Err(());
+}
+
+
+/// Generates HTML for a node
+/// TEST: the function is not actually implemented properly
+///       this is directly reconstructing the tag without processing anything
+pub fn get_node_html(node: &Node) -> String {
+    let mut res = String::from("<");
+
+    res.push_str(&node.name);
+    res.push(' ');
+    
+    for (attr, val) in &node.attributes {
+        res.push_str(&format!("\"{}\"=\"{}\" ", &attr, &val));
+    }    
+
+    if node.auto_closing {
+        res.push_str("/>");
+    }
+    else {
+        res.push('>');
+
+        for content in &node.content {
+            match content {
+                crate::parser::NodeContent::Character(c) => res.push(*c),
+                crate::parser::NodeContent::Child(id) => res.push_str(&get_node_html(&node.children[*id])),
+            }
+        }
+
+        res.push_str(&format!("</{}>", node.name))
+    }
+
+    return res;
 }
 

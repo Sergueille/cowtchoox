@@ -2,17 +2,18 @@
 <document>
     <head>
         <title>Test document</title>
-        <format>A4</format> <!-- Information about document will be located here -->
-        <!-- No need to link CSS here, as everything in the folder wil automatically included -->
+        <format>A4</format> // Information about document will be located here
+        // No need to link CSS here, as everything in the folder wil automatically included
+        // Comments are not yet implemented
     </head>
     <header>
-        <!-- Contents of the header -->
+        // Contents of the header
     </header>
     <footer>
-        <!-- Contents of the footer -->
+        // Contents of the footer
     </footer>
     <body>
-        <!-- Contents of the rest of the document -->
+        // Contents of the rest of the document
         Hello, world!
         <br/>
         <p test-attribute=test>
