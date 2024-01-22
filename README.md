@@ -47,6 +47,7 @@ Idées de syntaxe (juste des idées)
 
 - `&` pour séparer les maths en plein de `<span>` et pouvoir aligner des trucs facilement grâce à CSS
 
+- `;;` pour le retour à la ligne 
 - `//` pour un commentaire
 
 Pour le reste, on utilisera des balises html (par exemple `<matrix></matrix>`) qui pourront être définies par l'utilisateur
