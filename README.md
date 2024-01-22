@@ -3,8 +3,14 @@
 Nom provisoire: __Cowtchoox__
 
 ## Organisation du code
+Rust: le programme principal
 - `main`: lire l'entrée, lire les fichiers
-- `parser`: transformer le fichier brut en une struct
+- `parser`: transformer le fichier COW en une struct
+- `writer`: transformer la struct en HTML
+- `browser`: envoyer le fichier au navigateur
+
+JS: tourne dans le navigateur, sert à découper les pages comme il faut et à insérer les headers (le navigateur ne fait pas les headers et coupe n'importe comment)
+- J'ai rien fait pout l'instant
 
 On va utiliser la crate headless_chrome pour la conversion en PDF
 
