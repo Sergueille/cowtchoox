@@ -2,14 +2,15 @@
 use std::path::PathBuf; 
 use std::fs;
 use std::time::Duration;
+use crate::Args;
 
 // Sends the file to the browser!
 
-pub fn render_to_pdf(path: PathBuf) {
+pub fn render_to_pdf(path: PathBuf, args: &Args) {
     // create the browser
     let browser = headless_chrome::Browser::new(
         headless_chrome::LaunchOptions { 
-            headless: true, // NOTE: set this ot false to see the browser in action
+            headless: !args.headful,
             ..Default::default()
         }).expect("Could'n find chromium!");
 
@@ -33,6 +34,12 @@ pub fn render_to_pdf(path: PathBuf) {
     pdf_path.push("out.pdf");
     println!("{:?}", pdf_path);
     fs::write(pdf_path, pdf).unwrap();
+
+    if args.keep_alive {
+        println!("Keeping the browser alive forever, stop it manually");
+        loop {}
+    }
+
 }
 
 

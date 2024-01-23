@@ -37,11 +37,15 @@ pub fn white_head(options: &doc_options::DocOptions) -> String {
     // Document title
     res.push_str(format!("<title>{}</title>", options.title).as_str());
 
-    // Link JS script, so that it executes when the page loads
-    // FIXME: will NOT work if the JS dir isn't at th right place
-    //        should be like path_to_exe/JS/main.js when built, and /JS/main.js when running with cargo
+    // FIXME: should be like ~"path_to_exe/" when built, and ~"" when running with cargo
     //        but too lazy to do that
-    res.push_str("<script defer=\"defer\" src=\"JS/main.js\"></script>");
+    let default_resources_path = "";
+
+    // Link JS script, so that it executes when the page loads
+    res.push_str(&format!("<script defer=\"defer\" src=\"{}JS/main.js\"></script>", default_resources_path));
+
+    // Link default CSS
+    res.push_str(&format!("<link rel=\"stylesheet\" href=\"{}css/default.css\"/>", default_resources_path));
 
     res.push_str("</head>");
     return res;
