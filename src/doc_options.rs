@@ -5,8 +5,10 @@ use crate::parser::Node;
 // Handle document options
 
 
-pub enum DocFormat {
-    A4, // TODO: add weird formats
+/// Size of a page. Values are in mm
+pub struct DocFormat {
+    pub width: f32,
+    pub height: f32,
 }
 
 
@@ -29,7 +31,7 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
 
     let mut res = DocOptions { // Put default values here
         title: String::from("You forgot to specify the title!"),
-        format: DocFormat::A4,
+        format: DocFormat { width: 210.0, height: 297.0 }, // Default to A4
     };
     
     for child in &head.children {
@@ -40,7 +42,7 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
                 res.title = inner_text;
             },
             "format " => {
-                res.format = get_doc_format(inner_text);
+                res.format = get_format_from_name(inner_text);
             },
             _ => {
                 // TODO: warn for unknown tag
@@ -52,14 +54,15 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
 }
 
 
-fn get_doc_format(text: String) -> DocFormat {
+/// Converts the name found in the COW files to the right dimensions. Warns and returns A4 if not recognized
+fn get_format_from_name(text: String) -> DocFormat {
     match text.to_lowercase().as_str() {
         "a4" => {
-            return DocFormat::A4;
+            return DocFormat { width: 210.0, height: 297.0 };
         }
         _ => {
             // TODO: warn
-            return DocFormat::A4; // Default
+            return DocFormat { width: 210.0, height: 297.0 }; // Default
         }
     }
 }

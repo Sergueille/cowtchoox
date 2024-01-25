@@ -6,4 +6,15 @@
 
 body {
     font-family: latex-font; /* NOTE: the fonts dir needs to be in the same directory as default css */
+    margin: 0px;
+    padding: 0px;
+}
+
+page {
+    display: block;
+    overflow: auto; /* Ensures that overflow is properly detected by JS */
+
+    /* TEST: horrible colors to make sure pages have the right size */
+    background-color: #aaf;
+    outline: 2mm dashed green;
 }

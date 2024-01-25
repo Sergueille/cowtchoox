@@ -1,12 +1,13 @@
 
-use crate::parser::Node;
-use crate::doc_options;
+use crate::parser::{Node, NodeContent};
+use crate::doc_options::{self, DocOptions};
 
 // Transform the struct back to raw HTML
+// NOTE: all text will be wrapped in <text> tags
 
 
 // Get the entire text of the document, ready for being displayed
-pub fn get_file_text(document: &Node) -> Result<String, ()> {
+pub fn get_file_text(document: &Node) -> Result<(String, DocOptions), ()> {
     let mut res = String::new();
 
     let head = match try_get_children_with_name(document, "head") {
@@ -26,7 +27,7 @@ pub fn get_file_text(document: &Node) -> Result<String, ()> {
 
     res.push_str("</html>");
 
-    return Ok(res);
+    return Ok((res, options));
 }
 
 
@@ -46,6 +47,10 @@ pub fn white_head(options: &doc_options::DocOptions) -> String {
 
     // Link default CSS
     res.push_str(&format!("<link rel=\"stylesheet\" href=\"{}css/default.css\"/>", default_resources_path));
+
+    // Page size
+    res.push_str(&format!("<meta name=\"pagewidth\" content=\"{}\"/>", options.format.width));
+    res.push_str(&format!("<meta name=\"pageheight\" content=\"{}\"/>", options.format.height));
 
     res.push_str("</head>");
     return res;
@@ -83,11 +88,32 @@ pub fn get_node_html(node: &Node) -> String {
     else {
         res.push('>');
 
+        let mut previous: &NodeContent = &NodeContent::Child(0); // Keep track of the last character
         for content in &node.content {
             match content {
-                crate::parser::NodeContent::Character(c) => res.push(*c),
-                crate::parser::NodeContent::Child(id) => res.push_str(&get_node_html(&node.children[*id])),
+                crate::parser::NodeContent::Character(c) => {
+                    match previous {
+                        NodeContent::Character(_) => {},
+                        NodeContent::Child(_) => {
+                            res.push_str("<text>"); // Begin text tag
+                        },
+                    }
+
+                    res.push(*c)
+                },
+                crate::parser::NodeContent::Child(id) => {
+                    match previous {
+                        NodeContent::Character(_) => {
+                            res.push_str("</text>"); // End text tag
+                        },
+                        NodeContent::Child(_) => {},
+                    }
+
+                    res.push_str(&get_node_html(&node.children[*id]))
+                },
             }
+
+            previous = content;
         }
 
         res.push_str(&format!("</{}>", node.name))

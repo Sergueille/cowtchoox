@@ -10,7 +10,7 @@ Rust: le programme principal
 - `browser`: envoyer le fichier au navigateur
 
 JS: tourne dans le navigateur, sert à découper les pages comme il faut et à insérer les headers (le navigateur ne fait pas les headers et coupe n'importe comment)
-- J'ai rien fait pout l'instant
+- `main`: découpage basique, mais c'est le bordel...
 
 On va utiliser la crate headless_chrome pour la conversion en PDF
 
