@@ -21,7 +21,8 @@ On va utiliser la crate headless_chrome pour la conversion en PDF
 - pour les maths, on se démerde pour avoir les opérateurs usuels (idéalement un ou deux caractères par opérateur, par exemple , ou), des trucs de layout (`^`, `_`), et `{}` pour le parenthésage 
 - garder tout le support des balises à l'intérieur des maths
 
-Idées de syntaxe (juste des idées)
+Idées de syntaxe:<br>
+(les opérateurs avec `?` auront deux noms: un nom court (~une lettre) et un nom explicite plus long. Ils seront insensible à la casse)
 - `v/` pour la racine
 - `*` pour `\times`
 - `...` pour les dots
@@ -34,13 +35,13 @@ Idées de syntaxe (juste des idées)
 - `inf` pour `\infty`
 - `?E` (`?E!`) et `?A` pour `\forall` et il existe (un unique)
 - `?u ?i ?c` pour union, inter, inclusion
-- `?U` `?I` pour big_cup et big_cap
-- `€` pour l'appartenance
+- `€` ou `?in` pour l'appartenance
 - `[|` et `|]` pour les intervalles entiers
 - `~` pour équivalent
 - `~=` pour arrondis...
 - `|,` `,|` et `|'` `'|` pour \floor et \cel
 - `!]` pour indiquer que le ] doit matcher avec un autre dans le mauvais sens (intervalles `]a; b[` s'écrivent `!]a; b[!`)
+- `|->` ou `?maps` pour `\mapsto`
 
 - `||` pour `\mathbb`
 - `£`, `@` pour le calligraphié et le gothique
@@ -48,14 +49,15 @@ Idées de syntaxe (juste des idées)
 - `¤` pour mettre en grand (grand sigma)
 
 - `^_` pour `\overbar`
-- `^{` pour `\overbrace`
-- `_{` pour `\underbrace`
+- `?ob` ou `?overbrace` pour `\overbrace`
+- `?ub` ou `?underbrace` pour `\underbrace`
 - `^>` pour les vecteurs
 
 - `&` pour séparer les maths en plein de `<span>` et pouvoir aligner des trucs facilement grâce à CSS
 
 - `;;` pour le retour à la ligne 
 - `//` pour un commentaire
+- ``` `` ``` pour les blocs de code
 
 Pour le reste, on utilisera des balises html (par exemple `<matrix></matrix>`) qui pourront être définies par l'utilisateur
 
