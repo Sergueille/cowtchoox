@@ -2,6 +2,22 @@
 
 Nom provisoire: __Cowtchoox__
 
+## Comment ca marche
+
+Passez le nom du fichier dans la ligne de commande (pour l'instant ca ne fonctionne que avec cargo sinon les fichiers sont pas au bons endroits)
+(le `--` indique à cargo que c'est un argument pour cowtchoox, et pas lui)
+```
+    cargo run -- test.cow
+```
+
+Sinon, d'autres commandes sont implémentées, utiliser l'aide:
+```
+    cargo run -- -h
+```
+
+Cowtchoox produira `out.htm` et `out.pdf`
+
+
 ## Organisation du code
 Rust: le programme principal
 - `main`: lire l'entrée, lire les fichiers
