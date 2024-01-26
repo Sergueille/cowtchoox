@@ -76,7 +76,6 @@ function getPageSize() {
  * @param {HTMLElement} el The element
  */
 function isOverflowing(el) {
-    return el.clientWidth < el.scrollWidth 
-        || el.clientHeight < el.scrollHeight;
+    return el.clientHeight < el.scrollHeight;
 }
 

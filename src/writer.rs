@@ -46,6 +46,7 @@ pub fn white_head(options: &doc_options::DocOptions) -> String {
     res.push_str(&format!("<script defer=\"defer\" src=\"{}JS/main.js\"></script>", default_resources_path));
 
     // Link default CSS
+    // IMPORTANT NOTE: make sure this tag is the las CSS tag, to make sure users don't accidentally change critical CSS rules (such as pag elements) 
     res.push_str(&format!("<link rel=\"stylesheet\" href=\"{}css/default.css\"/>", default_resources_path));
 
     // Page size

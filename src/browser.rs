@@ -23,18 +23,21 @@ pub fn render_to_pdf(path: PathBuf, args: &Args, options: &DocOptions) {
 
     std::thread::sleep(Duration::from_secs(1)); // FIXME: needs to wait for JS to finish executing, not just waiting 1 sec
 
+    const SCALE_CONSTANT: f64 = 1.21; // A random constant to make things work
+    const MM_TO_PX: f64 = 1.0 / 30.7; // Convert from mm to px (https://developer.mozilla.org/en-US/docs/Web/CSS/length#absolute_length_units)
+
     // Export tp pdf
     let pdf = tab.print_to_pdf(Some(headless_chrome::types::PrintToPdfOptions {
         display_header_footer: Some(false),
         // FIXME: it seems that the page element overflows 1px on the pdf page because of precision issues 
-        paper_width: Some(options.format.width as f64 / 30.7),
-        paper_height: Some(options.format.height as f64 / 30.7), // Convert from mm to px (https://developer.mozilla.org/en-US/docs/Web/CSS/length#absolute_length_units)
+        paper_width: Some(options.format.width as f64 * MM_TO_PX * SCALE_CONSTANT),
+        paper_height: Some(options.format.height as f64 * MM_TO_PX * SCALE_CONSTANT), 
         print_background: Some(true),
         margin_bottom: Some(0.0),
         margin_top: Some(0.0),
         margin_left: Some(0.0),
         margin_right: Some(0.0),
-        scale: Some(1.0), // No idea of what it is...
+        scale: Some(SCALE_CONSTANT), // No idea of what it is...
         ..Default::default()
     })).unwrap();
 

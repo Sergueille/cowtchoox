@@ -9,3 +9,6 @@ TODO: Important: remember to make a CSS file to remove ALL default styling, to p
 
 BUG: Looks like that if two tags ar directly followed (`<p></p><p></p>`), it fails to parse
 
+
+- The font doesn't look right. It's not exactly the sam as tex...
+

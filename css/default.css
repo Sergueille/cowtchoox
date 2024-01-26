@@ -2,19 +2,39 @@
 @font-face {
     font-family: latex-font;
     src: url("../fonts/cmunrm.ttf");
-  }
+}
+
+@font-face {
+    font-family: maths-font;
+    src: url("../fonts/cmunti.ttf");
+}
 
 body {
     font-family: latex-font; /* NOTE: the fonts dir needs to be in the same directory as default css */
+    font-optical-sizing: none; /* Just in case */
+    
     margin: 0px;
     padding: 0px;
 }
 
+/* Using !important to prevent further CSS rules form breaking everything */
 page {
-    display: block;
-    overflow: auto; /* Ensures that overflow is properly detected by JS */
+    display: block !important;
+    overflow: auto !important; /* Ensures that overflow is properly detected by JS */
 
     /* TEST: horrible colors to make sure pages have the right size */
     background-color: #aaf;
     outline: 2mm dashed green;
+
+    /* Less important, default properties */
+    padding: 2cm 1.5cm;
+}
+
+text {
+    display: inline !important;
+}
+
+math {
+    font-family: maths-font;
+    display: inline;
 }

@@ -56,6 +56,7 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
 
 /// Converts the name found in the COW files to the right dimensions. Warns and returns A4 if not recognized
 fn get_format_from_name(text: String) -> DocFormat {
+    println!("{}", text.to_lowercase().as_str()); // TEST!
     match text.to_lowercase().as_str() {
         "a4" => {
             return DocFormat { width: 210.0, height: 297.0 };
