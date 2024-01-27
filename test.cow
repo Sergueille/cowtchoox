@@ -12,6 +12,9 @@
     <footer>
         // Contents of the footer
     </footer>
+    <aux>
+        // Define custom tags and operators here. You can also use aux files
+    </aux>
     <body>
         // Contents of the rest of the document
         Hello, world!

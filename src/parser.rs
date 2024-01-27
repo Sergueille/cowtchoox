@@ -2,6 +2,9 @@
 use std::vec::Vec;
 use std::path::PathBuf;
 
+pub mod math;
+pub mod custom;
+
 // This file is parsing raw text into the Node struct
 
 // TODO: support quotes around attributes
@@ -17,7 +20,12 @@ use std::path::PathBuf;
 // NOTE: I think math parsing, and react-like tags will be implemented in another module, when reconstructing the document
 
 
-const WORD_CHARS: &str = "_-"; // Chars to make a word (tag name, attribute, ...). Alphanumeric characters also included. 
+/// Chars to make a word (tag name, attribute, ...). Alphanumeric characters also included. 
+const WORD_CHARS: &str = "_-"; 
+
+/// Attribute nam usd to indicate that a th tag has a "?" whn parsed.
+/// FIXME: th user can declare it as a real attribute and break everything!
+const MATH_OPERATOR_ATTRIB_NAME: &'static str = "math_operator";
 
 
 #[derive(Debug)]
@@ -71,7 +79,7 @@ pub fn parse_file(file_path: &PathBuf, chars: &Vec<char>) -> Result<Node, ParseE
         absolute_position: 0,
         line: 0,
         line_character: 0
-    });
+    }, false);
 }
 
 
@@ -80,17 +88,32 @@ pub fn parse_file(file_path: &PathBuf, chars: &Vec<char>) -> Result<Node, ParseE
 /// # Arguments
 /// * `file`: the raw contents of the file
 /// * `pos`: the index of the character where the function should start parsing
+/// * `accept_question_mark`: is <?tag_name> allowed? Used for math operators declarations (if one is found, it's the attribute MATH_OPERATOR_ATTRIB_NAME is set)
 /// 
 /// # Returns
 /// * the parsed node
 /// 
-pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition) -> Result<Node, ParseError> {
+pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_mark: bool) -> Result<Node, ParseError> {
     expect(chars, &mut pos, '<')?;
+
+    let is_math = match expect(chars, pos, '?') {
+        Ok(_) => true,
+        Err(_) => false,
+    };
+
+    if !accept_question_mark && is_math { // "?" not allowed
+        return Err(ParseError::Expected(String::from("tag name"), pos.clone()));
+    }
+
+    let mut attributes = Vec::with_capacity(10);
+
+    if is_math {
+        attributes.push((String::from(MATH_OPERATOR_ATTRIB_NAME), String::from("")));
+    }
+
 
     // Read tag name
     let tag_name = read_word(chars, &mut pos);
-
-    let mut attributes = Vec::with_capacity(10);
 
     // Read the attributes
     loop {
@@ -156,7 +179,7 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition) -> Result<
                     // TODO: handle that
                 },
                 _ => { // It's a child
-                    let child = parse_file_part(chars, pos)?;
+                    let child = parse_file_part(chars, pos, false)?;
 
                     children.push(child);
                     content.push(NodeContent::Child(children.len() - 1));
@@ -222,6 +245,18 @@ pub fn get_node_content_as_str(node: &Node) -> String {
     }
 
     return res;
+}
+
+
+/// Gets the valu of an attribute of a node. If doesn't exists, returns Err(). If it does exists but has no value, returns Ok(())
+pub fn get_attribute_value<'a>(node: &'a Node, attrib_name: &str) -> Result<&'a String, ()> {
+    for (name, val) in &node.attributes {
+        if attrib_name == name {
+            return Ok(&val);
+        }
+    }
+
+    return Err(());
 }
 
 
