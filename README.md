@@ -47,6 +47,7 @@ Idées de syntaxe:<br>
 - `__` pour `\underset` (peut être en infixe?)
 - `^^` pour `\overset`
 - `!` pour barrer un truc
+- `\` pour indiquer que le prochain caractère n'est pas une commande
 - `->`, `-->`, `=>`, etc, pour les flèches
 - `inf` pour `\infty`
 - `?E` (`?E!`) et `?A` pour `\forall` et il existe (un unique)
