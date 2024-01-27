@@ -186,6 +186,10 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition, accept_que
                 }
             }
         }
+        else if next == '\' { // Next char isn't a command
+            advance_position(pos, chars);
+            content.push(NodeContent::Character(next));
+        }
         else if next.is_whitespace() {
             match content.last() {
                 Some(NodeContent::Child(_)) => {
