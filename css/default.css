@@ -23,7 +23,6 @@ page {
     overflow: auto !important; /* Ensures that overflow is properly detected by JS */
 
     /* TEST: horrible colors to make sure pages have the right size */
-    background-color: #aaf;
     outline: 2mm dashed green;
 
     /* Less important, default properties */

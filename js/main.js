@@ -10,7 +10,7 @@ main();
 
 // FIXME: this will create an infinite loop if one element is too big to fit one one page
 //        please fix this
-function main() {
+async function main() {
     // Gather all document elements
     let children = Array.from(document.body.children);
     children.reverse(); // Reverse it to pop th elements one by one later
@@ -28,6 +28,9 @@ function main() {
             let top = children.pop();
 
             pageElement.appendChild(top);
+            
+            // Wait to make sure the browser have updated the layout
+            await new Promise(resolve => setTimeout(resolve, 0));
 
             if (isOverflowing(pageElement)) { // The page is full // TODO: cut the element
                 top.remove(top);

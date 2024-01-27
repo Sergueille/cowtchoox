@@ -176,6 +176,7 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition, accept_que
 
         if next == '\\' { // Next char isn't a command
             backslashed_character = true;
+            advance_position(pos, chars);
         }
         else if next == '<' { // Opening a new tag?
             match chars[(*pos).absolute_position + 1] {
@@ -212,13 +213,14 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition, accept_que
                     // Ignore
                 }
             }
+            
+            advance_position(pos, chars);
         }
         else {
             // Add character
             content.push(NodeContent::Character(next));
+            advance_position(pos, chars);
         }
-
-        advance_position(pos, chars);
     }
 
     // Got out of the contents, now cursor is in closing tag
