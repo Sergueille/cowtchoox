@@ -7,8 +7,7 @@ pub mod custom;
 
 // This file is parsing raw text into the Node struct
 
-// TODO: support quotes around attributes
-// TODO: support \
+// TODO: support quotes around attribute
 // TODO: copy the file position struct in th nodes, for later error reporting
 // TODO: handle unexpected EOF (currently panics because accesses out of the bounds of the array)
 // TODO: check for $
