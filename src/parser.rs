@@ -162,11 +162,22 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition, accept_que
     let mut children: Vec<Node> = Vec::with_capacity(10);
     let mut content: Vec<NodeContent> = Vec::with_capacity(100);
     
+    let mut backslashed_character = false; // Should the next character be ignored because of a backslash
+
     loop {
         let next = chars[(*pos).absolute_position];
 
-        // Opening a new tag?
-        if next == '<' {
+        if backslashed_character { // Escaped by backslash
+            content.push(NodeContent::Character(next));
+            advance_position(pos, chars);
+            backslashed_character = false;
+            continue;
+        }
+
+        if next == '\\' { // Next char isn't a command
+            backslashed_character = true;
+        }
+        else if next == '<' { // Opening a new tag?
             match chars[(*pos).absolute_position + 1] {
                 '/' => { // Actually, it's finished!
                     advance_position(pos, chars);
@@ -184,10 +195,6 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition, accept_que
                     content.push(NodeContent::Child(children.len() - 1));
                 }
             }
-        }
-        else if next == '\' { // Next char isn't a command
-            advance_position(pos, chars);
-            content.push(NodeContent::Character(next));
         }
         else if next.is_whitespace() {
             match content.last() {

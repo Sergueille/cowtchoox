@@ -100,7 +100,19 @@ pub fn get_node_html(node: &Node) -> String {
                         },
                     }
 
-                    res.push(*c)
+                    // Escape characters
+                    if *c == '<' {
+                        res.push_str("&lt");
+                    }
+                    else if *c == '>' {
+                        res.push_str("&gt");
+                    }
+                    else if *c == '&' {
+                        res.push_str("&amp");
+                    }
+                    else {
+                        res.push(*c);
+                    }
                 },
                 crate::parser::NodeContent::Child(id) => {
                     match previous {
@@ -117,9 +129,15 @@ pub fn get_node_html(node: &Node) -> String {
             previous = content;
         }
 
+        match previous {
+            NodeContent::Character(_) => {
+                res.push_str("</text>"); // End text tag
+            },
+            NodeContent::Child(_) => {},
+        }
+
         res.push_str(&format!("</{}>", node.name))
     }
 
     return res;
 }
-
