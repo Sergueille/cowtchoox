@@ -1,6 +1,7 @@
 
 use std::vec::Vec;
 use std::path::PathBuf;
+use crate::util::FilePosition;
 
 pub mod math;
 pub mod custom;
@@ -47,21 +48,12 @@ pub struct Node {
 
 /// Describes what went wrong
 #[derive(Debug)]
-pub enum ParseError {
-    Expected(String, FilePosition),
-    UnmatchedTag(String, FilePosition),
+pub struct ParseError {
+    pub message: String,
+    pub position: FilePosition,
+    pub length: usize,
 }
 
-
-/// Indicates a position in a file
-/// All fields start at 0. Even lines.
-#[derive(Clone, Debug)]
-pub struct FilePosition {
-    pub file_path: PathBuf,
-    pub absolute_position: usize,
-    pub line: usize,
-    pub line_character: usize,
-}
 
 
 /// Parses a raw file.
@@ -101,7 +93,7 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition, accept_que
     };
 
     if !accept_question_mark && is_math { // "?" not allowed
-        return Err(ParseError::Expected(String::from("tag name"), pos.clone()));
+        return Err(ParseError { message: String::from("Expected tag name. \"?\" is not allowed here."), position: pos.clone(), length: 1 });
     }
 
     let mut attributes = Vec::with_capacity(10);
@@ -224,10 +216,15 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition, accept_que
     }
 
     // Got out of the contents, now cursor is in closing tag
-    let closing_tag_name = read_word(chars, pos);
+    let closing_tag_name = lookahead_word(chars, pos);
     if closing_tag_name != tag_name {
-        return Err(ParseError::UnmatchedTag(tag_name, pos.clone()));
+        return Err(ParseError { 
+            message: format!("Unmatched tag. Expected to close tag \"{}\", but found tag \"{}\"", tag_name, closing_tag_name), 
+            position: pos.clone(), 
+            length: closing_tag_name.len() 
+        });
     }
+    read_word(chars, pos); // Advance cursor to after the tag name 
 
     // Check for the very last character...
     expect(chars, pos, '>')?;
@@ -277,7 +274,7 @@ fn expect(chars: &Vec<char>, pos: &mut FilePosition, char: char) -> Result<(), P
     advance_until_non_whitespace(chars, pos);
 
     if chars[(*pos).absolute_position] != char {
-        return Err(ParseError::Expected(char.to_string(), pos.clone()));
+        return Err(ParseError { message: format!("Expected {}.", char), position: pos.clone(), length: 1 })
     }
 
     advance_position(pos, chars);
@@ -321,8 +318,8 @@ fn advance_position(pos: &mut FilePosition, file: &Vec<char>) {
     
     let character = file[pos.absolute_position - 1];
 
-    // FIXME: will increment the line number by 2 on windows. fuck microsoft
-    if character == '\n' || character == '\r' {
+    // FIXME: will not count lines for os that use \r
+    if character == '\n' {
         (*pos).line += 1;
         (*pos).line_character = 0;
     }

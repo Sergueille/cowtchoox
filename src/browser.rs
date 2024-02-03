@@ -1,27 +1,26 @@
 
 use std::path::PathBuf; 
 use std::fs;
-use std::time::Duration;
 use crate::Args;
 use crate::doc_options::DocOptions;
+use crate::log;
 
 // Sends the file to the browser!
 
-pub fn render_to_pdf(path: PathBuf, args: &Args, options: &DocOptions) {
+pub fn render_to_pdf(path: PathBuf, args: &Args, options: &DocOptions) -> Result<(), ()> {
     // create the browser
-    let browser = headless_chrome::Browser::new(
+    let browser = log::log_if_err(headless_chrome::Browser::new(
         headless_chrome::LaunchOptions { 
             headless: !args.headful,
             ..Default::default()
-        }).expect("Could'n find chromium!");
+        }), "Couldn't find chromium")?;
 
-    let tab = browser.new_tab().expect("Can't crate new tab");
+    let tab = log::log_if_err(browser.new_tab(), "Can't crate new tab")?;
 
     // Navigate to the page
-    tab.navigate_to(&format!("file:///{}", &path.clone().into_os_string().into_string().expect("")))
-        .expect("Failed to navigate to document");
-
-    std::thread::sleep(Duration::from_secs(1)); // FIXME: needs to wait for JS to finish executing, not just waiting 1 sec
+    let res = tab.navigate_to(&format!("file:///{}", &path.clone().into_os_string().into_string().expect("")));
+    log::log_if_err(res, "Failed to navigate to document (1).")?;
+    log::log_if_err(tab.wait_until_navigated(), "Failed to navigate to document (2).")?;
 
     const SCALE_CONSTANT: f64 = 1.21; // A random constant to make things work
     const MM_TO_PX: f64 = 1.0 / 30.7; // Convert from mm to px (https://developer.mozilla.org/en-US/docs/Web/CSS/length#absolute_length_units)
@@ -46,14 +45,17 @@ pub fn render_to_pdf(path: PathBuf, args: &Args, options: &DocOptions) {
     ancestors.next();
     let mut pdf_path = ancestors.next().unwrap().to_path_buf();
     pdf_path.push("out.pdf");
-    println!("{:?}", pdf_path);
     fs::write(pdf_path, pdf).unwrap();
 
     if args.keep_alive {
-        println!("Keeping the browser alive forever, stop it manually");
+        log::log("Keeping the browser alive forever, stop it manually");
         loop {}
     }
 
+    let res = tab.close(true);
+    log::log_if_err(res, "Failed to close browser tab.")?;
+
+    return Ok(());
 }
 
 

@@ -1,4 +1,5 @@
 
+use crate::log;
 use crate::parser::{Node, NodeContent};
 use crate::doc_options::{self, DocOptions};
 
@@ -13,7 +14,7 @@ pub fn get_file_text(document: &Node) -> Result<(String, DocOptions), ()> {
     let head = match try_get_children_with_name(document, "head") {
         Ok(head) => head,
         Err(()) => {
-            // TODO: warn
+            log::error("The document has no head.");
             return Err(());
         }
     };

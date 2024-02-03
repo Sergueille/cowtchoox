@@ -4,10 +4,13 @@ mod parser;
 mod writer;
 mod doc_options;
 mod browser;
+mod log;
+mod util;
 
 use std::{path::PathBuf, fs};
 
 use clap;
+use parser::Node;
 
 // Interpret command line arguments
 
@@ -49,17 +52,24 @@ fn main() {
             compile_file(path, content, &args);
         },
         Err(err) => {
-            println!("ERR: failed to read source file: {}", err);
+            log::error(&format!("failed to read source file: {}", err));
         },
     }
-
-    println!("Finished!");
 }
 
 fn compile_file(absolute_path: PathBuf, content: String, args: &Args) {
     // TEST: testing parser here
 
-    let document = parser::parse_file(&absolute_path, &content.chars().collect()).expect("Failed to parse file");
+    log::log("Parsing document...");
+    let document = match parser::parse_file(&absolute_path, &content.chars().collect()) {
+        Ok(node) => node,
+        Err(err) => {
+            log::error_position(&err.message, &err.position, err.length);
+            return;
+        },
+    };
+    
+    log::log("Creating HTML...");
     let (text, options) = writer::get_file_text(&document).expect("Failed to create HTML");
 
     // TODO: make this in a mor elegant way
@@ -67,7 +77,11 @@ fn compile_file(absolute_path: PathBuf, content: String, args: &Args) {
     out_path.push("out.html");
     fs::write(out_path.clone(), text).unwrap();
 
+    log::log("Creating PDF...");
+
     // Render to pdf!
-    browser::render_to_pdf(out_path, args, &options);
+    let _res = browser::render_to_pdf(out_path, args, &options);
+
+    log::log("Done!");
 }
 
