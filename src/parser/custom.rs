@@ -12,7 +12,7 @@ pub struct CustomTag {
 
 
 /// Stores all custom tags, in a big hash, the key is the name of the tag
-pub type TagHash = HashMap<String,CustomTag>;
+pub type TagHash = HashMap<String, CustomTag>;
 
 
 /// Put all defined tags in the text into the provided hashMap
@@ -56,13 +56,12 @@ pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: &mut 
 }
 
 
-// OPTI: should we use a hash map for the args 
 /// Returns the cloned contents of the tag, with args tags replaced by their values 
 /// 
 /// # Arguments
-/// * `arguments`: a list of (arg_name, arg_value)
+/// * `arguments`: a list of argument values, provided in the right order
 /// 
-pub fn instantiate_tag(tag: &CustomTag, arguments: Vec<(String, Node)>) {
+pub fn instantiate_tag(tag: &CustomTag, arguments: Vec<Node>) {
     // TODO
 }
 

@@ -34,7 +34,9 @@ pub enum NodeContent {
 }
 
 
-/// This struct will own all of his children, their position is indicated by the "content" field
+/// This struct will own all of his children.
+/// The content field is a vect of NodeContent. 
+///     -> Each element is either a character or a child node. If it's a child, it indicates the position of the child in the children vector
 #[derive(Debug)]
 pub struct Node {
     pub name: String,
