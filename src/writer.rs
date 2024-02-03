@@ -77,7 +77,8 @@ pub fn try_get_children_with_name<'a>(document: &'a Node, name: &str) -> Result<
 pub fn get_node_html(node: &Node) -> String {
     let mut res = String::from("<");
 
-    res.push_str(&node.name);
+    res.push_str(&escape_tag_name(&node.name));
+
     res.push(' ');
     
     for (attr, val) in &node.attributes {
@@ -137,8 +138,18 @@ pub fn get_node_html(node: &Node) -> String {
             NodeContent::Child(_) => {},
         }
 
-        res.push_str(&format!("</{}>", node.name))
+        res.push_str(&format!("</{}>", &escape_tag_name(&node.name)))
     }
 
     return res;
+}
+
+
+fn escape_tag_name(name: &str) -> String {
+    if name == "math" {
+        return String::from("mathnode");
+    }
+    else {
+        return String::from(name);
+    }
 }

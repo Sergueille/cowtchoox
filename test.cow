@@ -27,9 +27,9 @@
 
         <br/>
 
-        <math>
+        $
             This isn't actual math, but it has the math font! Δ = b<sup>2</sup>-4ac
-        </math>
+        $
 
         <br/>
         This tag is escaped: \<look at this tag!>, and so is this backslash \\ and this ampersand \&

@@ -27,7 +27,7 @@ pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: &mut 
     // TODO: not finished
 
     while pos.absolute_position < file.len() { // Repeat until end of the file
-        let node = parser::parse_file_part(file, pos, true)?;
+        let node = parser::parse_file_part(file, pos, true, false)?;
 
         // Check if a "?" was added
         let is_math = parser::get_attribute_value(&node, parser::MATH_OPERATOR_ATTRIB_NAME).is_ok(); 

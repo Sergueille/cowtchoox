@@ -11,7 +11,6 @@ pub mod custom;
 // TODO: support quotes around attribute
 // TODO: copy the file position struct in th nodes, for later error reporting
 // TODO: handle unexpected EOF (currently panics because accesses out of the bounds of the array)
-// TODO: check for $
 // TODO: handle comments (currently it reads them as text)
 
 // NOTE: currently auto-closing tags needs to include a / at the end (<br/>)
@@ -70,7 +69,7 @@ pub fn parse_file(file_path: &PathBuf, chars: &Vec<char>) -> Result<Node, ParseE
         absolute_position: 0,
         line: 0,
         line_character: 0
-    }, false);
+    }, false, false);
 }
 
 
@@ -84,21 +83,21 @@ pub fn parse_file(file_path: &PathBuf, chars: &Vec<char>) -> Result<Node, ParseE
 /// # Returns
 /// * the parsed node
 /// 
-pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_mark: bool) -> Result<Node, ParseError> {
+pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_mark: bool, math: bool) -> Result<Node, ParseError> {
     expect(chars, &mut pos, '<')?;
 
-    let is_math = match expect(chars, pos, '?') {
+    let has_question_mark = match expect(chars, pos, '?') {
         Ok(_) => true,
         Err(_) => false,
     };
 
-    if !accept_question_mark && is_math { // "?" not allowed
+    if !accept_question_mark && has_question_mark { // "?" not allowed
         return Err(ParseError { message: String::from("Expected tag name. \"?\" is not allowed here."), position: pos.clone(), length: 1 });
     }
 
     let mut attributes = Vec::with_capacity(10);
 
-    if is_math {
+    if has_question_mark {
         attributes.push((String::from(MATH_OPERATOR_ATTRIB_NAME), String::from("")));
     }
 
@@ -149,8 +148,41 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition, accept_que
             // Normal tag, continue execution
         },
     }
+
+    let mut res = Node {
+        name: tag_name,
+        attributes,
+        children: vec![],
+        content: vec![],
+        auto_closing: false,
+    };
+
+    parse_inner_tag(chars, &mut res, pos, math || has_question_mark)?;
+    advance_position(pos, chars);
+    advance_position(pos, chars);
     
     // Parse the node's contents
+    // Got out of the contents, now cursor is in closing tag
+    let closing_tag_name = lookahead_word(chars, pos);
+    if closing_tag_name != res.name {
+        return Err(ParseError { 
+            message: format!("Unmatched tag. Expected to close tag \"{}\", but found tag \"{}\"", res.name, closing_tag_name), 
+            position: pos.clone(), 
+            length: closing_tag_name.len() 
+        });
+    }
+    read_word(chars, pos); // Advance cursor to after the tag name 
+
+    // Check for the very last character...
+    expect(chars, pos, '>')?;
+
+    // Yay, the user gave a completely valid node!
+
+    return Ok(res);
+}
+
+
+fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosition, math: bool) -> Result<(), ParseError> {
     let mut children: Vec<Node> = Vec::with_capacity(10);
     let mut content: Vec<NodeContent> = Vec::with_capacity(100);
     
@@ -173,8 +205,6 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition, accept_que
         else if next == '<' { // Opening a new tag?
             match chars[(*pos).absolute_position + 1] {
                 '/' => { // Actually, it's finished!
-                    advance_position(pos, chars);
-                    advance_position(pos, chars);
                     break;
                 },
                 '!' => { // It's a comment
@@ -182,11 +212,32 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition, accept_que
                     // TODO: handle that
                 },
                 _ => { // It's a child
-                    let child = parse_file_part(chars, pos, false)?;
+                    let child = parse_file_part(chars, pos, false, math)?;
 
                     children.push(child);
                     content.push(NodeContent::Child(children.len() - 1));
                 }
+            }
+        }
+        else if next == '$' {
+            advance_position(pos, chars);
+
+            if !math { // Inner math tag
+                let mut math_tag = Node {
+                    name: String::from("math"),
+                    attributes: vec![],
+                    children: vec![],
+                    content: vec![],
+                    auto_closing: false,
+                };
+
+                parse_inner_tag(chars, &mut math_tag, pos, true)?;
+
+                children.push(math_tag);
+                content.push(NodeContent::Child(children.len() - 1));
+            }
+            else { // Finished math
+                break;
             }
         }
         else if next.is_whitespace() {
@@ -215,30 +266,10 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition, accept_que
         }
     }
 
-    // Got out of the contents, now cursor is in closing tag
-    let closing_tag_name = lookahead_word(chars, pos);
-    if closing_tag_name != tag_name {
-        return Err(ParseError { 
-            message: format!("Unmatched tag. Expected to close tag \"{}\", but found tag \"{}\"", tag_name, closing_tag_name), 
-            position: pos.clone(), 
-            length: closing_tag_name.len() 
-        });
-    }
-    read_word(chars, pos); // Advance cursor to after the tag name 
+    node.children = children;
+    node.content = content;
 
-    // Check for the very last character...
-    expect(chars, pos, '>')?;
-
-    // Yay, the user gave a completely valid node!
-    let res = Node {
-        name: tag_name,
-        attributes,
-        children,
-        content,
-        auto_closing: false,
-    };
-
-    return Ok(res);
+    return Ok(());
 }
 
 

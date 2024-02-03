@@ -33,7 +33,7 @@ text {
     display: inline !important;
 }
 
-math {
+mathnode {
     font-family: maths-font;
     display: inline;
 }
