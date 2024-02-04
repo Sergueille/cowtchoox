@@ -3,6 +3,8 @@ use std::vec::Vec;
 use std::path::PathBuf;
 use crate::util::FilePosition;
 
+use self::custom::TagHash;
+
 pub mod math;
 pub mod custom;
 
@@ -56,6 +58,12 @@ pub struct ParseError {
 }
 
 
+/// Contains useful information to parse a document
+pub struct ParserContext<'a> {
+    pub args: &'a crate::Args, // Command line arguments
+    pub math_operators: TagHash,
+}
+
 
 /// Parses a raw file.
 /// 
@@ -65,13 +73,13 @@ pub struct ParseError {
 /// # Returns
 /// * the parsed node
 /// 
-pub fn parse_file(file_path: &PathBuf, chars: &Vec<char>) -> Result<Node, ParseError> {
-    return parse_file_part(chars, &mut FilePosition {
+pub fn parse_file(file_path: &PathBuf, chars: &Vec<char>, context: &ParserContext) -> Result<Node, ParseError> {
+    return parse_tag(chars, &mut FilePosition {
         file_path: file_path.clone(),
         absolute_position: 0,
         line: 0,
         line_character: 0
-    }, false, false);
+    }, false, false, context);
 }
 
 
@@ -85,7 +93,7 @@ pub fn parse_file(file_path: &PathBuf, chars: &Vec<char>) -> Result<Node, ParseE
 /// # Returns
 /// * the parsed node
 /// 
-pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_mark: bool, math: bool) -> Result<Node, ParseError> {
+pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_mark: bool, math: bool, context: &ParserContext) -> Result<Node, ParseError> {
     expect(chars, &mut pos, '<')?;
 
     let has_question_mark = match expect(chars, pos, '?') {
@@ -159,7 +167,7 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition, accept_que
         auto_closing: false,
     };
 
-    parse_inner_tag(chars, &mut res, pos, math || has_question_mark)?;
+    parse_inner_tag(chars, &mut res, pos, math || has_question_mark, context)?;
     advance_position(pos, chars);
     advance_position(pos, chars);
     
@@ -184,7 +192,8 @@ pub fn parse_file_part(chars: &Vec<char>, mut pos: &mut FilePosition, accept_que
 }
 
 
-fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosition, math: bool) -> Result<(), ParseError> {
+/// Parses text inside a tag
+fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosition, math: bool, context: &ParserContext) -> Result<(), ParseError> {
     let mut children: Vec<Node> = Vec::with_capacity(10);
     let mut content: Vec<NodeContent> = Vec::with_capacity(100);
     
@@ -214,7 +223,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                     // TODO: handle that
                 },
                 _ => { // It's a child
-                    let child = parse_file_part(chars, pos, false, math)?;
+                    let child = parse_tag(chars, pos, false, math, context)?;
 
                     children.push(child);
                     content.push(NodeContent::Child(children.len() - 1));
@@ -233,7 +242,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                     auto_closing: false,
                 };
 
-                parse_inner_tag(chars, &mut math_tag, pos, true)?;
+                parse_inner_tag(chars, &mut math_tag, pos, true, context)?;
 
                 children.push(math_tag);
                 content.push(NodeContent::Child(children.len() - 1));
@@ -270,6 +279,9 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
 
     node.children = children;
     node.content = content;
+
+    // Now that the tag is parsed, if it's math, parse math
+    math::parse_math(node, context)?;
 
     return Ok(());
 }

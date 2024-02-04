@@ -7,10 +7,9 @@ mod browser;
 mod log;
 mod util;
 
-use std::{path::PathBuf, fs};
+use std::{collections::HashMap, fs, path::PathBuf};
 
 use clap;
-use parser::Node;
 
 // Interpret command line arguments
 
@@ -60,8 +59,13 @@ fn main() {
 fn compile_file(absolute_path: PathBuf, content: String, args: &Args) {
     // TEST: testing parser here
 
+    let parser_context = parser::ParserContext {
+        args,
+        math_operators: HashMap::new(),
+    };
+
     log::log("Parsing document...");
-    let document = match parser::parse_file(&absolute_path, &content.chars().collect()) {
+    let document = match parser::parse_file(&absolute_path, &content.chars().collect(), &parser_context) {
         Ok(node) => node,
         Err(err) => {
             log::error_position(&err.message, &err.position, err.length);
