@@ -1,9 +1,9 @@
 
-<custom_tag_name arg1>
-    This is a custom tag with parameter: <arg1/>
-</custom_tag_name>
+<test_tag arg1>
+    This is a custom tag with parameter
+</test_tag>
 
-<?math_operator_name arg1 arg2>
-    This is a custom math operator with args: <arg1/> <arg2/>
-</math_operator_name>
+<?test_op arg1 arg2>
+    This is a custom math operator with args
+</test_op>
 

@@ -1,34 +1,6 @@
-use super::{Node, ParserContext, ParseError};
-
-/*
-
-How it works:
-`parser::parse_tag` <- takes raw text
-    - parse comments, </>, backslash etc...
-    - make a recursive call for child tags
-    - call `parse_math` just before exiting
-
-Example:
-
-<math>§D = b^2-4ac = <boxed>§w_0^2(1/{Q^2}-4)</boxed></math>
-
-- parser::parse_tag called here: 
-    <math>§D = b^2-4ac = <div>§w_0^2(1/{Q^2}-4)</div></math>
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    - recursive call to parser::parse_tag
-        <math>§D = b^2-4ac = <div>§w_0^2(1/{Q^2}-4)</div></math>
-                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    - call to parse_math here then exit
-        <math>§D = b^2-4ac = <div>§w_0^2(1/{Q^2}-4)</div></math>
-                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-- call to parse_math here then exit
-    <math>§D = b^2-4ac = <div>[HTML representation of the math]</div></math>
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-*/
+use super::{advance_position, Node, NodeContent, ParseError, ParserContext};
+use crate::util::FilePosition;
+use super::custom::CustomTag;
 
 
 /// Create math! Called after tags are parsed. Will replace the provided Node's contents by math.
@@ -39,16 +11,107 @@ Example:
 /// # Returns
 /// The node that contains all the math.
 /// 
-pub fn parse_math(node: &mut Node, context: &ParserContext) -> Result<(), ParseError> {
-    // TODO
+/// TODO: absolutely not finished
+pub fn parse_math(node: &mut Node, chars: &Vec<char>, context: &ParserContext) -> Result<(), ParseError> {
+    let mut res: Vec<NodeContent> = Vec::with_capacity(node.content.len());
 
-    // NOTE: les opérateurs définis par l'utilisateur sont dans `context`, dans un dictionnaire, indexés par leur nom 
-    //       utiliser crate::parser::custom::instantiate_tag pour obtenir un node à partir de la struct de l'opérateur, et en donnant les arguments de l'opérateur
-    // NOTE: pour les erreurs, utiliser log::error sans spécifier de position, je ferai en sorte que ca l'indique plus tard
+    let mut i = 0;
+    while i < node.content.len() {
+        let c = &node.content[i];
 
-    // Et si il y a besoin, c'est possible de changer la spécification de la fonction 
+        match *c {
+            super::NodeContent::Character(c) => {
+                if c == '?' {
+                    i += 1;
+                    let op = expect_operator(node, chars, i, context)?;
+                    crate::log::log(&format!("Found op {:?}", op.content));
+                }
+            },
+            super::NodeContent::Child(_) => {
+                
+            },
+        }
+
+        i += 1;
+    }
+
+    node.content = res;
 
     return Ok(());
+}
+
+
+fn parse_math_part(pos: &mut FilePosition, context: &ParserContext) -> Result<Node, ParseError> {
+    todo!(); // TODO
+}
+
+
+/// Tries to read an operator AFTER the question mark
+fn expect_operator<'a>(node: &Node, chars: &Vec<char>, start_pos: usize, context: &'a ParserContext) -> Result<&'a CustomTag, ParseError> {
+    let mut word = String::with_capacity(15);
+    let mut pos = start_pos;
+
+    loop {
+        let el = &node.content[pos];
+
+        match *el {
+            NodeContent::Character(c) => {
+                if super::WORD_CHARS.contains(c) || c.is_alphabetic() {
+                    word.push(c);
+                }
+                else {
+                    break;
+                }
+            },
+            NodeContent::Child(_) => {
+                break;
+            },
+        }
+
+        pos += 1;
+    }
+
+    match context.math_operators.get(&word) {
+        Some(op) => return Ok(op),
+        None => 
+            Err(ParseError { 
+                message: format!("Unknown math operator name \"{}\"", word), 
+                position: get_file_pos_of_char_in_node(node, chars, start_pos), 
+                length: word.len() 
+            }),
+    }
+
+}
+
+
+/// Returns the proper error if a tag is present instead of a character
+fn expect_character(node: &Node, chars: &Vec<char>, id: usize) -> Result<char, ParseError> {
+    match node.content[id] {
+        NodeContent::Character(c) => return Ok(c),
+        _ => {
+            let err_pos = get_file_pos_of_char_in_node(node, chars, id);
+            return Err(ParseError { message: String::from("Didn't expected a tag here."), position: err_pos, length: 1 });
+        }
+    }
+}
+
+
+/// Get the file position of a character of a node. It's slow, use only for error reporting
+fn get_file_pos_of_char_in_node(node: &Node, chars: &Vec<char>, id: usize) -> FilePosition {
+    let mut res = node.start_inner_position.clone();
+    
+    for i in 0..id {
+        match node.content[i] {
+            NodeContent::Character(_) => advance_position(&mut res, chars),
+            NodeContent::Child(c) =>  {
+                for _ in 0..(node.children[c].source_length) {
+                    advance_position(&mut res, chars);
+                }
+            },
+        }
+    }
+
+    return res;
 }
 
 

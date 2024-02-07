@@ -46,6 +46,9 @@ pub struct Node {
     pub children: Vec<Node>,
     pub content: Vec<NodeContent>,
     pub auto_closing: bool,
+    pub start_position: FilePosition, // Where it is located in the source file
+    pub start_inner_position: FilePosition, // Where  =the inner content is located in the source file
+    pub source_length: usize, // How long it is in th source file
 }
 
 
@@ -74,12 +77,7 @@ pub struct ParserContext<'a> {
 /// * the parsed node
 /// 
 pub fn parse_file(file_path: &PathBuf, chars: &Vec<char>, context: &ParserContext) -> Result<Node, ParseError> {
-    return parse_tag(chars, &mut FilePosition {
-        file_path: file_path.clone(),
-        absolute_position: 0,
-        line: 0,
-        line_character: 0
-    }, false, false, context);
+    return parse_tag(chars, &mut get_start_of_file_position(file_path), false, false, context);
 }
 
 
@@ -95,6 +93,8 @@ pub fn parse_file(file_path: &PathBuf, chars: &Vec<char>, context: &ParserContex
 /// 
 pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_mark: bool, math: bool, context: &ParserContext) -> Result<Node, ParseError> {
     expect(chars, &mut pos, '<')?;
+
+    let start_pos = pos.clone();
 
     let has_question_mark = match expect(chars, pos, '?') {
         Ok(_) => true,
@@ -143,15 +143,21 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_
     // Are we closing the tag correctly?
     expect(chars, pos, '>')?;
 
+    let inner_start_pos = pos.clone();
+
     match exp {
         Ok(()) => { // Auto-closing
             // Return the node directly
+            let length = get_positions_difference(pos, &start_pos);
             return Ok(Node {
                 name: tag_name,
                 attributes,
                 children: vec![],
                 content: vec![],
                 auto_closing: true,
+                start_position: start_pos,
+                start_inner_position: inner_start_pos,
+                source_length: length,
             });
         },
         Err(_) => { 
@@ -165,6 +171,9 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_
         children: vec![],
         content: vec![],
         auto_closing: false,
+        start_position: start_pos,
+        start_inner_position: inner_start_pos,
+        source_length: 0,
     };
 
     parse_inner_tag(chars, &mut res, pos, math || has_question_mark, context)?;
@@ -185,6 +194,8 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_
 
     // Check for the very last character...
     expect(chars, pos, '>')?;
+
+    res.source_length = get_positions_difference(pos, &res.start_position);
 
     // Yay, the user gave a completely valid node!
 
@@ -234,15 +245,23 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
             advance_position(pos, chars);
 
             if !math { // Inner math tag
+                let mut start_inner_position = pos.clone();
+                advance_position(&mut start_inner_position, chars);
+
                 let mut math_tag = Node {
                     name: String::from("math"),
                     attributes: vec![],
                     children: vec![],
                     content: vec![],
                     auto_closing: false,
+                    start_position: pos.clone(),
+                    start_inner_position,
+                    source_length: 0
                 };
 
                 parse_inner_tag(chars, &mut math_tag, pos, true, context)?;
+
+                math_tag.source_length = get_positions_difference(&pos, &math_tag.start_position);
 
                 children.push(math_tag);
                 content.push(NodeContent::Child(children.len() - 1));
@@ -281,7 +300,9 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
     node.content = content;
 
     // Now that the tag is parsed, if it's math, parse math
-    math::parse_math(node, context)?;
+    if math {
+        math::parse_math(node, chars, context)?;
+    }
 
     return Ok(());
 }
@@ -328,9 +349,10 @@ fn expect(chars: &Vec<char>, pos: &mut FilePosition, char: char) -> Result<(), P
 }
 
 
-/// Advances the cursor until non-whitespace is found. The cursor will be on the first non-whitespace character
+/// Advances the cursor until non-whitespace is found. The cursor will be on the first non-whitespace character.
+/// If EOF is found, is places the cursor at the end of the file
 fn advance_until_non_whitespace(chars: &Vec<char>, pos: &mut FilePosition) {
-    while chars[(*pos).absolute_position].is_whitespace() {
+    while (*pos).absolute_position < chars.len() && chars[(*pos).absolute_position].is_whitespace() {
         advance_position(pos, chars);
     }
 }
@@ -357,7 +379,7 @@ fn lookahead_word(chars: &Vec<char>, pos: &mut FilePosition) -> String {
 
 
 /// Advances a position, the character is used to take new line into account
-fn advance_position(pos: &mut FilePosition, file: &Vec<char>) {
+pub fn advance_position(pos: &mut FilePosition, file: &Vec<char>) {
     (*pos).absolute_position += 1;
     (*pos).line_character += 1;
     
@@ -369,4 +391,33 @@ fn advance_position(pos: &mut FilePosition, file: &Vec<char>) {
         (*pos).line_character = 0;
     }
 }
+
+
+fn get_positions_difference(a: &FilePosition, b: &FilePosition) -> usize {
+    if a.file_path != b.file_path {
+        panic!("Tried to compare positions located in different files");
+    }
+
+    return a.absolute_position - b.absolute_position;
+}
+
+
+/// basically call advance_position `count` times
+pub fn advance_position_many(pos: &mut FilePosition, file: &Vec<char>, count: usize) {
+    for _ in 0..count {
+        advance_position(pos, file);
+    }
+}
+
+
+/// Get a file position at the beginning of the file with given path
+pub fn get_start_of_file_position(path: &PathBuf) -> FilePosition {
+    return FilePosition {   
+        file_path: path.clone(),
+        absolute_position: 0,
+        line: 0,
+        line_character: 0
+    };
+}
+
 

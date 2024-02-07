@@ -19,7 +19,6 @@ pub fn log(message: &str) {
 
 
 /// Prints a log with a position
-/// NOTE: the highlighted position must be on one line
 pub fn log_position(message: &str, start_pos: &FilePosition, length: usize) {
     println!("    {} {} {}", "log:".blue(), message, display_path(start_pos).bright_black());
     print_line(start_pos, length, LogLevel::Log);
@@ -33,7 +32,6 @@ pub fn warning(message: &str) {
 
 
 /// Prints a warning
-/// NOTE: the highlighted position must be on one line
 pub fn warning_position(message: &str, start_pos: &FilePosition, length: usize) {
     println!("{} {} {}", "warning:".yellow(), message, display_path(start_pos).bright_black());
     print_line(start_pos, length, LogLevel::Warning);
@@ -47,7 +45,6 @@ pub fn error(message: &str) {
 
 
 /// Prints an error
-/// NOTE: the highlighted position must be on one line
 pub fn error_position(message: &str, start_pos: &FilePosition, length: usize) {
     println!("  {} {} {}", "error:".red(), message, display_path(start_pos).bright_black());
     print_line(start_pos, length, LogLevel::Error);

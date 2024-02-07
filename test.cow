@@ -34,6 +34,9 @@
         <br/>
         This tag is escaped: \<look at this tag!>, and so is this backslash \\ and this ampersand \&
 
+        <br/>
+        $Text before ?test_op text after$
+
         <p>
         And even more text to test if the program is able to handle multiple page. 
         I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.

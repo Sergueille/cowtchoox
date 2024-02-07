@@ -23,11 +23,13 @@ pub type TagHash = HashMap<String, CustomTag>;
 /// * `hash`: the hash into which the function will add tags
 /// 
 /// TODO: this function is not tested at all
-pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: &mut TagHash<>, context: &super::ParserContext) -> Result<(), parser::ParseError> {
+pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: TagHash<>, args: &crate::Args) -> Result<TagHash, parser::ParseError> {
     // TODO: not finished
 
+    let mut context = parser::ParserContext { args, math_operators: hash };
+
     while pos.absolute_position < file.len() { // Repeat until end of the file
-        let node = parser::parse_tag(file, pos, true, false, context)?;
+        let node = parser::parse_tag(file, pos, true, false, &context)?;
 
         // Check if a "?" was added
         let is_math = parser::get_attribute_value(&node, parser::MATH_OPERATOR_ATTRIB_NAME).is_ok(); 
@@ -45,14 +47,16 @@ pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: &mut 
             arguments.push(name.clone());
         }
         
-        hash.insert(node.name.clone(), CustomTag {
+        context.math_operators.insert(node.name.clone(), CustomTag {
             arguments,
             is_math,
             content: node,
         }); 
+
+        super::advance_until_non_whitespace(file, pos);
     }
 
-    return Ok(());
+    return Ok(context.math_operators);
 }
 
 

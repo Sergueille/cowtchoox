@@ -10,6 +10,7 @@ mod util;
 use std::{collections::HashMap, fs, path::PathBuf};
 
 use clap;
+use parser::custom::TagHash;
 
 // Interpret command line arguments
 
@@ -32,6 +33,9 @@ fn main() {
             .arg(
                 clap::arg!(--keepalive "Keeps the browser opened until the program is forced to stop")
             )
+            .arg(
+                clap::arg!(--cowx <FILE> "Includes a cowx file")
+            )
             .get_matches();
 
     // Get the filepath from arguments
@@ -40,6 +44,35 @@ fn main() {
         headful: *matches.get_one::<bool>("headful").unwrap(),
         keep_alive: *matches.get_one::<bool>("keepalive").unwrap(),
     };
+
+    // Parse cowx file if needed
+    let cowx_file = matches.get_one::<String>("cowx");
+    let mut custom_tags_hash = HashMap::new(); // Store tags in this
+    match cowx_file {
+        Some(file_name) => {
+            match std::fs::read_to_string(file_name) { // Try to read the file
+                Ok(content) => {
+                    // Parse the file
+                    let res_hash = parser::custom::parse_custom_tags(
+                        &content.chars().collect::<Vec<char>>(), 
+                        &mut parser::get_start_of_file_position(&PathBuf::from(file_name)), 
+                        custom_tags_hash, 
+                        &args
+                    );
+
+                    match res_hash {
+                        Ok(hash) => custom_tags_hash = hash,
+                        Err(err) => {
+                            log::error_position(&err.message, &err.position, err.length);
+                            return; // Fatal error, we're done!
+                        }
+                    }
+                },
+                Err(err) => log::error(&format!("failed to read cowx file: {}", err)),
+            }
+        },
+        None => todo!(),
+    }
     
     let res = std::fs::read_to_string(args.filepath.clone());
 
@@ -48,7 +81,7 @@ fn main() {
             let mut path = std::env::current_dir().expect("Failed to get working dir");
             path.push(&args.filepath);
 
-            compile_file(path, content, &args);
+            compile_file(path, content, &args, custom_tags_hash);
         },
         Err(err) => {
             log::error(&format!("failed to read source file: {}", err));
@@ -56,12 +89,10 @@ fn main() {
     }
 }
 
-fn compile_file(absolute_path: PathBuf, content: String, args: &Args) {
-    // TEST: testing parser here
-
+fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tags_hash: TagHash) {
     let parser_context = parser::ParserContext {
         args,
-        math_operators: HashMap::new(),
+        math_operators: custom_tags_hash,
     };
 
     log::log("Parsing document...");
