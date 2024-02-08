@@ -3,7 +3,11 @@
     This is a custom tag with parameter
 </test_tag>
 
-<?test_op arg1 arg2>
-    This is a custom math operator with args
+<?test_op>
+    This is a custom math operator with <strong>no arguments</strong>
 </test_op>
+
+<?other_op arg1 arg2>
+    This is a custom math operator with args
+</other_op>
 

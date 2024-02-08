@@ -65,9 +65,55 @@ pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: TagHa
 /// # Arguments
 /// * `arguments`: a list of argument values, provided in the right order
 /// 
-pub fn instantiate_tag(tag: &CustomTag, arguments: Vec<Node>) {
-    // TODO
+pub fn instantiate_tag(tag: &CustomTag, arguments: Vec<Node>) -> Node {
+    return instantiate_tag_inner(tag, &tag.content, &arguments);
 }
+
+
+fn instantiate_tag_inner(tag: &CustomTag, node: &Node, arguments: &Vec<Node>) -> Node {
+    let mut res = Node {
+        name: node.name.clone(),
+        attributes: node.attributes.clone(),
+        children: node.children.clone(),
+        content: Vec::with_capacity(node.content.len()),
+        auto_closing: node.auto_closing,
+        start_position: node.start_position.clone(),
+        start_inner_position: node.start_inner_position.clone(),
+        source_length: node.source_length,
+    };
+
+    for c in &node.content {
+        match *c {
+            super::NodeContent::Character(c) => {
+                res.content.push(super::NodeContent::Character(c));
+            },
+            super::NodeContent::Child(child_id) => {
+                let child = &node.children[child_id];
+
+                let mut replaced_argument = false;
+                if child.auto_closing {
+                    // Should this tag be replaced by an argument?
+                    for (i, arg) in tag.arguments.iter().enumerate() {
+                        if arg == &child.name {
+                            replaced_argument = true;
+                            res.children[child_id] = arguments[i].clone();
+                        }
+                    }
+                }
+
+                res.content.push(super::NodeContent::Child(child_id));
+
+                if !replaced_argument {
+                    let new_child = instantiate_tag_inner(tag, child, arguments);
+                    res.children[child_id] = new_child;
+                }
+            },
+        }
+    }
+
+    return res;
+}
+
 
 
 

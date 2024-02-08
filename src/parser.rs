@@ -29,7 +29,7 @@ const WORD_CHARS: &str = "_-";
 const MATH_OPERATOR_ATTRIB_NAME: &'static str = "math_operator";
 
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum NodeContent {
     Character(char),
     Child(usize), // The positon of the child in the child array
@@ -39,7 +39,7 @@ pub enum NodeContent {
 /// This struct will own all of his children.
 /// The content field is a vect of NodeContent. 
 ///     -> Each element is either a character or a child node. If it's a child, it indicates the position of the child in the children vector
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Node {
     pub name: String,
     pub attributes: Vec<(String, String)>,

@@ -1,4 +1,4 @@
-use super::{advance_position, Node, NodeContent, ParseError, ParserContext};
+use super::{advance_position, custom::instantiate_tag, Node, NodeContent, ParseError, ParserContext};
 use crate::util::FilePosition;
 use super::custom::CustomTag;
 
@@ -20,15 +20,28 @@ pub fn parse_math(node: &mut Node, chars: &Vec<char>, context: &ParserContext) -
         let c = &node.content[i];
 
         match *c {
-            super::NodeContent::Character(c) => {
+            NodeContent::Character(c) => {
                 if c == '?' {
                     i += 1;
-                    let op = expect_operator(node, chars, i, context)?;
-                    crate::log::log(&format!("Found op {:?}", op.content));
+                    let op = expect_operator(node, chars, &mut i, context)?;
+
+                    let mut arguments = Vec::with_capacity(op.arguments.len());
+                    for _ in 0..op.arguments.len() {
+                        arguments.push(parse_math_part(node, chars, &mut i, context)?);
+                    }
+
+                    let instantiated = instantiate_tag(op, arguments);
+
+                    let new_child_id = node.children.len();
+                    node.children.push(instantiated);
+                    res.push(NodeContent::Child(new_child_id));
+                }
+                else {
+                    res.push(NodeContent::Character(c));
                 }
             },
-            super::NodeContent::Child(_) => {
-                
+            NodeContent::Child(c) => {
+                res.push(NodeContent::Child(c));
             },
         }
 
@@ -41,18 +54,18 @@ pub fn parse_math(node: &mut Node, chars: &Vec<char>, context: &ParserContext) -
 }
 
 
-fn parse_math_part(pos: &mut FilePosition, context: &ParserContext) -> Result<Node, ParseError> {
+fn parse_math_part(node: &mut Node, chars: &Vec<char>, pos: &mut usize, context: &ParserContext) -> Result<Node, ParseError> {
     todo!(); // TODO
 }
 
 
 /// Tries to read an operator AFTER the question mark
-fn expect_operator<'a>(node: &Node, chars: &Vec<char>, start_pos: usize, context: &'a ParserContext) -> Result<&'a CustomTag, ParseError> {
+fn expect_operator<'a>(node: &Node, chars: &Vec<char>, pos: &mut usize, context: &'a ParserContext) -> Result<&'a CustomTag, ParseError> {
     let mut word = String::with_capacity(15);
-    let mut pos = start_pos;
+    let start_pos = *pos;
 
     loop {
-        let el = &node.content[pos];
+        let el = &node.content[*pos];
 
         match *el {
             NodeContent::Character(c) => {
@@ -68,7 +81,7 @@ fn expect_operator<'a>(node: &Node, chars: &Vec<char>, start_pos: usize, context
             },
         }
 
-        pos += 1;
+        *pos += 1;
     }
 
     match context.math_operators.get(&word) {
