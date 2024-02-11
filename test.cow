@@ -35,7 +35,7 @@
         This tag is escaped: \<look at this tag!>, and so is this backslash \\ and this ampersand \&
 
         <br/>
-        $Text before ?test_op text after$
+        $Text before ?other_op{?test_op}{the second thing} text after$
 
         <p>
         And even more text to test if the program is able to handle multiple page. 

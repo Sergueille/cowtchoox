@@ -63,7 +63,7 @@ fn display_path(start_pos: &FilePosition) -> String {
 
 
 fn print_line(start_pos: &FilePosition, length: usize, level: LogLevel) {
-    let content = fs::read_to_string(start_pos.file_path.clone()).unwrap();
+    let content = fs::read_to_string((*start_pos.file_path).clone()).unwrap();
 
     let line = content.lines().nth(start_pos.line).expect("The line doesn't exists in the file!");
     let line_number_text = (start_pos.line + 1).to_string();

@@ -55,7 +55,7 @@ fn main() {
                     // Parse the file
                     let res_hash = parser::custom::parse_custom_tags(
                         &content.chars().collect::<Vec<char>>(), 
-                        &mut parser::get_start_of_file_position(&PathBuf::from(file_name)), 
+                        &mut parser::get_start_of_file_position(PathBuf::from(file_name)), 
                         custom_tags_hash, 
                         &args
                     );

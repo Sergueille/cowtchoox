@@ -26,7 +26,7 @@ const WORD_CHARS: &str = "_-";
 
 /// Attribute nam usd to indicate that a th tag has a "?" whn parsed.
 /// FIXME: th user can declare it as a real attribute and break everything!
-const MATH_OPERATOR_ATTRIB_NAME: &'static str = "math_operator";
+const MATH_OPERATOR_ATTRIB_NAME: &'static str = "math-operator";
 
 
 #[derive(Debug, Clone)]
@@ -77,7 +77,7 @@ pub struct ParserContext<'a> {
 /// * the parsed node
 /// 
 pub fn parse_file(file_path: &PathBuf, chars: &Vec<char>, context: &ParserContext) -> Result<Node, ParseError> {
-    return parse_tag(chars, &mut get_start_of_file_position(file_path), false, false, context);
+    return parse_tag(chars, &mut get_start_of_file_position(file_path.clone()), false, false, context);
 }
 
 
@@ -411,13 +411,32 @@ pub fn advance_position_many(pos: &mut FilePosition, file: &Vec<char>, count: us
 
 
 /// Get a file position at the beginning of the file with given path
-pub fn get_start_of_file_position(path: &PathBuf) -> FilePosition {
+pub fn get_start_of_file_position(path: PathBuf) -> FilePosition {
     return FilePosition {   
-        file_path: path.clone(),
+        file_path: std::rc::Rc::from(path),
         absolute_position: 0,
         line: 0,
         line_character: 0
     };
+}
+
+
+/// Get the file position of a character of a node. It's slow, use only for error reporting
+fn get_file_pos_of_char_in_node(node: &Node, chars: &Vec<char>, id: usize) -> FilePosition {
+    let mut res = node.start_inner_position.clone();
+    
+    for i in 0..id {
+        match node.content[i] {
+            NodeContent::Character(_) => advance_position(&mut res, chars),
+            NodeContent::Child(c) =>  {
+                for _ in 0..(node.children[c].source_length) {
+                    advance_position(&mut res, chars);
+                }
+            },
+        }
+    }
+
+    return res;
 }
 
 

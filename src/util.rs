@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, rc::Rc};
 
 // Some useful structs and functions
 
@@ -7,7 +7,7 @@ use std::path::PathBuf;
 /// All fields start at 0. Even lines.
 #[derive(Clone, Debug)]
 pub struct FilePosition {
-    pub file_path: PathBuf, // OPTI: find a way not to copy that everywhere, maybe use a reference counter
+    pub file_path: Rc<PathBuf>, // OPTI: find a way not to copy that everywhere, maybe use a reference counter
     pub absolute_position: usize,
     pub line: usize,
     pub line_character: usize

@@ -8,6 +8,6 @@
 </test_op>
 
 <?other_op arg1 arg2>
-    This is a custom math operator with args
+    There is <strong><arg1/></strong> and <u><arg2/></u>
 </other_op>
 

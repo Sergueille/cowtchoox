@@ -43,3 +43,7 @@ mathnode {
     font-family: maths-digit-font, maths-font;
     display: inline;
 }
+
+*[math-operator=""] {
+    display: inline;
+}
