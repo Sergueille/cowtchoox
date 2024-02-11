@@ -10,7 +10,7 @@ mod util;
 use std::{collections::HashMap, fs, path::PathBuf};
 
 use clap;
-use parser::custom::TagHash;
+use parser::custom::{CustomTag, TagHash};
 
 // Interpret command line arguments
 
@@ -20,7 +20,7 @@ pub struct Args {
     pub filepath: String,
 }
 
-fn main() {
+fn main() -> Result<(), ()> {
     let matches =
         clap::Command::new("cowtchoox") 
             .arg_required_else_help(true)
@@ -45,33 +45,20 @@ fn main() {
         keep_alive: *matches.get_one::<bool>("keepalive").unwrap(),
     };
 
-    // Parse cowx file if needed
-    let cowx_file = matches.get_one::<String>("cowx");
     let mut custom_tags_hash = HashMap::new(); // Store tags in this
+    
+    custom_tags_hash = parse_cowx_file("default/default.cowx", custom_tags_hash, &args)?; // FIXME: use the right path when not running with cargo 
+
+    // Cowx file from command line
+    let cowx_file = matches.get_one::<String>("cowx");
     match cowx_file {
         Some(file_name) => {
-            match std::fs::read_to_string(file_name) { // Try to read the file
-                Ok(content) => {
-                    // Parse the file
-                    let res_hash = parser::custom::parse_custom_tags(
-                        &content.chars().collect::<Vec<char>>(), 
-                        &mut parser::get_start_of_file_position(PathBuf::from(file_name)), 
-                        custom_tags_hash, 
-                        &args
-                    );
-
-                    match res_hash {
-                        Ok(hash) => custom_tags_hash = hash,
-                        Err(err) => {
-                            log::error_position(&err.message, &err.position, err.length);
-                            return; // Fatal error, we're done!
-                        }
-                    }
-                },
-                Err(err) => log::error(&format!("failed to read cowx file: {}", err)),
+            match parse_cowx_file(file_name, custom_tags_hash, &args) {
+                Ok(hash) => custom_tags_hash = hash,
+                Err(_) => { return Ok(()); },
             }
         },
-        None => todo!(),
+        None => { },
     }
     
     let res = std::fs::read_to_string(args.filepath.clone());
@@ -87,6 +74,8 @@ fn main() {
             log::error(&format!("failed to read source file: {}", err));
         },
     }
+
+    return Ok(());
 }
 
 fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tags_hash: TagHash) {
@@ -118,5 +107,32 @@ fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tag
     let _res = browser::render_to_pdf(out_path, args, &options);
 
     log::log("Done!");
+}
+
+
+pub fn parse_cowx_file(file_name: &str, custom_tags_hash: HashMap<String, CustomTag>, arguments: &Args) -> Result<HashMap<String, CustomTag>, ()> {
+    match std::fs::read_to_string(file_name) { // Try to read the file
+        Ok(content) => {
+            // Parse the file
+            let res_hash = parser::custom::parse_custom_tags(
+                &content.chars().collect::<Vec<char>>(), 
+                &mut parser::get_start_of_file_position(PathBuf::from(file_name)), 
+                custom_tags_hash, 
+                &arguments
+            );
+
+            match res_hash {
+                Ok(hash) => return Ok(hash),
+                Err(err) => {
+                    log::error_position(&err.message, &err.position, err.length);
+                    return Err(()); // Fatal error, we're done!
+                }
+            }
+        },
+        Err(err) => {
+            log::error(&format!("Failed to read cowx file at {}: {}", file_name, err));
+            return Err(());
+        }
+    } 
 }
 

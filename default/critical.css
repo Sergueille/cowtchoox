@@ -30,15 +30,13 @@ page {
     padding: 2cm 1.5cm;
 }
 
-text {
-    display: inline !important;
+text, span {
+    display: inline-block !important;
 }
 
 mathnode {
     font-family: maths-font, latex-font;
-    display: inline;
-}
-
-*[math-operator=""] {
-    display: inline;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }

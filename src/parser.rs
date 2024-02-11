@@ -10,15 +10,12 @@ pub mod custom;
 
 // This file is parsing raw text into the Node struct
 
-// TODO: support quotes around attribute
 // TODO: copy the file position struct in th nodes, for later error reporting
 // TODO: handle unexpected EOF (currently panics because accesses out of the bounds of the array)
 // TODO: handle comments (currently it reads them as text)
 
 // NOTE: currently auto-closing tags needs to include a / at the end (<br/>)
 //       should-it be mandatory?
-
-// NOTE: I think math parsing, and react-like tags will be implemented in another module, when reconstructing the document
 
 
 /// Chars to make a word (tag name, attribute, ...). Alphanumeric characters also included. 
@@ -129,7 +126,18 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_
         let exp = expect(chars, pos, '=');
         match exp {
             Ok(()) => { // There is a value: read it
-                let value = read_word(chars, pos);
+                advance_until_non_whitespace(chars, pos);
+                let use_quotes = chars[pos.absolute_position] == '"';
+
+                let value;
+                if use_quotes {
+                    advance_position(pos, chars);
+                    value = read_until_quote(chars, pos);
+                }
+                else {
+                    value = read_word(chars, pos);
+                }
+
                 attributes.push((attr, value));
             },
             Err(_) => { // No value
@@ -343,7 +351,7 @@ fn expect(chars: &Vec<char>, pos: &mut FilePosition, char: char) -> Result<(), P
     advance_until_non_whitespace(chars, pos);
 
     if chars[(*pos).absolute_position] != char {
-        return Err(ParseError { message: format!("Expected {}.", char), position: pos.clone(), length: 1 })
+        return Err(ParseError { message: format!("Expected \"{}\".", char), position: pos.clone(), length: 1 })
     }
 
     advance_position(pos, chars);
@@ -370,6 +378,21 @@ fn read_word(chars: &Vec<char>, pos: &mut FilePosition) -> String {
         res.push(chars[(*pos).absolute_position]);
         advance_position(pos, chars);
     }
+
+    return res.into_iter().collect::<String>().to_lowercase();
+}
+
+
+/// Reads everything until a quote. The cursor is left after the quote (case insensitive, return lowered chars!)
+fn read_until_quote(chars: &Vec<char>, pos: &mut FilePosition) -> String {
+    let mut res = Vec::with_capacity(15);
+
+    while chars[(*pos).absolute_position] != '"' {
+        res.push(chars[(*pos).absolute_position]);
+        advance_position(pos, chars);
+    }
+    
+    advance_position(pos, chars);
 
     return res.into_iter().collect::<String>().to_lowercase();
 }
@@ -436,7 +459,7 @@ fn get_file_pos_of_char_in_node(node: &Node, chars: &Vec<char>, id: usize) -> Fi
                 advance_position(&mut res, chars);
             },
             NodeContent::Child(c) =>  {
-                for _ in 0..(node.children[c].source_length) {
+                 for _ in 0..(node.children[c].source_length) {
                     advance_position(&mut res, chars);
                 }
             },
