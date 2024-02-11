@@ -115,6 +115,10 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<Option<Node>>, chars: &Ve
                     *index += 1;
                 }
             },
+            NodeContent::EscapedCharacter(c) => { // A normal character
+                res.push(NodeContent::Character(c));
+                *index += 1;
+            }
             NodeContent::Child(c) => { // A child, just push it as a normal NodeContent
                 let child = std::mem::replace(&mut children[c], None).unwrap();
 
@@ -153,6 +157,9 @@ fn expect_operator<'a>(node: &Node, chars: &Vec<char>, pos: &mut usize, context:
                 else {
                     break;
                 }
+            },
+            NodeContent::EscapedCharacter(_) => {
+                break;
             },
             NodeContent::Child(_) => {
                 break;

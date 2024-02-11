@@ -28,8 +28,12 @@
         <br/>
 
         $
-            This isn't actual math, but it has the math font! Δ = b<sup>2</sup>-4ac
+            There is a\ space in math\!
         $
+
+        <br/>
+
+        Also escaping in math $\$ \< \{ \\ \} 123456789Δ$
 
         <br/>
         This tag is escaped: \<look at this tag!>, and so is this backslash \\ and this ampersand \&

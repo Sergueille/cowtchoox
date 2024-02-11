@@ -94,9 +94,9 @@ pub fn get_node_html(node: &Node) -> String {
         let mut previous: &NodeContent = &NodeContent::Child(0); // Keep track of the last character
         for content in &node.content {
             match content {
-                crate::parser::NodeContent::Character(c) => {
+                crate::parser::NodeContent::Character(c) | NodeContent::EscapedCharacter(c) => {
                     match previous {
-                        NodeContent::Character(_) => {},
+                        NodeContent::Character(_) | NodeContent::EscapedCharacter(_) => {},
                         NodeContent::Child(_) => {
                             res.push_str("<text>"); // Begin text tag
                         },
@@ -118,7 +118,7 @@ pub fn get_node_html(node: &Node) -> String {
                 },
                 crate::parser::NodeContent::Child(id) => {
                     match previous {
-                        NodeContent::Character(_) => {
+                        NodeContent::Character(_) | NodeContent::EscapedCharacter(_) => {
                             res.push_str("</text>"); // End text tag
                         },
                         NodeContent::Child(_) => {},
@@ -132,7 +132,7 @@ pub fn get_node_html(node: &Node) -> String {
         }
 
         match previous {
-            NodeContent::Character(_) => {
+            NodeContent::Character(_) | NodeContent::EscapedCharacter(_) => {
                 res.push_str("</text>"); // End text tag
             },
             NodeContent::Child(_) => {},

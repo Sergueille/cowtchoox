@@ -87,6 +87,9 @@ fn instantiate_tag_inner(tag: &CustomTag, node: &Node, arguments: &Vec<Node>) ->
             super::NodeContent::Character(c) => {
                 res.content.push(super::NodeContent::Character(c));
             },
+            super::NodeContent::EscapedCharacter(c) => {
+                res.content.push(super::NodeContent::EscapedCharacter(c));
+            },
             super::NodeContent::Child(child_id) => {
                 let child = &node.children[child_id];
 

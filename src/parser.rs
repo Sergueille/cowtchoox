@@ -32,6 +32,7 @@ const MATH_OPERATOR_ATTRIB_NAME: &'static str = "math-operator";
 #[derive(Debug, Clone)]
 pub enum NodeContent {
     Character(char),
+    EscapedCharacter(char), // Character with backslash before it
     Child(usize), // The positon of the child in the child array
 }
 
@@ -214,7 +215,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
         let next = chars[(*pos).absolute_position];
 
         if backslashed_character { // Escaped by backslash
-            content.push(NodeContent::Character(next));
+            content.push(NodeContent::EscapedCharacter(next));
             advance_position(pos, chars);
             backslashed_character = false;
             continue;
@@ -271,19 +272,21 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
             }
         }
         else if next.is_whitespace() {
-            match content.last() {
-                Some(NodeContent::Child(_)) => {
-                    // Ignore
-                },
-                Some(NodeContent::Character(c)) => {
-                    // Ignore if last chars is already whitespace
-                    if !c.is_whitespace() {
-                        // Add a space
-                        content.push(NodeContent::Character(' '));
+            if !math { // Ignore whitespace in math
+                match content.last() {
+                    Some(NodeContent::Child(_)) => {
+                        // Ignore
+                    },
+                    Some(NodeContent::Character(c)) | Some(NodeContent::EscapedCharacter(c)) => {
+                        // Ignore if last chars is already whitespace
+                        if !c.is_whitespace() {
+                            // Add a space
+                            content.push(NodeContent::Character(' '));
+                        }
+                    },
+                    None => {
+                        // Ignore
                     }
-                },
-                None => {
-                    // Ignore
                 }
             }
             
@@ -428,6 +431,10 @@ fn get_file_pos_of_char_in_node(node: &Node, chars: &Vec<char>, id: usize) -> Fi
     for i in 0..id {
         match node.content[i] {
             NodeContent::Character(_) => advance_position(&mut res, chars),
+            NodeContent::EscapedCharacter(_) => {  // Advance twice. For the backslash AND the escaped character
+                advance_position(&mut res, chars);
+                advance_position(&mut res, chars);
+            },
             NodeContent::Child(c) =>  {
                 for _ in 0..(node.children[c].source_length) {
                     advance_position(&mut res, chars);
