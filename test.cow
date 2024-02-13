@@ -52,6 +52,19 @@
             },
             ?sqrt{
                 ?frac{1}{2}
+            },
+            ?frac{
+                ?sqrt{?frac{1}{2}}
+            }{2},
+            ?frac{
+                ?frac{1}{2}
+            }{
+                ?frac{3}{4}
+            },
+            ?frac{
+                ?frac{1}{2}
+            }{
+                a
             }
         $
 

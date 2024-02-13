@@ -70,7 +70,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
                         let partial_child = parse_math_part(node, children, chars, index, context, true)?;
 
                         let child_node = Node {
-                            name: String::from("span"),
+                            name: String::from("div"),
                             attributes: vec![],
                             children: partial_child.children,
                             content: partial_child.content,
@@ -97,7 +97,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
                     let partial_child = parse_math_part(node, children, chars, index, context, false)?;
 
                     let child_node = Node {
-                        name: String::from("span"),
+                        name: String::from("div"),
                         attributes: vec![],
                         children: partial_child.children,
                         content: partial_child.content,

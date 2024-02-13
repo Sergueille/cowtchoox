@@ -3,45 +3,45 @@
 sqrt {
     position: relative;
     display: inline-block;
-    padding-left: 2.5mm;
+    padding-left: 1.5mm;
 }
 
 sqrt > svg {
     display: block;
     position: absolute;
-    width: 3mm;
+    width: 2mm;
     height: calc(100% - 1mm);
     top: 0;
     left: 0;
 }
 
 .sqrt-inner {
-    display: inline;
-    padding-left: 0.5mm;
+    display: block;
+    padding-left: 0.8mm;
     padding-right: 1mm;
 }
 
 .sqrt-bar {
     display: block;
-    border-top: 0.35mm solid #000;
+    border-top: 0.3mm solid #000;
     margin-bottom: -0.5mm;
+    margin-left: 0.3mm;
 }
 
 
 /* ?frac */
 frac {
-    display: inline-block;
+    display: inline;
+    text-align: center;
 }
 
 .frac-bar {
     width: 100%;
-    height: 0.3mm;
+    height: 0.25mm;
     background-color: #000; 
     margin-top: -0.5mm;
 }
 
 .frac-up, .frac-down {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
+    display: inline-block;
 }

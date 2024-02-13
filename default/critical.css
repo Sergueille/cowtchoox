@@ -23,20 +23,13 @@ page {
     display: block !important;
     overflow: auto !important; /* Ensures that overflow is properly detected by JS */
 
-    /* TEST: horrible colors to make sure pages have the right size */
-    outline: 2mm dashed green;
-
-    /* Less important, default properties */
+    /* // TODO: Less important, default properties: move them */
     padding: 2cm 1.5cm;
-}
-
-text, span {
-    display: inline-block !important;
 }
 
 mathnode {
     font-family: maths-font, latex-font;
     display: inline-flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: center;
 }

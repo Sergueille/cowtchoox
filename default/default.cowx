@@ -8,9 +8,9 @@
         </g>
     </svg>
     <div class="sqrt-bar"></div>
-    <span class="sqrt-inner">
+    <div class="sqrt-inner">
         <under/>
-    </span>
+    </div>
 </sqrt>
 
 <?frac up down>
