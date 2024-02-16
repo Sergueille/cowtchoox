@@ -1,31 +1,53 @@
 
+/* General properties */
+page {
+    padding: 2cm 1.5cm;
+    font-family: latex-font;
+}
+
+mathnode {
+    font-family: maths-font, latex-font;
+}
+
+@font-face {
+    font-family: latex-font;
+    src: url("../fonts/cmunrm.ttf");
+}
+
+@font-face {
+    font-family: maths-font;
+    src: url("../fonts/cmunti.ttf");
+    unicode-range: U+0041-007A;
+}
+
+
 /* ?sqrt */
 sqrt {
     position: relative;
     display: inline-block;
-    padding-left: 1.5mm;
+    padding-left: 0.15em;
 }
 
 sqrt > svg {
     display: block;
     position: absolute;
-    width: 2mm;
-    height: calc(100% - 1mm);
+    width: 0.5em;
+    height: calc(100% - 0.25em);
     top: 0;
     left: 0;
 }
 
 .sqrt-inner {
     display: block;
-    padding-left: 0.8mm;
-    padding-right: 1mm;
+    padding-left: 0.35em;
+    padding-right: 0.1em;
 }
 
 .sqrt-bar {
     display: block;
-    border-top: 0.3mm solid #000;
-    margin-bottom: -0.5mm;
-    margin-left: 0.3mm;
+    border-top: 0.06em solid #000;
+    margin-bottom: -0.12em;
+    margin-left: 0.27em;
 }
 
 
@@ -45,3 +67,55 @@ frac {
 .frac-up, .frac-down {
     display: inline-block;
 }
+
+
+/* ?normalfont */
+normalfont {
+    font-family: latex-font;
+}
+
+/* ?underset */
+underset {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.underset-under {
+    margin-top: -0.3em;
+    font-size: 0.8em;
+}
+
+
+/* ?comma */
+comma {
+    margin-right: 0.25em;
+}
+
+
+/* ?equal */
+equal {
+    margin-left: 0.3em;
+    margin-right: 0.2em;
+}
+
+
+/* ?minus */
+minus {
+    margin-left: 0.18em;
+    margin-right: 0.15em;
+}
+
+
+/* ?plus */
+plus {
+    margin-left: 0.18em;
+    margin-right: 0.15em;
+}
+
+
+/* ?belongsto */
+belongsto {
+    margin-left: 0.1em;
+}
+

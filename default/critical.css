@@ -1,17 +1,5 @@
 
-@font-face {
-    font-family: latex-font;
-    src: url("../fonts/cmunrm.ttf");
-}
-
-@font-face {
-    font-family: maths-font;
-    src: url("../fonts/cmunti.ttf");
-    unicode-range: U+0041-007A;
-}
-
 body {
-    font-family: latex-font; /* NOTE: the fonts dir needs to be in the same directory as default css */
     font-optical-sizing: none; /* Just in case */
     
     margin: 0px;
@@ -22,13 +10,9 @@ body {
 page {
     display: block !important;
     overflow: auto !important; /* Ensures that overflow is properly detected by JS */
-
-    /* // TODO: Less important, default properties: move them */
-    padding: 2cm 1.5cm;
 }
 
 mathnode {
-    font-family: maths-font, latex-font;
     display: inline-flex;
     align-items: baseline;
     justify-content: center;

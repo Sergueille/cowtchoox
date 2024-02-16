@@ -280,21 +280,19 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
             }
         }
         else if next.is_whitespace() {
-            if !math { // Ignore whitespace in math
-                match content.last() {
-                    Some(NodeContent::Child(_)) => {
-                        // Ignore
-                    },
-                    Some(NodeContent::Character(c)) | Some(NodeContent::EscapedCharacter(c)) => {
-                        // Ignore if last chars is already whitespace
-                        if !c.is_whitespace() {
-                            // Add a space
-                            content.push(NodeContent::Character(' '));
-                        }
-                    },
-                    None => {
-                        // Ignore
+            match content.last() {
+                Some(NodeContent::Child(_)) => {
+                    // Ignore
+                },
+                Some(NodeContent::Character(c)) | Some(NodeContent::EscapedCharacter(c)) => {
+                    // Ignore if last chars is already whitespace
+                    if !c.is_whitespace() {
+                        // Add a space
+                        content.push(NodeContent::Character(' '));
                     }
+                },
+                None => {
+                    // Ignore
                 }
             }
             
@@ -404,17 +402,49 @@ fn lookahead_word(chars: &Vec<char>, pos: &mut FilePosition) -> String {
 }
 
 
-/// Advances a position, the character is used to take new line into account
+/// Advances a position, updating everything in the struct. Ignores "//" and "/**/" comments.
 pub fn advance_position(pos: &mut FilePosition, file: &Vec<char>) {
-    (*pos).absolute_position += 1;
-    (*pos).line_character += 1;
-    
-    let character = file[pos.absolute_position - 1];
+    let mut in_double_slash_comment = false;
+    let mut in_slash_star_comment = false;
 
-    // FIXME: will not count lines for os that use \r
-    if character == '\n' {
-        (*pos).line += 1;
-        (*pos).line_character = 0;
+    loop {
+        (*pos).absolute_position += 1;
+        (*pos).line_character += 1;
+        
+        let character_before = file[pos.absolute_position - 1];
+        let character = 
+            if pos.absolute_position < file.len() { // Makes sure nto reading after end of file
+                file[pos.absolute_position]
+            } else { '\0' };
+        let character_after = 
+            if pos.absolute_position < file.len() - 1 {
+                file[pos.absolute_position + 1]
+            } else { '\0' };
+            
+        // FIXME: will not count lines for os that use \r
+        if character_before == '\n' {
+            (*pos).line += 1;
+            (*pos).line_character = 0;
+        }
+
+        // Keep reading if in comments
+        if in_double_slash_comment {
+            if character == '\n' {
+                in_double_slash_comment = false;
+            }
+        }
+        else if in_slash_star_comment {
+            if character_before == '*' && character == '/' {
+                in_slash_star_comment = false
+            }
+        }
+        else if character == '/' && character_after == '/' { // Detect "//" comments
+            in_double_slash_comment = true;
+        }
+        else if character == '/' && character_after == '*' { // Detect "/**/" comments
+            in_slash_star_comment = true;
+        }
+        else { break };
     }
 }
 

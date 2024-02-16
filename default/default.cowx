@@ -1,4 +1,6 @@
 
+// Square root.
+// under: the thing in the square root
 <?sqrt under>
     <svg viewBox="0,0,31.07407,97.52569" preserveAspectRatio="none">
         <g transform="translate(-225.40004,-131.23716)">
@@ -13,9 +15,74 @@
     </div>
 </sqrt>
 
+
+// Horizontal fraction.
+// up: the thing over the bar
+// down: the thing under the bar
 <?frac up down>
     <div class="frac-up"><up/></div>
     <div class="frac-bar"></div>
     <div class="frac-down"><down/></div>
 </frac>
+
+
+// Makes inner not use math font
+<?normalfont inner> 
+    <inner/>
+</normalfont>
+
+
+// Put down under middle
+<?underset middle down> 
+    <middle/>
+    <div class="underset-under"><down/></div>
+</underset>
+
+
+// Properly spaced comma.
+<?comma>
+    ,
+</comma>
+
+
+// Properly spaced equal.
+<?equal>
+    =
+</equal>
+
+
+// A minus sign (U+2013)
+<?minus>
+    –
+</minus>
+
+
+// A plus sign
+<?plus>
+    +
+</plus>
+
+
+// For all. (U+2200)
+<?forall>
+    ∀
+</forall>
+<?a>
+    ∀
+</a>
+
+
+// There exists. (U+2203)
+<?exists>
+    ∃
+</exists>
+<?e>
+    ∃
+</e>
+
+
+// Belongs to. (U+2208)
+<?belongsto>
+    ∈
+</belongsto>
 

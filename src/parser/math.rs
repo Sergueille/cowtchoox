@@ -115,6 +115,9 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
                     *index += 1;
                     break;
                 } 
+                else if c.is_whitespace() { // Ignore whitespace!
+                    *index += 1;
+                }
                 else { // A normal character
                     res.push(NodeContent::Character(c));
                     *index += 1;
