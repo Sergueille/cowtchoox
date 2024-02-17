@@ -9,6 +9,7 @@ use crate::log;
 
 pub fn render_to_pdf(path: PathBuf, args: &Args, options: &DocOptions) -> Result<(), ()> {
     // create the browser
+    log::log("Opening the browser...");
     let browser = log::log_if_err(headless_chrome::Browser::new(
         headless_chrome::LaunchOptions { 
             headless: !args.headful,
@@ -17,6 +18,8 @@ pub fn render_to_pdf(path: PathBuf, args: &Args, options: &DocOptions) -> Result
 
     let tab = log::log_if_err(browser.new_tab(), "Can't crate new tab")?;
 
+    log::log("Splitting pages...");
+
     // Navigate to the page
     let res = tab.navigate_to(&format!("file:///{}", &path.clone().into_os_string().into_string().expect("")));
     log::log_if_err(res, "Failed to navigate to document (1).")?;
@@ -24,6 +27,8 @@ pub fn render_to_pdf(path: PathBuf, args: &Args, options: &DocOptions) -> Result
 
     const SCALE_CONSTANT: f64 = 1.21; // A random constant to make things work
     const MM_TO_PX: f64 = 1.0 / 30.7; // Convert from mm to px (https://developer.mozilla.org/en-US/docs/Web/CSS/length#absolute_length_units)
+
+    log::log("Creating PDF...");
 
     // Export tp pdf
     let pdf = tab.print_to_pdf(Some(headless_chrome::types::PrintToPdfOptions {

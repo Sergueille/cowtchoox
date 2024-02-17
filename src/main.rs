@@ -101,8 +101,6 @@ fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tag
     out_path.push("out.html");
     fs::write(out_path.clone(), text).unwrap();
 
-    log::log("Creating PDF...");
-
     // Render to pdf!
     let _res = browser::render_to_pdf(out_path, args, &options);
 
