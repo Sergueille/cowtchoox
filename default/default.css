@@ -47,7 +47,7 @@ sqrt > svg {
     display: block;
     border-top: 0.02em solid currentcolor;
     margin-bottom: -0.12em;
-    margin-left: 0.27em;
+    margin-left: 0.295em;
 }
 
 
@@ -55,7 +55,7 @@ sqrt > svg {
 frac {
     display: inline-block;
     text-align: center;
-    vertical-align: 15%;
+    vertical-align: 15%; /* https://xymaths.fr/Informatique-Programmation/html-css/ecrire-maths-fractions.php#frac */
 }
 
 .frac-bar {
