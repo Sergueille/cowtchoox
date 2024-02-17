@@ -13,7 +13,7 @@ page {
 }
 
 mathnode {
-    display: inline-flex;
+    display: inline-block;
     align-items: baseline;
     justify-content: center;
 }
