@@ -8,6 +8,7 @@ page {
 
 mathnode {
     font-family: maths-font, latex-font;
+    margin-right: 0.4em;
 }
 
 @font-face {
@@ -56,7 +57,7 @@ sqrt > svg {
 frac {
     display: inline-block;
     text-align: center;
-    vertical-align: 15%; /* https://xymaths.fr/Informatique-Programmation/html-css/ecrire-maths-fractions.php#frac */
+    vertical-align: 7%; /* https://xymaths.fr/Informatique-Programmation/html-css/ecrire-maths-fractions.php#frac */
 }
 
 .frac-bar {
@@ -82,6 +83,7 @@ normalfont {
     font-family: latex-font;
 }
 
+
 /* ?underset */
 underset {
     display: inline-flex;
@@ -95,9 +97,23 @@ underset {
 }
 
 
+/* ?overset */
+overset {
+    display: inline-flex;
+    flex-direction: column-reverse;
+    align-items: center;
+}
+
+.overset-over {
+    margin-bottom: -0.3em;
+    font-size: 0.8em;
+}
+
+
+
 /* ?comma */
 comma {
-    margin-right: 0.25em;
+    margin-right: 0.35em;
 }
 
 

@@ -12,6 +12,34 @@ enum PotentialChild {
 }
 
 
+struct Alias {
+    alias: &'static str,
+    tag_name: &'static str,
+    is_infix: bool,
+}
+
+macro_rules! alias {
+    ($alias: literal, $tag_name: literal, $infix: expr) => {
+        Alias { alias: $alias, tag_name: $tag_name, is_infix: $infix }
+    };
+}
+
+
+/// HashMap of all aliases, each character maps to th corresponding default custom tag name 
+static ALIASES: [Alias; 10] = [
+    alias!("=", "equal", false),
+    alias!(",", "comma", false),
+    alias!("/", "frac", true),
+    alias!("v/", "sqrt", false),
+    alias!("+", "plus", false),
+    alias!("-", "minus", false),
+    alias!("€", "belongsto", false),
+    alias!("^^", "overset", true),
+    alias!("__", "underset", true),
+    alias!("|", "normalfont", false),
+];
+
+
 /// Create math! Called after tags are parsed. Will replace the provided Node's contents by math.
 /// 
 /// # Arguments
@@ -53,101 +81,155 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
     let mut res: Vec<NodeContent> = Vec::with_capacity(node.content.len());
     let mut res_children: Vec<Node> = Vec::with_capacity(5);
 
+    let mut got_one_thing = false;
+
     while *index < node.content.len() {
         let c = &node.content[*index];
 
-        match *c {
-            NodeContent::Character(c) => {
-                if c == '?' { // Parse a math operator
-                    *index += 1;
-                    let op = expect_operator(node, chars, &children, index, context)?;
+        // Look for aliases
+        let alias = if context.ignore_aliases { None } else { check_for_alias(&node.content, *index) };
+        match alias {
+            Some(alias) => {
+                let tag = context.math_operators.get(alias.tag_name);
 
-                    let mut arguments = Vec::with_capacity(op.arguments.len());
-                    for _ in 0..op.arguments.len() {
-                        let start_pos = *index - 1;
-                        let start_pos_in_file = get_file_pos_of_char_in_node_with_other_children(node, children, chars, start_pos);
+                match tag {
+                    Some(tag) => {
+                        *index += alias.alias.chars().count();
 
-                        let partial_child = parse_math_part(node, children, chars, index, context, true)?;
+                        let file_pos = get_file_pos_of_char_in_node_with_other_children(node, &children, chars, *index);
 
-                        let child_node = Node {
-                            name: String::from("div"),
-                            attributes: vec![],
-                            children: partial_child.children,
-                            content: partial_child.content,
-                            auto_closing: false,
-                            start_position: start_pos_in_file.clone(),
-                            start_inner_position: start_pos_in_file,
-                            source_length: *index - start_pos,
-                        };
+                        let mut arguments: Vec<Node> = Vec::new();
+                        if alias.is_infix {
+                            if tag.arguments.len() != 2 { // Invalid argument count
+                                return Err(ParseError { 
+                                    message: format!("Operator alias \"{}\" in infix but corresponds to the operator \"{}\" with {} arguments. This is probably because you have modified default.cowx.", alias.alias, alias.tag_name, tag.arguments.len()), 
+                                    position: file_pos, length: alias.alias.len() 
+                                })
+                            }
 
-                        arguments.push(child_node);
-                    }
+                            // Nothing before infix operator
+                            if res.len() == 0 {
+                                return Err(ParseError { 
+                                    message: format!("Expected something before \"{}\", because it's an infix operator. You should write {{left}}{}{{right}} instead of {}{{left}}{{right}}", alias.alias, alias.alias, alias.alias), 
+                                    position: file_pos, length: alias.alias.len() 
+                                });
+                            }
 
-                    let instantiated = super::custom::instantiate_tag(op, arguments);
+                            // Gt the last element of the nodes's content
+                            let left = match res.pop().unwrap() {
+                                NodeContent::Character(c) |
+                                NodeContent::EscapedCharacter(c) => Node { 
+                                    name: String::from("div"), 
+                                    attributes: vec![], 
+                                    children: vec![], 
+                                    content: vec![NodeContent::Character(c)], 
+                                    auto_closing: false, 
+                                    start_position: file_pos.clone(),
+                                    start_inner_position: file_pos, 
+                                    source_length: 1 
+                                },
+                                NodeContent::Child(_) => {
+                                    res_children.pop().unwrap()
+                                },
+                            };
 
-                    let new_child_id = res_children.len();
-                    res_children.push(instantiated);
-                    res.push(NodeContent::Child(new_child_id));
-                }
-                else if c == '{' { // Sub group. Make a recursive call
-                    *index += 1;
-                    let start_pos = *index;
-                    let start_pos_in_file = get_file_pos_of_char_in_node_with_other_children(node, &children, chars, start_pos);
+                            let right = parse_math_subgroup(node, children, chars, index, context, true)?;
 
-                    let partial_child = parse_math_part(node, children, chars, index, context, false)?;
+                            arguments.push(left);
+                            arguments.push(right);
+                        }
+                        else {
+                            for _ in 0..tag.arguments.len() {
+                                let child = parse_math_subgroup(node, children, chars, index, context, true)?;
+                                arguments.push(child);
+                            }
+                        }
 
-                    let child_node = Node {
-                        name: String::from("div"),
-                        attributes: vec![],
-                        children: partial_child.children,
-                        content: partial_child.content,
-                        auto_closing: false,
-                        start_position: start_pos_in_file.clone(),
-                        start_inner_position: start_pos_in_file,
-                        source_length: *index - start_pos,
-                    };
+                        let instantiated = super::custom::instantiate_tag(tag, arguments);
+                        let new_child_id = res_children.len();
+                        res_children.push(instantiated);
+                        res.push(NodeContent::Child(new_child_id));
 
-                    let new_child_id = res_children.len();
-                    res_children.push(child_node);
-                    res.push(NodeContent::Child(new_child_id));
-                }
-                else if c == '}' { // Finished!
-                    *index += 1;
-                    break;
-                } 
-                else if c.is_whitespace() { // Ignore whitespace!
-                    *index += 1;
-                }
-                else { // A normal character
-                    res.push(NodeContent::Character(c));
-                    *index += 1;
-                }
-            },
-            NodeContent::EscapedCharacter(c) => { // A normal character
-                res.push(NodeContent::Character(c));
-                *index += 1;
-            }
-            NodeContent::Child(c) => { // A child, just push it as a normal NodeContent
-                let length = match &children[c] {
-                    PotentialChild::Some(child) => child.source_length,
-                    PotentialChild::None(_) => panic!("Should be Some"),
-                };
-
-                let child = std::mem::replace(&mut children[c], PotentialChild::None(length));
-
-                match child {
-                    PotentialChild::Some(child) =>{
-                        res_children.push(child);
-                        res.push(NodeContent::Child(res_children.len() - 1));
-                        
-                        *index += 1;
+                        got_one_thing = true;
                     },
-                    PotentialChild::None(_) => unreachable!(),
+                    None => return Err(ParseError { 
+                        message: format!("Operator alias \"{}\" found, but corresponding tag \"{}\" not found. This is probably because you have modified default.cowx.", alias.alias, alias.tag_name), 
+                        position: get_file_pos_of_char_in_node_with_other_children(node, &children, chars, *index), length: alias.alias.len() 
+                    }),
                 }
             },
-        }
+            None => { // No alias found, check as a regular character 
+                match *c {
+                    NodeContent::Character(c) => {
+                        if c == '?' { // Parse a math operator
+                            *index += 1;
+                            let op = expect_operator(node, chars, &children, index, context)?;
+        
+                            let mut arguments = Vec::with_capacity(op.arguments.len());
+                            for _ in 0..op.arguments.len() {
+                                let child = parse_math_subgroup(node, children, chars, index, context, true)?;
+                                arguments.push(child);
+                            }
+        
+                            let instantiated = super::custom::instantiate_tag(op, arguments);
+        
+                            let new_child_id = res_children.len();
+                            res_children.push(instantiated);
+                            res.push(NodeContent::Child(new_child_id));
+                            got_one_thing = true;
+                        }
+                        else if c == '{' { // Sub group. Make a recursive call
+                            *index += 1;
+                            let child = parse_math_subgroup(node, children, chars, index, context, false)?;
+        
+                            let new_child_id = res_children.len();
+                            res_children.push(child);
+                            res.push(NodeContent::Child(new_child_id));
+                            got_one_thing = true;
+                        }
+                        else if c == '}' { // Finished!
+                            *index += 1;
+                            break;
+                        } 
+                        else if c.is_whitespace() { // Ignore whitespace!
+                            *index += 1;
+                        }
+                        else { // A normal character
+                            res.push(NodeContent::Character(c));
+                            *index += 1;
+                            got_one_thing = true;
+                        }
+                    },
+                    NodeContent::EscapedCharacter(c) => { // A normal character
+                        res.push(NodeContent::Character(c));
+                        *index += 1;
+                        got_one_thing = true;
+                    }
+                    NodeContent::Child(c) => { // A child, just push it as a normal NodeContent
+                        let length = match &children[c] {
+                            PotentialChild::Some(child) => child.source_length,
+                            PotentialChild::None(_) => panic!("Should be Some"),
+                        };
+        
+                        let child = std::mem::replace(&mut children[c], PotentialChild::None(length));
+        
+                        match child {
+                            PotentialChild::Some(child) =>{
+                                res_children.push(child);
+                                res.push(NodeContent::Child(res_children.len() - 1));
+                                
+                                *index += 1;
+                            },
+                            PotentialChild::None(_) => unreachable!(),
+                        }
 
-        if just_one_thing {
+                        got_one_thing = true;
+                    },
+                }
+            }
+        };
+
+        if got_one_thing && just_one_thing {
             break;
         }
     }
@@ -238,3 +320,74 @@ fn get_file_pos_of_char_in_node_with_other_children(node: &Node, children: &Vec<
 
     return res;
 }
+
+
+// OPTI: that's O(n²) because of chars().nth(). Also a lot of vec allocations
+/// Returns the longest possible alias at specified position, returns None if no alias found 
+fn check_for_alias(node_content: &Vec<NodeContent>, index: usize) -> Option<&'static Alias> {
+    let mut potential_matchs: Vec<usize> = Vec::with_capacity(ALIASES.len());
+    for i in 0..ALIASES.len() {
+        potential_matchs.push(i);
+    }
+
+    let mut res = None;
+
+    let mut pos = 0;
+    loop {
+        let mut new_vec = Vec::new();
+        for i in potential_matchs.iter() {
+            let opt_char = ALIASES[*i].alias.chars().nth(pos);
+
+            match opt_char {
+                Some(alias_char) => {
+                    let node_char = match node_content[index + pos] {
+                        NodeContent::Character(c) => c,
+                        NodeContent::EscapedCharacter(_) => '\0',
+                        NodeContent::Child(_) => '\0',
+                    };
+        
+                    let still_ok = alias_char == node_char;
+        
+                    if still_ok {
+                        new_vec.push(*i);
+                    }
+                },
+                None => { // End of the alias
+                    res = Some(&ALIASES[*i]); // Set the result
+                },
+            }
+
+        }
+
+        if new_vec.len() == 0 { // No more potential matches
+            break;
+        }
+
+        potential_matchs = new_vec;
+        pos += 1;
+    }
+
+    return res;
+}
+
+
+fn parse_math_subgroup(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &Vec<char>, index: &mut usize, context: &ParserContext, just_one_thing: bool) -> Result<Node, ParseError> {
+    let start_pos = *index;
+    let start_pos_in_file = get_file_pos_of_char_in_node_with_other_children(node, &children, chars, start_pos);
+
+    let partial_child = parse_math_part(node, children, chars, index, context, just_one_thing)?;
+
+    let res = Node {
+        name: String::from("div"),
+        attributes: vec![],
+        children: partial_child.children,
+        content: partial_child.content,
+        auto_closing: false,
+        start_position: start_pos_in_file.clone(),
+        start_inner_position: start_pos_in_file,
+        source_length: *index - start_pos,
+    };
+
+    return Ok(res);
+}
+

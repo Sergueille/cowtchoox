@@ -1,5 +1,5 @@
 
-// Square root.
+// Square root. Alias v/
 // under: the thing in the square root
 <?sqrt under>
     <svg viewBox="0,0,31.07407,97.52569" preserveAspectRatio="none">
@@ -16,7 +16,7 @@
 </sqrt>
 
 
-// Horizontal fraction.
+// Horizontal fraction. Infix alias /
 // up: the thing over the bar
 // down: the thing under the bar
 <?frac up down>
@@ -26,38 +26,45 @@
 </frac>
 
 
-// Makes inner not use math font
+// Makes inner not use math font. Alias |
 <?normalfont inner> 
     <inner/>
 </normalfont>
 
 
-// Put down under middle
+// Put down under middle. Infix alias __
 <?underset middle down> 
     <middle/>
     <div class="underset-under"><down/></div>
 </underset>
 
 
-// Properly spaced comma.
+// Put up over middle. Infix alias ^^
+<?overset middle up> 
+    <middle/>
+    <div class="overset-over"><up/></div>
+</overset>
+
+
+// Properly spaced comma. Alias ,
 <?comma>
     ,
 </comma>
 
 
-// Properly spaced equal.
+// Properly spaced equal. Alias =
 <?equal>
     =
 </equal>
 
 
-// A minus sign (U+2013)
+// A minus sign. (U+2013) Alias -
 <?minus>
     –
 </minus>
 
 
-// A plus sign
+// A plus sign. Alias +
 <?plus>
     +
 </plus>
@@ -81,7 +88,7 @@
 </e>
 
 
-// Belongs to. (U+2208)
+// Belongs to. (U+2208) Alias €
 <?belongsto>
     ∈
 </belongsto>

@@ -21,12 +21,13 @@ pub type TagHash = HashMap<String, CustomTag>;
 /// * `file`: th content of the file
 /// * `pos`: the positon in the file
 /// * `hash`: the hash into which the function will add tags
+/// * `is_default`: is it a default file (will ignore aliases etc.)
 /// 
 /// TODO: this function is not tested at all
-pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: TagHash<>, args: &crate::Args) -> Result<TagHash, parser::ParseError> {
+pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: TagHash<>, args: &crate::Args, is_default: bool) -> Result<TagHash, parser::ParseError> {
     // TODO: not finished
 
-    let mut context = parser::ParserContext { args, math_operators: hash };
+    let mut context = parser::ParserContext { args, math_operators: hash, ignore_aliases: is_default };
 
     while pos.absolute_position < file.len() { // Repeat until end of the file
         let node = parser::parse_tag(file, pos, true, false, &context)?;

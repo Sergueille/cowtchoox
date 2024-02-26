@@ -47,13 +47,13 @@ fn main() -> Result<(), ()> {
 
     let mut custom_tags_hash = HashMap::new(); // Store tags in this
     
-    custom_tags_hash = parse_cowx_file("default/default.cowx", custom_tags_hash, &args)?; // FIXME: use the right path when not running with cargo 
+    custom_tags_hash = parse_cowx_file("default/default.cowx", custom_tags_hash, &args, true)?; // FIXME: use the right path when not running with cargo 
 
     // Cowx file from command line
     let cowx_file = matches.get_one::<String>("cowx");
     match cowx_file {
         Some(file_name) => {
-            match parse_cowx_file(file_name, custom_tags_hash, &args) {
+            match parse_cowx_file(file_name, custom_tags_hash, &args, false) {
                 Ok(hash) => custom_tags_hash = hash,
                 Err(_) => { return Ok(()); },
             }
@@ -78,10 +78,12 @@ fn main() -> Result<(), ()> {
     return Ok(());
 }
 
+
 fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tags_hash: TagHash) {
     let parser_context = parser::ParserContext {
         args,
         math_operators: custom_tags_hash,
+        ignore_aliases: false,
     };
 
     log::log("Parsing document...");
@@ -108,7 +110,7 @@ fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tag
 }
 
 
-pub fn parse_cowx_file(file_name: &str, custom_tags_hash: HashMap<String, CustomTag>, arguments: &Args) -> Result<HashMap<String, CustomTag>, ()> {
+pub fn parse_cowx_file(file_name: &str, custom_tags_hash: HashMap<String, CustomTag>, arguments: &Args, is_default: bool) -> Result<HashMap<String, CustomTag>, ()> {
     match std::fs::read_to_string(file_name) { // Try to read the file
         Ok(content) => {
             // Parse the file
@@ -116,7 +118,8 @@ pub fn parse_cowx_file(file_name: &str, custom_tags_hash: HashMap<String, Custom
                 &content.chars().collect::<Vec<char>>(), 
                 &mut parser::get_start_of_file_position(PathBuf::from(file_name)), 
                 custom_tags_hash, 
-                &arguments
+                &arguments,
+                is_default
             );
 
             match res_hash {

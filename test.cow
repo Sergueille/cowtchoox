@@ -36,58 +36,49 @@
         Also escaping in math $\$ \< \{ \\ \} 123456789Δ$
 
         <br/>
-        This tag is escaped: \<look at this tag!>, and so is this backslash \\ and this ampersand \&
+        This tag is escaped: \<look at this tag!>, and so is this backslash \\ and this ampersand \&.
 
         <br/>
-        Sqrt test: $
-            ?frac{
-                ?minus b ?plus ?sqrt{b<sup>2</sup> ?minus 4ac}
-            }{
+        This is a fraction: $1 / 2$
+
+        <br/>
+        Sqrt test:
+        $
+            {
+                - b + v/{b<sup>2</sup> - 4ac}
+            } / {
                 2a
-            }?comma
-            ?frac{
-                ?minus b ?minus ?sqrt{b<sup>2</sup> ?minus 4ac}
-            }{
+            },
+            {
+                - b - v/{b<sup>2</sup> - 4ac}
+            } / {
                 2a
-            }?comma
-            ?sqrt{
-                ?frac{1}{2}
-            }?comma
-            ?frac{
-                ?sqrt{?frac{1}{2}}
-            }{2}?comma
-            ?frac{
-                1
-            }{
-                ?sqrt{1 + (?frac{a}{b})<sup>2</sup>}
-            }?comma
-            ?frac{
-                ?frac{1}{2}
-            }{
+            },
+            v/{1 / 2},
+            v/{1 / 2} / {2},
+            1 / v/{1 + (a/b)<sup>2</sup>},
+            {
+                1/2
+            } / {
                 a
-            }?comma
-            ?frac{
+            },
+            {
                 a
-            }{
-                ?frac{1}{2}
-            }?comma
-            ?underset{
-                ?normalfont{lim}
-            }{
-                x
-            }
-            f(x)?comma
-            ?underset{
-                ?normalfont{lim}
-            }{
-                ?sqrt{x}
-            }
-            f(?sqrt{x})
+            } / {
+                1 / 2
+            },
+            |{lim}__x \  f(x),
+            |{lim}__{v/ x} \  f(v/ x)
         $
 
         <br/>
         $
-            ?a x ?belongsto A ?comma ?e y ?belongsto B ?comma x ?equal y
+            ?a x€A, ?e y€B, x = y
+        $
+
+        <br/>
+        $
+            {overset\ test}^^{above}
         $
 
         <div style="border: 0.5mm solid black; padding: 2mm;">

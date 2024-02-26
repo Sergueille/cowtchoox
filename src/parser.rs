@@ -63,6 +63,7 @@ pub struct ParseError {
 pub struct ParserContext<'a> {
     pub args: &'a crate::Args, // Command line arguments
     pub math_operators: TagHash,
+    pub ignore_aliases: bool,
 }
 
 
