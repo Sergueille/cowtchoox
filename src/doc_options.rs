@@ -16,6 +16,7 @@ pub struct DocFormat {
 pub struct DocOptions {
     pub title: String,
     pub format: DocFormat,
+    pub css_files: Vec<String>,
 }
 
 
@@ -32,6 +33,7 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
     let mut res = DocOptions { // Put default values here
         title: String::from("You forgot to specify the title!"),
         format: DocFormat { width: 210.0, height: 297.0 }, // Default to A4
+        css_files: Vec::new(), // No additional css files linked by default
     };
     
     for child in &head.children {
@@ -44,6 +46,9 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
             "format" => {
                 res.format = get_format_from_name(inner_text);
             },
+            "css" => {
+                res.css_files.push(inner_text);
+            }
             tag_name => {
                 log::warning(&format!("Unknown tag \"{}\" in head.", tag_name)); // TODO: pass the position when it will be stored in nodes
             }

@@ -26,7 +26,7 @@ macro_rules! alias {
 
 
 /// HashMap of all aliases, each character maps to th corresponding default custom tag name 
-static ALIASES: [Alias; 10] = [
+static ALIASES: [Alias; 12] = [
     alias!("=", "equal", false),
     alias!(",", "comma", false),
     alias!("/", "frac", true),
@@ -34,6 +34,8 @@ static ALIASES: [Alias; 10] = [
     alias!("+", "plus", false),
     alias!("-", "minus", false),
     alias!("€", "belongsto", false),
+    alias!("^", "exponent", true),
+    alias!("_", "subscript", true),
     alias!("^^", "overset", true),
     alias!("__", "underset", true),
     alias!("|", "normalfont", false),
@@ -246,7 +248,7 @@ fn expect_operator<'a>(node: &Node, chars: &Vec<char>, children: &Vec<PotentialC
     let mut word = String::with_capacity(15);
     let start_pos = *pos - 1;
 
-    loop {
+    while *pos < node.content.len() {
         let el = &node.content[*pos];
 
         match *el {

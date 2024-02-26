@@ -14,6 +14,5 @@ page {
 
 mathnode {
     display: inline-block;
-    align-items: baseline;
-    justify-content: center;
+    text-indent: 0;
 }

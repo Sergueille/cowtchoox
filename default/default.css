@@ -3,7 +3,6 @@
 page {
     padding: 2cm 1.5cm;
     font-family: latex-font;
-    outline: 2px dashed green;
 }
 
 mathnode {
@@ -81,6 +80,47 @@ frac {
 /* ?normalfont */
 normalfont {
     font-family: latex-font;
+    display: inline;
+}
+
+normalfont > div {
+    display: inline;
+}
+
+normalfont > div > div {
+    display: inline;
+}
+
+
+/* ?exponent */
+exponent {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: start;
+}
+
+.exponent-before {
+    padding-top: 0.05em;
+}
+
+.exponent-inner {
+    font-size: 0.75em;
+}
+
+
+/* ?subscript */
+subscript {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: end;
+}
+
+.subscript-before {
+    padding-bottom: 0.05em;
+}
+
+.subscript-inner {
+    font-size: 0.75em;
 }
 
 

@@ -41,15 +41,20 @@ pub fn white_head(options: &doc_options::DocOptions) -> String {
 
     // FIXME: should be like ~"path_to_exe/" when built, and ~"" when running with cargo
     //        but too lazy to do that
-    let default_resources_path = "";
+    let default_resources_path = std::env::current_dir().expect("Failed to get working dir").to_str().expect("Failed to get working dir string").to_string().replace("\\", "/");
 
     // Link JS script, so that it executes when the page loads
-    res.push_str(&format!("<script defer=\"defer\" src=\"{}JS/main.js\"></script>", default_resources_path));
+    res.push_str(&format!("<script defer=\"defer\" src=\"file:///{}/JS/main.js\"></script>", default_resources_path));
+
+    // Link additional CSS
+    for file_path in &options.css_files {
+        res.push_str(&format!("<link rel=\"stylesheet\" href=\"{}\"/>", file_path));
+    }
 
     // Link default CSS
-    // IMPORTANT NOTE: make sure this tag is the las CSS tag, to make sure users don't accidentally change critical CSS rules (such as pag elements) 
-    res.push_str(&format!("<link rel=\"stylesheet\" href=\"{}default/critical.css\"/>", default_resources_path));
-    res.push_str(&format!("<link rel=\"stylesheet\" href=\"{}default/default.css\"/>", default_resources_path));
+    // IMPORTANT NOTE: make sure this tag is the last CSS tag, to make sure users don't accidentally change critical CSS rules (such as pag elements) 
+    res.push_str(&format!("<link rel=\"stylesheet\" href=\"file:///{}/default/critical.css\"/>", default_resources_path));
+    res.push_str(&format!("<link rel=\"stylesheet\" href=\"file:///{}/default/default.css\"/>", default_resources_path));
 
     // Page size
     res.push_str(&format!("<meta name=\"pagewidth\" content=\"{}\"/>", options.format.width));

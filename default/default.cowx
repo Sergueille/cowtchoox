@@ -32,6 +32,20 @@
 </normalfont>
 
 
+// Exponent. Infix alias ^
+<?exponent before inner>
+    <span class="exponent-before"><before/></span>
+    <span class="exponent-inner"><inner/></span>
+</exponent>
+
+
+// Subscript. Infix alias _
+<?subscript before inner>
+    <span class="subscript-before"><before/></span>
+    <span class="subscript-inner"><inner/></span>
+</subscript>
+
+
 // Put down under middle. Infix alias __
 <?underset middle down> 
     <middle/>
@@ -92,4 +106,10 @@
 <?belongsto>
     ∈
 </belongsto>
+
+
+// Infinity. (U+221E)
+<?inf>
+    ∞
+</inf>
 

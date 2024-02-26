@@ -98,8 +98,8 @@ fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tag
     log::log("Creating HTML...");
     let (text, options) = writer::get_file_text(&document).expect("Failed to create HTML");
 
-    // TODO: make this in a mor elegant way
-    let mut out_path = std::env::current_dir().expect("Failed to get working dir");
+    // Remove filename form path and add
+    let mut out_path = absolute_path.parent().unwrap().to_path_buf();
     out_path.push("out.html");
     fs::write(out_path.clone(), text).unwrap();
 
