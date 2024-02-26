@@ -26,7 +26,7 @@ macro_rules! alias {
 
 
 /// HashMap of all aliases, each character maps to th corresponding default custom tag name 
-static ALIASES: [Alias; 12] = [
+static ALIASES: [Alias; 20] = [
     alias!("=", "equal", false),
     alias!(",", "comma", false),
     alias!("/", "frac", true),
@@ -39,6 +39,14 @@ static ALIASES: [Alias; 12] = [
     alias!("^^", "overset", true),
     alias!("__", "underset", true),
     alias!("|", "normalfont", false),
+    alias!("->", "rightarrow", false),
+    alias!("=>", "rightdoublearrow", false),
+    alias!("-->", "longrightarrow", false),
+    alias!("==>", "longrightdoublearrow", false),
+    alias!("<-", "leftarrow", false),
+    alias!("<=", "leftdoublearrow", false),
+    alias!("<--", "longleftarrow", false),
+    alias!("<==", "longleftdoublearrow", false),
 ];
 
 

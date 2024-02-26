@@ -19,7 +19,7 @@ pub mod custom;
 
 
 /// Chars to make a word (tag name, attribute, ...). Alphanumeric characters also included. 
-const WORD_CHARS: &str = "_-"; 
+const WORD_CHARS: &str = "_-:"; 
 
 /// Attribute nam usd to indicate that a th tag has a "?" whn parsed.
 /// FIXME: th user can declare it as a real attribute and break everything!
@@ -386,9 +386,16 @@ fn read_word(chars: &Vec<char>, pos: &mut FilePosition) -> String {
 fn read_until_quote(chars: &Vec<char>, pos: &mut FilePosition) -> String {
     let mut res = Vec::with_capacity(15);
 
-    while chars[(*pos).absolute_position] != '"' {
+    let start_pos = pos.to_owned();
+
+    while chars[pos.absolute_position] != '"' {
         res.push(chars[(*pos).absolute_position]);
-        advance_position(pos, chars);
+
+        if (*pos).absolute_position >= chars.len() - 1 {
+            crate::log::error_position("Unmatched \".", &start_pos, 1);
+        }
+
+        advance_position_with_comments(pos, chars);
     }
     
     advance_position(pos, chars);
@@ -446,6 +453,21 @@ pub fn advance_position(pos: &mut FilePosition, file: &Vec<char>) {
             in_slash_star_comment = true;
         }
         else { break };
+    }
+}
+
+
+/// Same as advance_position, but ignores comments
+pub fn advance_position_with_comments(pos: &mut FilePosition, file: &Vec<char>) {
+    (*pos).absolute_position += 1;
+    (*pos).line_character += 1;
+    
+    let character_before = file[pos.absolute_position - 1];
+        
+    // FIXME: will not count lines for os that use \r
+    if character_before == '\n' {
+        (*pos).line += 1;
+        (*pos).line_character = 0;
     }
 }
 

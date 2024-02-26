@@ -24,7 +24,7 @@ pub fn get_file_text(document: &Node) -> Result<(String, DocOptions), ()> {
 
     res.push_str(&white_head(&options));
 
-    res.push_str(&get_node_html(&try_get_children_with_name(document, "body").expect("The document has no body")));
+    res.push_str(&get_node_html(&try_get_children_with_name(document, "body").expect("The document has no body"), false));
 
     res.push_str("</html>");
 
@@ -80,7 +80,10 @@ pub fn try_get_children_with_name<'a>(document: &'a Node, name: &str) -> Result<
 /// Generates HTML for a node
 /// TEST: the function is not actually implemented properly
 ///       this is directly reconstructing the tag without processing anything
-pub fn get_node_html(node: &Node) -> String {
+///
+/// # Arguments
+/// * `in_svg`: if in SVG, will not create <text> tags
+pub fn get_node_html(node: &Node, in_svg: bool) -> String {
     let mut res = String::from("<");
 
     res.push_str(&escape_tag_name(&node.name));
@@ -101,11 +104,14 @@ pub fn get_node_html(node: &Node) -> String {
         for content in &node.content {
             match content {
                 crate::parser::NodeContent::Character(c) | NodeContent::EscapedCharacter(c) => {
-                    match previous {
-                        NodeContent::Character(_) | NodeContent::EscapedCharacter(_) => {},
-                        NodeContent::Child(_) => {
-                            res.push_str("<text>"); // Begin text tag
-                        },
+                    if !in_svg {
+                        match previous {
+                            NodeContent::Character(_) | NodeContent::EscapedCharacter(_) => {},
+                            NodeContent::Child(_) => {
+                                res.push_str("<text>"); // Begin text tag
+                            },
+                        }
+    
                     }
 
                     // Escape characters
@@ -123,14 +129,16 @@ pub fn get_node_html(node: &Node) -> String {
                     }
                 },
                 crate::parser::NodeContent::Child(id) => {
-                    match previous {
-                        NodeContent::Character(_) | NodeContent::EscapedCharacter(_) => {
-                            res.push_str("</text>"); // End text tag
-                        },
-                        NodeContent::Child(_) => {},
+                    if !in_svg {
+                        match previous {
+                            NodeContent::Character(_) | NodeContent::EscapedCharacter(_) => {
+                                res.push_str("</text>"); // End text tag
+                            },
+                            NodeContent::Child(_) => {},
+                        }
                     }
 
-                    res.push_str(&get_node_html(&node.children[*id]))
+                    res.push_str(&get_node_html(&node.children[*id], in_svg || node.children[*id].name == "svg"))
                 },
             }
 

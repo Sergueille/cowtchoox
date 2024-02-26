@@ -113,3 +113,51 @@
     ∞
 </inf>
 
+
+// Right arrow. (U+2192) Alias ->
+<?rightarrow>
+    →
+</rightarrow>
+
+
+// Left arrow. (U+2190) Alias <-
+<?leftarrow>
+    ←
+</leftarrow>
+
+
+// Long right arrow. (U+27F6) Alias -->
+<?longrightarrow>
+    ⟶
+</longrightarrow>
+
+
+// Long left arrow. (U+27F5) Alias <--
+<?longleftarrow>
+    ⟵
+</longleftarrow>
+
+
+// Right double arrow. (U+21D2) Alias =>
+<?rightdoublearrow>
+    ⇒
+</rightdoublearrow>
+
+
+// Left double arrow. (U+21D0) Alias <=
+<?leftdoublearrow>
+    ⇐
+</leftdoublearrow>
+
+
+// Long right double arrow. (U+27F9) Alias ==>
+<?longrightdoublearrow>
+    ⟹
+</longrightdoublearrow>
+
+
+// Long left double arrow. (U+27F8) Alias <==
+<?longleftdoublearrow>
+    ⟸
+</longleftdoublearrow>
+

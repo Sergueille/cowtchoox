@@ -22,6 +22,32 @@ mathnode {
 }
 
 
+/* Figures */
+figure {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: 7mm 0;
+}
+
+figure > * {
+    margin: 0 3mm;
+}
+
+figure-caption {
+    counter-increment: figure;
+    display: block;
+    text-align: center;
+    margin-bottom: 7mm;
+}
+
+figure-caption::before {
+    content: "Fig." counter(figure) ": ";
+    font-variant: small-caps;
+}
+
+
 /* ?sqrt */
 sqrt {
     position: relative;

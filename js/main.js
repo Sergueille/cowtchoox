@@ -59,7 +59,7 @@ async function fillUntilOverflow(pageElement, parentElement) {
         await new Promise(resolve => setTimeout(resolve, 0));
 
         if (isOverflowing(pageElement)) { // The page is full
-            if (top.getAttribute("nonbreaking")) { // Finished!
+            if (top.getAttribute("nonbreaking") || top.tagName == "svg") { // Finished!
                 parentElement.remove(top);
                 children.push(top);
             }
