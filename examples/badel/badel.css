@@ -1,0 +1,90 @@
+
+page > text::before { /* Fake indentation */
+    content: " ";
+    display: inline-block;
+    width: 2em;
+}
+
+.top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0 10mm;
+}
+
+.box {
+    font-family: 'Times New Roman', Times, serif;
+    border: 0.3mm solid black;
+    box-shadow: 2mm 2mm 0 0 black;
+}
+
+.box {
+    font-size: 1.4em;
+    font-weight: bold;
+    border: 0.5mm solid black;
+    box-shadow: 1.5mm 1.5mm 0 0 black;
+    padding: 3mm 4mm;
+}
+
+h1 {
+    display: flex;
+    flex-direction: column;
+
+    font-family: calligra;
+    font-weight: normal;
+    text-align: center;
+    font-size: 4em;
+
+    background-color: #ffb74a;
+    margin-top: 5mm;
+    padding-bottom: 2mm;
+}
+
+h1 > span {
+    margin-top: -2mm;
+    font-size: 0.6em;
+}
+
+h2 {
+    font-family: 'Times New Roman', Times, serif;
+    position: relative;
+    display: block;
+    border: 0.3mm solid black;
+    text-align: center;
+    padding: 4mm 5mm 6mm 5mm;
+    counter-increment: h2;
+}
+
+h2::before {
+    content: counter(h2);
+    position: absolute;
+    background-color: white;
+    top: -3.5mm;
+    left: 5mm;
+    padding: 0 1mm 0 1mm;
+}
+
+.question {
+    padding-left: 2.2em;
+    text-indent: -2.2em;
+}
+
+.question > * {
+    text-indent: 0;
+}
+
+.question-num {
+    display: inline-block;
+    width: 1.7em;
+    text-align: right;
+    margin-right: 0.5em;
+}
+
+box {
+    border: 0.2mm solid black;
+}
+
+@font-face {
+    font-family: calligra;
+    src: url("calligra.otf");
+}

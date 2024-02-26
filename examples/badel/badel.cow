@@ -1,0 +1,42 @@
+<document>
+<head>
+    <title>DL 18</title>
+    <format>A4</format>
+    <css>badel.css</css>
+</head>
+<body>
+    <div class="top">
+        <div class="box">MP2I 861, Lycée du Parc</div>
+        <div class="box">2023-24</div>
+    </div>
+    <h1>
+        Titre du Document
+        <span>Sous titre</span>
+        <span>Nom</span>
+    </h1>
+
+    <h2>Premiere partie</h2>
+
+    Bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla,
+    bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla, bla...
+
+    <h2>Seconde partie</h2>
+
+    <div class="question">
+        <span class="question-num">1.</span>
+        Premièrement, gna, gna, gna...
+    </div>
+
+    <div class="question">
+        <span class="question-num">2.</span>
+        <em>A priori </em> les filtres etc...
+
+        <figure>
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" height="30mm" viewBox="0,0,294.59027,151.3045"><g transform="translate(-68.72099,-102.6711)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill-rule="nonzero" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M98.50389,154.74871h228.07476v98.22689h-227.05657" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/><path d="M303.63581,166.38259h-65.74865v-23.94056h65.74865z" fill="#ffffff" stroke="#000000" stroke-width="2" stroke-linecap="butt"/><text transform="translate(261.68498,127.92024) scale(0.58044,0.58044)" font-size="40" xml:space="preserve" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="Sans Serif" font-weight="normal" text-anchor="start" style="mix-blend-mode: normal"><tspan x="0" dy="0">R</tspan></text><path d="M83.93113,168.8199l7.05558,-7.05557l6.96983,6.96983" data-paper-data="{&quot;index&quot;:null}" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/><path d="M90.70642,248.2915v-85.63173" data-paper-data="{&quot;index&quot;:null}" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/><text transform="translate(69.01121,207.62371) scale(0.58044,0.58044)" font-size="40" xml:space="preserve" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="Sans Serif" font-weight="normal" text-anchor="start" style="mix-blend-mode: normal"><tspan x="0" dy="0">e</tspan></text><path d="M335.17114,169.11039l7.05558,-7.05557l6.96983,6.96983" data-paper-data="{&quot;index&quot;:null}" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/><path d="M341.94643,162.95027v85.63172" data-paper-data="{&quot;index&quot;:null}" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/><text transform="translate(351.19942,208.58699) scale(0.58044,0.58044)" font-size="40" xml:space="preserve" data-paper-data="{&quot;index&quot;:null}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="Sans Serif" font-weight="normal" text-anchor="start" style="mix-blend-mode: normal"><tspan x="0" dy="0">s</tspan></text><path d="M322.84284,232.81378v-51.8046h8.74623v51.8046z" fill="#ffffff" stroke="none" stroke-width="0" stroke-linecap="butt"/></g></g></svg>
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" height="30mm" viewBox="0,0,322.17454,151.3045"><g transform="translate(-68.72099,-102.6711)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill-rule="nonzero" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M98.50389,154.74871h228.07476v98.22689h-227.05657" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/><path d="M303.63581,166.38259h-65.74865v-23.94056h65.74865z" fill="#ffffff" stroke="#000000" stroke-width="2" stroke-linecap="butt"/><text transform="translate(261.68498,127.92024) scale(0.58044,0.58044)" font-size="40" xml:space="preserve" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="Sans Serif" font-weight="normal" text-anchor="start" style="mix-blend-mode: normal"><tspan x="0" dy="0">R</tspan></text><path d="M202.67698,156.65143h-69v-3.75h69z" fill="#ffffff" stroke="none" stroke-width="0" stroke-linecap="butt"/><path d="M83.93113,168.8199l7.05558,-7.05557l6.96983,6.96983" data-paper-data="{&quot;index&quot;:null}" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/><path d="M90.70642,248.2915v-85.63173" data-paper-data="{&quot;index&quot;:null}" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/><text transform="translate(69.01121,207.62371) scale(0.58044,0.58044)" font-size="40" xml:space="preserve" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="Sans Serif" font-weight="normal" text-anchor="start" style="mix-blend-mode: normal"><tspan x="0" dy="0">e</tspan></text><path d="M362.7554,169.11039l7.05558,-7.05557l6.96983,6.96983" data-paper-data="{&quot;index&quot;:null}" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/><path d="M369.53069,162.95027v85.63172" data-paper-data="{&quot;index&quot;:null}" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round"/><text transform="translate(378.78368,208.58699) scale(0.58044,0.58044)" font-size="40" xml:space="preserve" data-paper-data="{&quot;index&quot;:null}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="Sans Serif" font-weight="normal" text-anchor="start" style="mix-blend-mode: normal"><tspan x="0" dy="0">s</tspan></text></g></g></svg>
+        </figure>
+        <figure-caption>Des beaux filtres</figure-caption>
+    </div>
+
+</body>
+</document>
