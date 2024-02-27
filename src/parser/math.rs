@@ -201,6 +201,45 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
                             *index += 1;
                             break;
                         } 
+                        else if c == '§' {
+                            *index += 1;
+
+                            let letter_to_convert = match node.content[*index] {
+                                NodeContent::Character(l) => l,
+                                NodeContent::EscapedCharacter(l) => {
+                                    crate::log::warning_position(
+                                        "Escaped character after \"§\". Consider removing the backslash.", 
+                                        &get_file_pos_of_char_in_node_with_other_children(node, &children, chars, *index - 1), 
+                                        3,
+                                    );
+                                    l
+                                },
+                                NodeContent::Child(_) => {
+                                    return Err(ParseError {
+                                        message: format!("Expected a character after \"§\", found a tag."),
+                                        position: get_file_pos_of_char_in_node_with_other_children(node, &children, chars, *index - 1),
+                                        length: 1,
+                                    });
+                                },
+                            };
+
+                            let greek_letter = letter_to_greek(letter_to_convert);
+                            match greek_letter {
+                                Some(l) => {
+                                    res.push(NodeContent::Character(l));
+                                    *index += 1;
+                                    got_one_thing = true;
+                                },
+                                None => {
+                                    return Err(ParseError {
+                                        message: format!("Character \"{}\" after \"§\" does not correspond to a greek letter. Only a-z, A-Z are accepted, except for q, Q, w and W", letter_to_convert),
+                                        position: get_file_pos_of_char_in_node_with_other_children(node, &children, chars, *index - 1),
+                                        length: 2,
+                                    });
+                                },
+                            }
+
+                        }
                         else if c.is_whitespace() { // Ignore whitespace!
                             *index += 1;
                         }
@@ -399,5 +438,22 @@ fn parse_math_subgroup(node: &mut Node, children: &mut Vec<PotentialChild>, char
     };
 
     return Ok(res);
+}
+
+
+/// Converts a char to greek, returns None if non-alphabetical, Q or W
+fn letter_to_greek(c: char) -> Option<char> {
+    let ascii_code = c as u8;
+
+    if !c.is_ascii() { return None; }
+
+    if 'A' <= c && c <= 'Z' && c != 'Q' && c != 'W' {
+        return Some("ΑΒΨΔΕΦΓΗΙΞΚΛΜΝΟΠ ΡΣΤΘΩ ΧΥΖ".chars().nth((ascii_code - ('A' as u8)) as usize).expect("Uuh?"));
+    }
+    else if 'a' <= c && c <= 'z' && c != 'q' && c != 'w' {
+        return Some("αβψδεφγηιξκλμνοπ ρστθω χυζ".chars().nth((ascii_code - ('a' as u8)) as usize).expect("Uuh?"));
+    }
+
+    return None;
 }
 

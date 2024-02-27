@@ -81,6 +81,10 @@
             {overset\ test}^^{above}
         $
 
+        <br/>
+
+        Easy greek letters: $§=$
+
         <div style="border: 0.5mm solid black; padding: 2mm;">
             <p>
             And even more text to test if the program is able to handle multiple page. 
