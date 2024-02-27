@@ -175,6 +175,8 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_
         },
     }
 
+    let is_really_math = math || has_question_mark || tag_name == "mathnode";
+
     let mut res = Node {
         name: tag_name,
         attributes,
@@ -186,7 +188,7 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_
         source_length: 0,
     };
 
-    parse_inner_tag(chars, &mut res, pos, math || has_question_mark, context)?;
+    parse_inner_tag(chars, &mut res, pos, is_really_math, context)?;
     advance_position(pos, chars);
     advance_position(pos, chars);
     

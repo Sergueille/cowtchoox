@@ -82,6 +82,8 @@ h2::before {
 
 box {
     border: 0.2mm solid black;
+    display: inline-block;
+    padding: 0 0.3em;
 }
 
 @font-face {

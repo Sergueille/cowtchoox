@@ -16,3 +16,7 @@ mathnode {
     display: inline-block;
     text-indent: 0;
 }
+
+mathnode * {
+    display: inline-block;
+}

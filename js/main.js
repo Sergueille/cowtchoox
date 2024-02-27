@@ -68,9 +68,25 @@ async function fillUntilOverflow(pageElement, parentElement) {
                 children.push(top);
             }
             else {
-                let remaining = await fillUntilOverflow(pageElement, top);
-                if (remaining != null) {
-                    children.push(remaining);
+                parentElement.removeChild(top);
+
+                let cloned = top.cloneNode(false);
+                cloned.innerHTML = "";
+                parentElement.appendChild(cloned);
+
+                // Overflows even if empty
+                if (isOverflowing(pageElement)) {
+                    parentElement.removeChild(cloned);
+                    children.push(top);
+                }
+                else {
+                    parentElement.removeChild(cloned);
+                    parentElement.appendChild(top);
+
+                    let remaining = await fillUntilOverflow(pageElement, top);
+                    if (remaining != null) {
+                        children.push(remaining);
+                    }
                 }
             }
 

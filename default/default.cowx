@@ -161,3 +161,20 @@
     ⟸
 </longleftdoublearrow>
 
+
+// Long left right arrow. (U+27F7) Alias <-->
+<?longleftrightarrow>
+    ⟷
+</longleftrightarrow>
+
+
+// Left right double arrow. (U+21D4) Alias <=>
+<?leftrightdoublearrow>
+    ⇔
+</leftrightdoublearrow>
+
+
+// Underlines argument.
+<?un inner>
+    <inner/>
+</un>
