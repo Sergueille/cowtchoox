@@ -196,24 +196,10 @@ comma {
 }
 
 
-/* ?equal */
-equal {
+/* ?equal, ?simeq, ?equiv, ?mless, ?mgreater */
+equal, simeq, equiv, less, greater, leq, geq, mless, mgreater {
     margin-left: 0.3em;
-    margin-right: 0.2em;
-}
-
-
-/* ?simeq */
-simeq {
-    margin-left: 0.3em;
-    margin-right: 0.2em;
-}
-
-
-/* ?equiv */
-equiv {
-    margin-left: 0.3em;
-    margin-right: 0.2em;
+    margin-right: 0.3em;
 }
 
 
@@ -251,4 +237,12 @@ un::after {
     width: 100%;
     bottom: 0.15em;
     left: 0;
+}
+
+
+/* ?leftrightdoublearrow, ?rightdoublearrow, ?leftdoublearrow */
+leftrightdoublearrow, rightdoublearrow, leftdoublearrow,
+longleftrightdoublearrow, longrightdoublearrow, longleftdoublearrow {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
 }
