@@ -1,0 +1,26 @@
+
+/* Default useful things*/
+
+box {
+    border: 0.2mm solid black;
+    display: inline-block;
+    padding: 0 0.3em;
+}
+
+
+.variations {
+    margin: 1em auto;
+
+    width: fit-content;
+    display: grid;
+    border: 0.2mm solid black;
+    grid-template-columns: repeat(var(--columns), auto);
+    justify-items: stretch;
+    align-items: baseline;
+    padding: 1mm;
+}
+
+.variations > * {
+    padding: 1mm;
+    text-align: center;
+}

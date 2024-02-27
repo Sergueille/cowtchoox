@@ -53,8 +53,9 @@ pub fn white_head(options: &doc_options::DocOptions) -> String {
 
     // Link default CSS
     // IMPORTANT NOTE: make sure this tag is the last CSS tag, to make sure users don't accidentally change critical CSS rules (such as pag elements) 
-    res.push_str(&format!("<link rel=\"stylesheet\" href=\"file:///{}/default/critical.css\"/>", default_resources_path));
+    res.push_str(&format!("<link rel=\"stylesheet\" href=\"file:///{}/default/util.css\"/>", default_resources_path));
     res.push_str(&format!("<link rel=\"stylesheet\" href=\"file:///{}/default/default.css\"/>", default_resources_path));
+    res.push_str(&format!("<link rel=\"stylesheet\" href=\"file:///{}/default/critical.css\"/>", default_resources_path));
 
     // Page size
     res.push_str(&format!("<meta name=\"pagewidth\" content=\"{}\"/>", options.format.width));

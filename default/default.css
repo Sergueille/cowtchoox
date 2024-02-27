@@ -1,4 +1,9 @@
 
+/* Default look of cowtchoox */
+/* Also contains style for default.cowx */
+/* Changing some rules can cause unexpected behavior. */
+
+
 /* General properties */
 page {
     padding: 2cm 1.5cm;
@@ -90,6 +95,7 @@ frac {
     display: inline-block;
     text-align: center;
     vertical-align: 7%; /* https://xymaths.fr/Informatique-Programmation/html-css/ecrire-maths-fractions.php#frac */
+    margin: 0 0.1em;
 }
 
 .frac-bar {
@@ -114,14 +120,20 @@ frac {
 normalfont {
     font-family: latex-font;
     display: inline;
-    margin-right: 0.5em;
-    margin-left: 0.5em;
+}
+
+
+/* ?txt */
+txt {
+    font-family: latex-font;
+    display: inline;
+    margin: 0 0.5em;
 }
 
 
 /* ?exponent */
 exponent {
-    display: inline-flex;
+    display: inline-flex !important;
     flex-direction: row;
     align-items: start;
 }
@@ -137,7 +149,7 @@ exponent {
 
 /* ?subscript */
 subscript {
-    display: inline-flex;
+    display: inline-flex  !important;
     flex-direction: row;
     align-items: end;
 }
@@ -153,27 +165,27 @@ subscript {
 
 /* ?underset */
 underset {
-    display: inline-flex;
+    display: inline-flex !important;
     flex-direction: column;
     align-items: center;
 }
 
 .underset-under {
-    margin-top: -0.3em;
-    font-size: 0.8em;
+    margin-top: -0.5em;
+    font-size: 0.6em;
 }
 
 
 /* ?overset */
 overset {
-    display: inline-flex;
+    display: inline-flex !important;
     flex-direction: column-reverse;
     align-items: center;
 }
 
 .overset-over {
-    margin-bottom: -0.3em;
-    font-size: 0.8em;
+    margin-bottom: -0.5em;
+    font-size: 0.6em;
 }
 
 
@@ -186,6 +198,20 @@ comma {
 
 /* ?equal */
 equal {
+    margin-left: 0.3em;
+    margin-right: 0.2em;
+}
+
+
+/* ?simeq */
+simeq {
+    margin-left: 0.3em;
+    margin-right: 0.2em;
+}
+
+
+/* ?equiv */
+equiv {
     margin-left: 0.3em;
     margin-right: 0.2em;
 }
@@ -214,7 +240,6 @@ belongsto {
 /* ?un */
 un {
     margin: 0;
-    padding-bottom: -0.1em;
     position: relative;
 }
 

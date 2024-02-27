@@ -1,4 +1,7 @@
 
+// Default tags and math operators
+
+
 // Square root. Alias v/
 // under: the thing in the square root
 <?sqrt under>
@@ -30,6 +33,12 @@
 <?normalfont inner> 
     <inner/>
 </normalfont>
+
+
+// Same as normalfont, but with additionnal margins.
+<?txt inner>
+    <inner/>
+</txt>
 
 
 // Exponent. Infix alias ^
@@ -178,3 +187,15 @@
 <?un inner>
     <inner/>
 </un>
+
+
+// Almost equal. (U+2243)
+<?simeq>
+    ≃
+</simeq>
+
+
+// Equivalent / tilde operator. (U+223C) Alias ~
+<?equiv>
+    ∼
+</equiv>
