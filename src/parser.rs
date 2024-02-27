@@ -246,10 +246,26 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                     // TODO: handle that
                 },
                 _ => { // It's a child
-                    let child = parse_tag(chars, pos, false, math, context)?;
+                    let mut res_pos = pos.clone();
+                    let result = parse_tag(chars, &mut res_pos, false, math, context);
 
-                    children.push(child);
-                    content.push(NodeContent::Child(children.len() - 1));
+                    match result {
+                        Ok(child) => {
+                            children.push(child);
+                            content.push(NodeContent::Child(children.len() - 1));
+                            *pos = res_pos;
+                        }
+                        Err(e) => { // Didn't work! Maybe because in math some characters looks like tags but aren't
+                            if math { // If error, just interpret as regular text
+                                content.push(NodeContent::Character('<'));
+                                advance_position(pos, chars);
+                            }
+                            else {
+                                return Err(e);
+                            }
+                        },
+                    }
+
                 }
             }
         }
