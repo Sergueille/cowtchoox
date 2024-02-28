@@ -2,6 +2,11 @@
 // This file will create nice page elements, and fil them with the content of the document
 // This allows to place headers and to have specific rules for page layout
 
+// Tags that ar nonbreaking by default
+const defaultNonbreaking = [
+    "H1", "H2", "H3", "H4", "H5", "H6", "SVG"
+];
+
 
 console.log("Hello world from JS!")
 main();
@@ -58,8 +63,8 @@ async function fillUntilOverflow(pageElement, parentElement) {
         await new Promise(resolve => setTimeout(resolve, 0));
 
         if (isOverflowing(pageElement)) { // The page is full
-            if (top.getAttribute("nonbreaking") != null || top.tagName == "SVG") { // Finished!
-                parentElement.remove(top);
+            if (isNonbreaking(top)) { // Finished!
+                parentElement.removeChild(top);
                 children.push(top);
             }
             else if (top.tagName == "TEXT") { // Split text
@@ -101,14 +106,14 @@ async function fillUntilOverflow(pageElement, parentElement) {
                     secondHalf.classList.add("second-half");
                 }
             }
-            else {
+            else { // Split element
                 parentElement.removeChild(top);
 
                 let cloned = top.cloneNode(false);
                 cloned.innerHTML = "";
                 parentElement.appendChild(cloned);
 
-                // Overflows even if empty
+                // Overflows even if empty: put all on next page
                 if (isOverflowing(pageElement)) {
                     parentElement.removeChild(cloned);
                     children.push(top);
@@ -183,5 +188,15 @@ function getPageSize() {
  */
 function isOverflowing(el) {
     return el.clientHeight < el.scrollHeight;
+}
+
+
+/**
+ * Determines if the element is nonbreaking
+ * @param {HTMLElement} tag
+ * @returns {Boolean}
+ */
+function isNonbreaking(tag) {
+    return tag.getAttribute("nonbreaking") != null || defaultNonbreaking.includes(tag.tagName);
 }
 

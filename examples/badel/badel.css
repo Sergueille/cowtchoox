@@ -1,6 +1,6 @@
 
 body {
-    counter-reset: h2;
+    --counter-reset: h2;
 }
 
 page > text {

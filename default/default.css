@@ -87,7 +87,7 @@ figure-caption::before {
 }
 
 body {
-    counter-reset: figure;
+    counter-reset: figure var(--counter-reset);
 }
 
 
