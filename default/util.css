@@ -24,3 +24,7 @@ box {
     padding: 1mm;
     text-align: center;
 }
+
+.variations > text {
+    display: none; /* Remove spaces between elements */
+}
