@@ -103,42 +103,50 @@ pub fn get_node_html(node: &Node, no_text_tags: bool) -> String {
 
         let mut inner_html = String::new();
 
+        let mut in_text = false;
+        let mut current_text_tag = String::new(); // Accumulate text here, and push it at the end, or when a child is encountered
+
         let mut previous: &NodeContent = &NodeContent::Child(0); // Keep track of the last character
         for content in &node.content {
             match content {
                 crate::parser::NodeContent::Character(c) | NodeContent::EscapedCharacter(c) => {
-                    if !no_text_tags {
-                        match previous {
-                            NodeContent::Character(_) | NodeContent::EscapedCharacter(_) => {},
-                            NodeContent::Child(_) => {
-                                inner_html.push_str("<text>"); // Begin text tag
-                            },
-                        }
-    
+                    if !in_text {
+                        in_text = true;
+                    }
+
+                    if !in_text && c.is_whitespace() {
+                        println!("A");
                     }
 
                     // Escape characters
                     if *c == '<' {
-                        inner_html.push_str("&lt");
+                        current_text_tag.push_str("&lt");
                     }
                     else if *c == '>' {
-                        inner_html.push_str("&gt");
+                        current_text_tag.push_str("&gt");
                     }
                     else if *c == '&' {
-                        inner_html.push_str("&amp");
+                        current_text_tag.push_str("&amp");
                     }
                     else {
-                        inner_html.push(*c);
+                        current_text_tag.push(*c);
+                        println!("'{}'", *c);
                     }
                 },
                 crate::parser::NodeContent::Child(id) => {
-                    if !no_text_tags {
-                        match previous {
-                            NodeContent::Character(_) | NodeContent::EscapedCharacter(_) => {
-                                inner_html.push_str("</text>"); // End text tag
-                            },
-                            NodeContent::Child(_) => {},
+                    if in_text && current_text_tag.trim().len() != 0 {
+                        if !no_text_tags {
+                            inner_html.push_str("<text>");
                         }
+
+                        inner_html.push_str(&current_text_tag);
+
+                        if !no_text_tags {
+                            inner_html.push_str("</text>");
+                        }
+
+                        in_text = false;
+                        current_text_tag = String::new();
                     }
 
                     inner_html.push_str(&get_node_html(&node.children[*id], no_text_tags || node.children[*id].name == "svg" || node.children[*id].name == "pre"))
@@ -146,6 +154,18 @@ pub fn get_node_html(node: &Node, no_text_tags: bool) -> String {
             }
 
             previous = content;
+        }
+
+        if in_text && current_text_tag.trim().len() != 0 {
+            if !no_text_tags {
+                inner_html.push_str("<text>");
+            }
+
+            inner_html.push_str(&current_text_tag);
+
+            if !no_text_tags {
+                inner_html.push_str("</text>");
+            }
         }
         
         if !no_text_tags {
