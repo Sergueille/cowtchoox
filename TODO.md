@@ -5,8 +5,6 @@ HACK: currently, when failing to parse a tag in maths, it represents it a regula
     - because if in maths there is for example <=>, it shouldn't be a tag
     - problematic because if user uses large tags, they can't see where is the error
 
-TODO: split text tags with JS
-
 TODO: add the possibility to add attributes to a custom tag
 
 TODO: change the way code is parsed

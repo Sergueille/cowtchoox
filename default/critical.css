@@ -13,7 +13,7 @@ body {
 /* Using !important to prevent further CSS rules form breaking everything */
 page {
     display: block !important;
-    overflow: auto !important; /* Ensures that overflow is properly detected by JS */
+    overflow: auto; /* Ensures that overflow is properly detected by JS */
 }
 
 mathnode {

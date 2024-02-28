@@ -1,7 +1,6 @@
 
 // This file will create nice page elements, and fil them with the content of the document
-// This allows to place headers and to have specific rule for page layout
-// It's currently a total mess...
+// This allows to place headers and to have specific rules for page layout
 
 
 console.log("Hello world from JS!")
@@ -38,7 +37,7 @@ async function main() {
 
 
 /**
- * TODO
+ * Inserts an element into parentElement, inside pageElement, and cuts it if necessary
  * @param {HTMLElement} pageElement 
  * @param {HTMLElement} parentElement 
  * @returns {HTMLElement} The rest of the element that couldn't be inserted in the page. Returns null if everything were inserted.
@@ -64,8 +63,43 @@ async function fillUntilOverflow(pageElement, parentElement) {
                 children.push(top);
             }
             else if (top.tagName == "TEXT") { // Split text
-                parentElement.removeChild(top); // TODO: just ignoring for now
-                children.push(top);
+                let text = top.textContent;
+                top.textContent = "";
+
+                // Overflowing even if empty
+                if (isOverflowing(pageElement)) {
+                    parentElement.removeChild(top);
+                    top.textContent = text;
+                    children.push(top);
+                }
+                else {
+                    let word = "";
+                    let wordStartId = 0;
+                    for (let i = 0; i < text.length; i++) {
+                        let ch = text[i];
+                        if (/\s/.test(ch)) { // whitespace: try to cut!
+                            top.textContent += word;
+
+                            if (isOverflowing(pageElement)) {
+                                pageElement.style.setProperty("overflow", "hidden")
+                                top.textContent = top.textContent.slice(0, top.textContent.length - word.length);
+                                break;
+                            }
+
+                            word = "";
+                            wordStartId = i;
+                        }
+
+                        word += ch;
+                    }
+
+                    let secondHalf = top.cloneNode(false);
+                    secondHalf.textContent = text.slice(wordStartId, text.length);
+                    children.push(secondHalf);
+
+                    top.classList.add("first-half");
+                    secondHalf.classList.add("second-half");
+                }
             }
             else {
                 parentElement.removeChild(top);
