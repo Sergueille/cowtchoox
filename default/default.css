@@ -12,7 +12,6 @@ page {
 
 mathnode {
     font-family: maths-font, latex-font;
-    margin-right: 0.4em;
 }
 
 mathnode.center {

@@ -387,7 +387,8 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
         else if next.is_whitespace() {
             match content.last() {
                 Some(NodeContent::Child(_)) => {
-                    // Ignore
+                    // Add a space
+                    content.push(NodeContent::Character(' '));
                 },
                 Some(NodeContent::Character(c)) | Some(NodeContent::EscapedCharacter(c)) => {
                     // Ignore if last chars is already whitespace

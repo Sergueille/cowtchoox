@@ -3,7 +3,7 @@ body {
     --counter-reset: h2;
 }
 
-page > text {
+page > text:nth-child(1) {
     display: inline-block;
     text-indent: 8mm;
 }
