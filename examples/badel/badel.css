@@ -1,8 +1,11 @@
 
-page > text::before { /* Fake indentation */
-    content: " ";
+body {
+    counter-reset: h2;
+}
+
+page > text {
     display: inline-block;
-    width: 2em;
+    text-indent: 8mm;
 }
 
 .top {

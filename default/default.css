@@ -86,6 +86,10 @@ figure-caption::before {
     font-variant: small-caps;
 }
 
+body {
+    counter-reset: figure;
+}
+
 
 /* ?sqrt */
 sqrt {
