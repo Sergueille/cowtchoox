@@ -9,6 +9,12 @@ TODO: split text tags with JS
 
 TODO: add the possibility to add attributes to a custom tag
 
+TODO: change the way code is parsed
+    -> allow full `<code>` block with attributes
+    -> escape `
+
+TODO: integrate highlight.js
+
 TODO: Important: remember to make a CSS file to remove ALL default styling, to prevent differences between browsers engines/versions
       -> should we ship a version of chromium with cowtchoox to make sure the same version is always used?
 TODO: some error reporting for css

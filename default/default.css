@@ -19,7 +19,7 @@ mathnode.center {
     width: 100%;
     display: inline-block;
     text-align: center;
-    margin: 2em 0;
+    margin: 1em 0;
 }
 
 @font-face {
@@ -31,6 +31,33 @@ mathnode.center {
     font-family: maths-font;
     src: url("../fonts/cmunti.ttf");
     unicode-range: U+0041-007A;
+}
+
+@font-face {
+    font-family: cascadia-code;
+    src: url("../fonts/CascadiaCode.ttf");
+}
+
+
+/* Code */
+pre {
+    font-family: cascadia-code;
+    font-size: 0.85em;
+
+    margin-right: 0.5em;
+    background-color: #f2f2f2;
+    border-radius: 0.2em;
+    padding: 0.1em 0.3em;
+}
+
+pre.center {
+    background-color: white;
+    display: block;
+    margin: 3mm 0;
+    padding: 3mm 5mm;
+
+    border-radius: 0.4em;
+    border: 0.5mm solid #ccc;
 }
 
 

@@ -41,11 +41,22 @@ pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: TagHa
                 continue; // An internal thing. Just ignore
             }
 
-            if value != "" {
-                // TODO: report error: values ar not allowed
-            }
+            let mut chars = name.chars();
+            if chars.next() == Some(':') { // It's an argument
+                if value != "" {
+                    return Err(parser::ParseError {
+                        message: format!("In custom tag definition, the argument \"{}\" has value \"{}\". You should remove either the colon or the value.", name, value),
+                        position: node.start_position.clone(),
+                        length: node.start_inner_position.absolute_position - node.start_position.absolute_position
+                    });
+                }
 
-            arguments.push(name.clone());
+                let arg_name = chars.collect();
+                arguments.push(arg_name);
+            }
+            else {
+                // Real attribute: do nothing
+            }
         }
         
         context.math_operators.insert(node.name.clone(), CustomTag {

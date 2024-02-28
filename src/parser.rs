@@ -67,6 +67,13 @@ pub struct ParserContext<'a> {
 }
 
 
+/// Used internally to determine if inside math node or code block
+#[derive(PartialEq, Eq, Debug)]
+enum ParserState {
+    Normal, Math, Code, BigCode
+}
+
+
 /// Parses a raw file.
 /// 
 /// # Arguments
@@ -188,7 +195,7 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_
         source_length: 0,
     };
 
-    parse_inner_tag(chars, &mut res, pos, is_really_math, context)?;
+    parse_inner_tag(chars, &mut res, pos, if is_really_math { ParserState::Math } else { ParserState::Normal }, context)?;
     advance_position(pos, chars);
     advance_position(pos, chars);
     
@@ -216,7 +223,7 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_
 
 
 /// Parses text inside a tag
-fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosition, math: bool, context: &ParserContext) -> Result<(), ParseError> {
+fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosition, state: ParserState, context: &ParserContext) -> Result<(), ParseError> {
     let mut children: Vec<Node> = Vec::with_capacity(10);
     let mut content: Vec<NodeContent> = Vec::with_capacity(100);
     
@@ -224,6 +231,46 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
 
     loop {
         let next = chars[(*pos).absolute_position];
+
+        // Code: ignore all but backticks
+        if state == ParserState::Code || state == ParserState::BigCode {
+            if next == '`' {
+                advance_position(pos, chars);
+            
+                let double = chars[(*pos).absolute_position] == '`';
+
+                if state == ParserState::Code {
+                    if double {
+                        return Err(ParseError {
+                            message: String::from("Expected a single backtick (and not two) to close code block."),
+                            position: pos.clone(),
+                            length: 1,
+                        })
+                    }
+                    else {
+                        break;
+                    }
+                }
+                else if state == ParserState::BigCode {
+                    if double {
+                        advance_position(pos, chars);
+                        break;
+                    }
+                    else {
+                        //It's a regular character
+                        content.push(NodeContent::Character('`'));
+                    }
+                }
+            }
+            else {
+                advance_position(pos, chars);
+                content.push(NodeContent::Character(next));
+            }
+
+            continue; // Nothing else!
+        }
+
+        // If not code:
 
         if backslashed_character { // Escaped by backslash
             content.push(NodeContent::EscapedCharacter(next));
@@ -247,7 +294,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                 },
                 _ => { // It's a child
                     let mut res_pos = pos.clone();
-                    let result = parse_tag(chars, &mut res_pos, false, math, context);
+                    let result = parse_tag(chars, &mut res_pos, false, state == ParserState::Math, context);
 
                     match result {
                         Ok(child) => {
@@ -256,7 +303,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                             *pos = res_pos;
                         }
                         Err(e) => { // Didn't work! Maybe because in math some characters looks like tags but aren't
-                            if math { // If error, just interpret as regular text
+                            if state == ParserState::Math { // If error, just interpret as regular text
                                 content.push(NodeContent::Character('<'));
                                 advance_position(pos, chars);
                             }
@@ -272,7 +319,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
         else if next == '$' {
             advance_position(pos, chars);
 
-            if !math { // Inner math tag
+            if state == ParserState::Normal { // Inner math tag
                 let mut start_inner_position = pos.clone();
                 advance_position(&mut start_inner_position, chars);
 
@@ -287,16 +334,55 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                     source_length: 0
                 };
 
-                parse_inner_tag(chars, &mut math_tag, pos, true, context)?;
+                parse_inner_tag(chars, &mut math_tag, pos, ParserState::Math, context)?;
 
                 math_tag.source_length = get_positions_difference(&pos, &math_tag.start_position);
 
                 children.push(math_tag);
                 content.push(NodeContent::Child(children.len() - 1));
             }
-            else { // Finished math
+            else if state == ParserState::Math { // Finished math
                 break;
             }
+            else { unreachable!() }
+        }
+        else if next == '`' && state != ParserState::Math { // Code block
+            advance_position(pos, chars);
+            
+            let double = chars[(*pos).absolute_position] == '`';
+
+            let mut start_inner_position = pos.clone();
+            advance_position(&mut start_inner_position, chars);
+
+            // Make it big if two backticks
+            let attributes = if double { 
+                vec![(String::from("class"), String::from("center"))] 
+            } else { 
+                vec![] 
+            };
+
+            let mut math_tag = Node {
+                name: String::from("pre"),
+                attributes: attributes,
+                children: vec![],
+                content: vec![],
+                auto_closing: false,
+                start_position: pos.clone(),
+                start_inner_position,
+                source_length: 0
+            };
+            
+            if double {
+                advance_position(pos, chars);
+            } 
+
+            parse_inner_tag(chars, &mut math_tag, pos, if double { ParserState::BigCode } else { ParserState::Code }, context)?;
+
+
+            math_tag.source_length = get_positions_difference(&pos, &math_tag.start_position);
+
+            children.push(math_tag);
+            content.push(NodeContent::Child(children.len() - 1));
         }
         else if next.is_whitespace() {
             match content.last() {
@@ -328,7 +414,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
     node.content = content;
 
     // Now that the tag is parsed, if it's math, parse math
-    if math {
+    if state == ParserState::Math {
         math::parse_math(node, chars, context)?;
     }
 

@@ -59,7 +59,7 @@ async function fillUntilOverflow(pageElement, parentElement) {
         await new Promise(resolve => setTimeout(resolve, 0));
 
         if (isOverflowing(pageElement)) { // The page is full
-            if (top.getAttribute("nonbreaking") || top.tagName == "svg") { // Finished!
+            if (top.getAttribute("nonbreaking") != null || top.tagName == "SVG") { // Finished!
                 parentElement.remove(top);
                 children.push(top);
             }
@@ -84,7 +84,10 @@ async function fillUntilOverflow(pageElement, parentElement) {
                     parentElement.appendChild(top);
 
                     let remaining = await fillUntilOverflow(pageElement, top);
+
                     if (remaining != null) {
+                        top.classList.add("first-half");
+                        remaining.classList.add("second-half");
                         children.push(remaining);
                     }
                 }

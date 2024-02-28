@@ -4,7 +4,7 @@
 
 // Square root. Alias v/
 // under: the thing in the square root
-<?sqrt under>
+<?sqrt :under nonbreaking>
     <svg viewBox="0,0,31.07407,97.52569" preserveAspectRatio="none">
         <g transform="translate(-225.40004,-131.23716)">
             <g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="currentcolor" fill-rule="nonzero" stroke-linecap="butt" style="mix-blend-mode: normal">
@@ -22,7 +22,7 @@
 // Horizontal fraction. Infix alias /
 // up: the thing over the bar
 // down: the thing under the bar
-<?frac up down>
+<?frac :up :down nonbreaking>
     <div class="frac-up"><up/></div>
     <div class="frac-bar"></div>
     <div class="frac-down"><down/></div>
@@ -30,40 +30,40 @@
 
 
 // Makes inner not use math font. Alias |
-<?normalfont inner> 
+<?normalfont :inner> 
     <inner/>
 </normalfont>
 
 
 // Same as normalfont, but with additionnal margins.
-<?txt inner>
+<?txt :inner>
     <inner/>
 </txt>
 
 
 // Exponent. Infix alias ^
-<?exponent before inner>
+<?exponent :before :inner>
     <span class="exponent-before"><before/></span>
     <span class="exponent-inner"><inner/></span>
 </exponent>
 
 
 // Subscript. Infix alias _
-<?subscript before inner>
+<?subscript :before :inner>
     <span class="subscript-before"><before/></span>
     <span class="subscript-inner"><inner/></span>
 </subscript>
 
 
 // Put down under middle. Infix alias __
-<?underset middle down> 
+<?underset :middle :down> 
     <middle/>
     <div class="underset-under"><down/></div>
 </underset>
 
 
 // Put up over middle. Infix alias ^^
-<?overset middle up> 
+<?overset :middle :up> 
     <middle/>
     <div class="overset-over"><up/></div>
 </overset>
@@ -189,7 +189,7 @@
 
 
 // Underlines argument.
-<?un inner>
+<?un :inner>
     <inner/>
 </un>
 

@@ -24,3 +24,17 @@ mathnode {
 mathnode * {
     display: inline-block;
 }
+
+
+/* Whn an element is split across a page, each half has on class */
+.first-half::after {
+    content: " ";
+}
+
+.second-half {
+    text-indent: 0;
+}
+
+.second-half::before, .second-half::marker {
+    content: " ";
+}

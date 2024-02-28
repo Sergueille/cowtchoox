@@ -83,7 +83,18 @@
 
         <br/>
 
-        Easy greek letters: $§=$
+        Easy greek letters: $§a$
+
+        <br/>
+
+        Inline code blocks: `this is code` and this isn't
+
+        ``
+            And this is even more code.
+            Line breaks and indentation are automatic here.
+            It ignores everything except double backticks: no need for backslash!
+            <tag>, \ ` $ 
+        ``
 
         <div style="border: 0.5mm solid black; padding: 2mm;">
             <p>

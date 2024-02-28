@@ -83,8 +83,8 @@ pub fn try_get_children_with_name<'a>(document: &'a Node, name: &str) -> Result<
 ///       this is directly reconstructing the tag without processing anything
 ///
 /// # Arguments
-/// * `in_svg`: if in SVG, will not create <text> tags
-pub fn get_node_html(node: &Node, in_svg: bool) -> String {
+/// * `no_text_tags`: will not create <text> tags (for pre of svg)
+pub fn get_node_html(node: &Node, no_text_tags: bool) -> String {
     let mut res = String::from("<");
 
     res.push_str(&escape_tag_name(&node.name));
@@ -101,15 +101,17 @@ pub fn get_node_html(node: &Node, in_svg: bool) -> String {
     else {
         res.push('>');
 
+        let mut inner_html = String::new();
+
         let mut previous: &NodeContent = &NodeContent::Child(0); // Keep track of the last character
         for content in &node.content {
             match content {
                 crate::parser::NodeContent::Character(c) | NodeContent::EscapedCharacter(c) => {
-                    if !in_svg {
+                    if !no_text_tags {
                         match previous {
                             NodeContent::Character(_) | NodeContent::EscapedCharacter(_) => {},
                             NodeContent::Child(_) => {
-                                res.push_str("<text>"); // Begin text tag
+                                inner_html.push_str("<text>"); // Begin text tag
                             },
                         }
     
@@ -117,43 +119,49 @@ pub fn get_node_html(node: &Node, in_svg: bool) -> String {
 
                     // Escape characters
                     if *c == '<' {
-                        res.push_str("&lt");
+                        inner_html.push_str("&lt");
                     }
                     else if *c == '>' {
-                        res.push_str("&gt");
+                        inner_html.push_str("&gt");
                     }
                     else if *c == '&' {
-                        res.push_str("&amp");
+                        inner_html.push_str("&amp");
                     }
                     else {
-                        res.push(*c);
+                        inner_html.push(*c);
                     }
                 },
                 crate::parser::NodeContent::Child(id) => {
-                    if !in_svg {
+                    if !no_text_tags {
                         match previous {
                             NodeContent::Character(_) | NodeContent::EscapedCharacter(_) => {
-                                res.push_str("</text>"); // End text tag
+                                inner_html.push_str("</text>"); // End text tag
                             },
                             NodeContent::Child(_) => {},
                         }
                     }
 
-                    res.push_str(&get_node_html(&node.children[*id], in_svg || node.children[*id].name == "svg"))
+                    inner_html.push_str(&get_node_html(&node.children[*id], no_text_tags || node.children[*id].name == "svg" || node.children[*id].name == "pre"))
                 },
             }
 
             previous = content;
         }
-
-        match previous {
-            NodeContent::Character(_) | NodeContent::EscapedCharacter(_) => {
-                res.push_str("</text>"); // End text tag
-            },
-            NodeContent::Child(_) => {},
+        
+        if !no_text_tags {
+            match previous {
+                NodeContent::Character(_) | NodeContent::EscapedCharacter(_) => {
+                    inner_html.push_str("</text>"); // End text tag
+                },
+                NodeContent::Child(_) => {},
+            }
         }
 
-        res.push_str(&format!("</{}>", &escape_tag_name(&node.name)))
+        if node.name == "pre" {
+            inner_html = inner_html.trim().to_string();
+        }
+
+        res.push_str(&format!("{}</{}>", inner_html, &escape_tag_name(&node.name)))
     }
 
     return res;
