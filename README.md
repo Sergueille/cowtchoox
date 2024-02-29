@@ -1,7 +1,7 @@
 
-<div style="font-size: 5em;">
-    CO<sup style="">W</sup>TCH<sub style="font-size: 1em;">O</sub>OX<sub style="font-size: 0.5em; color: #d99;">α</sub>
-</div>
+<img src="logo.png"/>
+
+<br/>
 
 L<sup>A</sup>T<sub>E</sub>X sucks.
 
@@ -19,7 +19,7 @@ It's currently an alpha version, so nothing is working properly.
 ### Installation (Windows)
 
 - Grab a release zip.
-- Unzip it.
+- Unzip it. Inside there is the executable and helpers files.
 - Add to your PATH the folder into which you unzipped, so that you can call the executable from anywhere
 
 ### Usage 
