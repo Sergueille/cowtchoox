@@ -81,7 +81,7 @@ h2::before {
     display: inline-block;
     width: 1.7em;
     text-align: right;
-    margin-right: 0.5em;
+    margin-right: 0.15em;
 }
 
 @font-face {
