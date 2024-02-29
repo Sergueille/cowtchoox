@@ -17,6 +17,12 @@
     </aux>
     <body>
         // Contents of the rest of the document
+
+        <div style="font-size: 5em;">
+            CO<sup style="">W</sup>TCH<sub style="font-size: 1em;">O</sub>OX<sub style="font-size: 0.5em; color: #d99;">α</sub>
+        </div>
+        <br/>
+
         Hello, world!
         <br/>
         <p test-attribute=test>

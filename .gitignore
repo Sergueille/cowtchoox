@@ -3,3 +3,5 @@
 *.html
 *.pdf
 /tests
+/build
+build.zip

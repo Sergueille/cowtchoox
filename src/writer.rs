@@ -1,4 +1,6 @@
 
+use std::path::PathBuf;
+
 use crate::log;
 use crate::parser::{Node, NodeContent};
 use crate::doc_options::{self, DocOptions};
@@ -8,7 +10,7 @@ use crate::doc_options::{self, DocOptions};
 
 
 // Get the entire text of the document, ready for being displayed
-pub fn get_file_text(document: &Node) -> Result<(String, DocOptions), ()> {
+pub fn get_file_text(document: &Node, exe_path: PathBuf) -> Result<(String, DocOptions), ()> {
     let mut res = String::new();
 
     let head = match try_get_children_with_name(document, "head") {
@@ -22,7 +24,7 @@ pub fn get_file_text(document: &Node) -> Result<(String, DocOptions), ()> {
 
     res.push_str("<html>"); // Quirks is better!
 
-    res.push_str(&white_head(&options));
+    res.push_str(&white_head(&options, exe_path));
 
     res.push_str(&get_node_html(&try_get_children_with_name(document, "body").expect("The document has no body"), false));
 
@@ -32,7 +34,7 @@ pub fn get_file_text(document: &Node) -> Result<(String, DocOptions), ()> {
 }
 
 
-pub fn white_head(options: &doc_options::DocOptions) -> String {
+pub fn white_head(options: &doc_options::DocOptions, exe_path: PathBuf) -> String {
     let mut res = String::with_capacity(200);
     res.push_str("<head>");
 
@@ -41,7 +43,7 @@ pub fn white_head(options: &doc_options::DocOptions) -> String {
 
     // FIXME: should be like ~"path_to_exe/" when built, and ~"" when running with cargo
     //        but too lazy to do that
-    let default_resources_path = std::env::current_dir().expect("Failed to get working dir").to_str().expect("Failed to get working dir string").to_string().replace("\\", "/");
+    let default_resources_path = exe_path.to_str().expect("Failed to get resources dir string").to_string().replace("\\", "/");
 
     // Link JS script, so that it executes when the page loads
     res.push_str(&format!("<script defer=\"defer\" src=\"file:///{}/JS/main.js\"></script>", default_resources_path));
@@ -114,10 +116,6 @@ pub fn get_node_html(node: &Node, no_text_tags: bool) -> String {
                         in_text = true;
                     }
 
-                    if !in_text && c.is_whitespace() {
-                        println!("A");
-                    }
-
                     // Escape characters
                     if *c == '<' {
                         current_text_tag.push_str("&lt");
@@ -130,7 +128,6 @@ pub fn get_node_html(node: &Node, no_text_tags: bool) -> String {
                     }
                     else {
                         current_text_tag.push(*c);
-                        println!("'{}'", *c);
                     }
                 },
                 crate::parser::NodeContent::Child(id) => {

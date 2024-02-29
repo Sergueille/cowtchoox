@@ -46,8 +46,25 @@ fn main() -> Result<(), ()> {
     };
 
     let mut custom_tags_hash = HashMap::new(); // Store tags in this
-    
-    custom_tags_hash = parse_cowx_file("default/default.cowx", custom_tags_hash, &args, true)?; // FIXME: use the right path when not running with cargo 
+
+    // HACK: assume cargo tests are always debug mode, and builds always release mode
+    #[allow(unused_mut)]
+    let mut exe_path;
+
+    #[cfg(debug_assertions)] {
+        exe_path = std::env::current_dir().expect("Failed to get working dir");
+    }
+
+    #[cfg(not(debug_assertions))] {
+        let mut exe_path_owned = std::env::current_exe().expect("Cant' get executable location");
+        exe_path = exe_path_owned.parent().expect("Uuh?").to_owned();
+    }
+
+    let mut default_dir_path = exe_path.clone();
+    default_dir_path.push("default");
+    default_dir_path.push("default.cowx");
+
+    custom_tags_hash = parse_cowx_file(default_dir_path.to_str().expect("Uuh?"), custom_tags_hash, &args, true)?;
 
     // Cowx file from command line
     let cowx_file = matches.get_one::<String>("cowx");
@@ -68,7 +85,7 @@ fn main() -> Result<(), ()> {
             let mut path = std::env::current_dir().expect("Failed to get working dir");
             path.push(&args.filepath);
 
-            compile_file(path, content, &args, custom_tags_hash);
+            compile_file(path, content, &args, custom_tags_hash, exe_path);
         },
         Err(err) => {
             log::error(&format!("failed to read source file: {}", err));
@@ -79,7 +96,7 @@ fn main() -> Result<(), ()> {
 }
 
 
-fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tags_hash: TagHash) {
+fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tags_hash: TagHash, exe_path: PathBuf) {
     let parser_context = parser::ParserContext {
         args,
         math_operators: custom_tags_hash,
@@ -96,7 +113,7 @@ fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tag
     };
     
     log::log("Creating HTML...");
-    let (text, options) = writer::get_file_text(&document).expect("Failed to create HTML");
+    let (text, options) = writer::get_file_text(&document, exe_path).expect("Failed to create HTML");
 
     // Remove filename form path and add
     let mut out_path = absolute_path.parent().unwrap().to_path_buf();

@@ -11,8 +11,9 @@ TODO: change the way code is parsed
 
 TODO: integrate highlight.js
 
-TODO: Important: remember to make a CSS file to remove ALL default styling, to prevent differences between browsers engines/versions
-      -> should we ship a version of chromium with cowtchoox to make sure the same version is always used?
+TODO: ship a version [mini-chromium](https://github.com/chromium/mini_chromium)
+    -> will be always same version, and lighter than chrome
+
 TODO: some error reporting for css
     - units should be only em, mm, or %
     - class names for custom tags
