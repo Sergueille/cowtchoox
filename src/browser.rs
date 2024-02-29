@@ -60,6 +60,12 @@ pub fn render_to_pdf(path: PathBuf, args: &Args, options: &DocOptions) -> Result
     let res = tab.close(true);
     log::log_if_err(res, "Failed to close browser tab.")?;
 
+    // NOTE: some background thread is panicking just before exit, so I added that to hide the error message
+    //       it's not so bad because it's the last thing that is done.
+    std::panic::set_hook(Box::new(|_info| {
+        // Do nothing if got a panic!
+    }));
+
     return Ok(());
 }
 
