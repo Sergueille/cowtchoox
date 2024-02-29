@@ -57,6 +57,14 @@ pub fn log_if_err<T, E>(res: Result<T, E>, message: &str) -> Result<T, ()> {
 }
 
 
+/// Overrides the default panic message
+pub fn override_panic_message() {
+    std::panic::set_hook(Box::new(|info| {
+        println!("  {} This error is a bug of cowtchoox, and you shouldn't see it. Please report this bug. Here is the error message:\n{}", "panic:".purple(), info);
+    }));
+}
+
+
 fn display_path(start_pos: &FilePosition) -> String {
     return format!("at {}:{}:{}", start_pos.file_path.to_str().unwrap(), start_pos.line + 1, start_pos.line_character);
 }
@@ -65,7 +73,11 @@ fn display_path(start_pos: &FilePosition) -> String {
 fn print_line(start_pos: &FilePosition, length: usize, level: LogLevel) {
     let content = fs::read_to_string((*start_pos.file_path).clone()).unwrap();
 
-    let line = content.lines().nth(start_pos.line).expect("The line doesn't exists in the file!");
+    let line = match content.lines().nth(start_pos.line) {
+        Some(l) => l,
+        None => "",
+    };
+
     let line_number_text = (start_pos.line + 1).to_string();
 
     let spaces_vector = vec![b' '; line_number_text.len()];

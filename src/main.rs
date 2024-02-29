@@ -21,6 +21,8 @@ pub struct Args {
 }
 
 fn main() -> Result<(), ()> {
+    log::override_panic_message();
+
     let matches =
         clap::Command::new("cowtchoox") 
             .arg_required_else_help(true)
@@ -64,6 +66,7 @@ fn main() -> Result<(), ()> {
     default_dir_path.push("default");
     default_dir_path.push("default.cowx");
 
+    log::log("Parsing cowx files...");
     custom_tags_hash = parse_cowx_file(default_dir_path.to_str().expect("Uuh?"), custom_tags_hash, &args, true)?;
 
     // Cowx file from command line
@@ -85,7 +88,14 @@ fn main() -> Result<(), ()> {
             let mut path = std::env::current_dir().expect("Failed to get working dir");
             path.push(&args.filepath);
 
-            compile_file(path, content, &args, custom_tags_hash, exe_path);
+            let res = compile_file(path, content, &args, custom_tags_hash, exe_path);
+
+            match res {
+                Ok(_) => {},
+                Err(_) => {
+                    log::log("No files produced.");
+                },
+            }
         },
         Err(err) => {
             log::error(&format!("failed to read source file: {}", err));
@@ -96,7 +106,7 @@ fn main() -> Result<(), ()> {
 }
 
 
-fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tags_hash: TagHash, exe_path: PathBuf) {
+fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tags_hash: TagHash, exe_path: PathBuf) -> Result<(), ()> {
     let parser_context = parser::ParserContext {
         args,
         math_operators: custom_tags_hash,
@@ -108,12 +118,17 @@ fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tag
         Ok(node) => node,
         Err(err) => {
             log::error_position(&err.message, &err.position, err.length);
-            return;
+            return Err(());
         },
     };
     
     log::log("Creating HTML...");
-    let (text, options) = writer::get_file_text(&document, exe_path).expect("Failed to create HTML");
+    let (text, options) = match writer::get_file_text(&document, exe_path) {
+        Ok(res) => res,
+        Err(_) => {
+            return Err(());
+        },
+    };
 
     // Remove filename form path and add
     let mut out_path = absolute_path.parent().unwrap().to_path_buf();
@@ -124,6 +139,7 @@ fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tag
     let _res = browser::render_to_pdf(out_path, args, &options);
 
     log::log("Done!");
+    return Ok(());
 }
 
 

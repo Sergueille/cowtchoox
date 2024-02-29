@@ -26,7 +26,15 @@ pub fn get_file_text(document: &Node, exe_path: PathBuf) -> Result<(String, DocO
 
     res.push_str(&white_head(&options, exe_path));
 
-    res.push_str(&get_node_html(&try_get_children_with_name(document, "body").expect("The document has no body"), false));
+    let body = match try_get_children_with_name(document, "body") {
+        Ok(res) => res,
+        Err(()) => {
+            log::error("The document has no body");
+            return Err(());
+        }
+    };
+
+    res.push_str(&get_node_html(&body, false));
 
     res.push_str("</html>");
 

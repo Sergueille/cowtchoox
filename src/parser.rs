@@ -119,11 +119,11 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_
 
 
     // Read tag name
-    let tag_name = read_word(chars, &mut pos);
+    let tag_name = read_word(chars, &mut pos)?;
 
     // Read the attributes
     loop {
-        let attr = read_word(chars, &mut pos);
+        let attr = read_word(chars, &mut pos)?;
 
         // No more attributes
         if attr == "" {
@@ -134,16 +134,16 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_
         let exp = expect(chars, pos, '=');
         match exp {
             Ok(()) => { // There is a value: read it
-                advance_until_non_whitespace(chars, pos);
+                advance_until_non_whitespace(chars, pos)?;
                 let use_quotes = chars[pos.absolute_position] == '"';
 
                 let value;
                 if use_quotes {
-                    advance_position(pos, chars);
-                    value = read_until_quote(chars, pos);
+                    advance_position(pos, chars)?;
+                    value = read_until_quote(chars, pos)?;
                 }
                 else {
-                    value = read_word(chars, pos);
+                    value = read_word(chars, pos)?;
                 }
 
                 attributes.push((attr, value));
@@ -196,12 +196,12 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_
     };
 
     parse_inner_tag(chars, &mut res, pos, if is_really_math { ParserState::Math } else { ParserState::Normal }, context)?;
-    advance_position(pos, chars);
-    advance_position(pos, chars);
+    advance_position(pos, chars)?;
+    advance_position(pos, chars)?;
     
     // Parse the node's contents
     // Got out of the contents, now cursor is in closing tag
-    let closing_tag_name = lookahead_word(chars, pos);
+    let closing_tag_name = lookahead_word(chars, pos)?;
     if closing_tag_name != res.name {
         return Err(ParseError { 
             message: format!("Unmatched tag. Expected to close tag \"{}\", but found tag \"{}\"", res.name, closing_tag_name), 
@@ -209,7 +209,7 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_
             length: closing_tag_name.len() 
         });
     }
-    read_word(chars, pos); // Advance cursor to after the tag name 
+    read_word(chars, pos)?; // Advance cursor to after the tag name 
 
     // Check for the very last character...
     expect(chars, pos, '>')?;
@@ -235,7 +235,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
         // Code: ignore all but backticks
         if state == ParserState::Code || state == ParserState::BigCode {
             if next == '`' {
-                advance_position(pos, chars);
+                advance_position(pos, chars)?;
             
                 let double = chars[(*pos).absolute_position] == '`';
 
@@ -253,7 +253,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                 }
                 else if state == ParserState::BigCode {
                     if double {
-                        advance_position(pos, chars);
+                        advance_position(pos, chars)?;
                         break;
                     }
                     else {
@@ -263,7 +263,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                 }
             }
             else {
-                advance_position(pos, chars);
+                advance_position(pos, chars)?;
                 content.push(NodeContent::Character(next));
             }
 
@@ -274,14 +274,14 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
 
         if backslashed_character { // Escaped by backslash
             content.push(NodeContent::EscapedCharacter(next));
-            advance_position(pos, chars);
+            advance_position(pos, chars)?;
             backslashed_character = false;
             continue;
         }
 
         if next == '\\' { // Next char isn't a command
             backslashed_character = true;
-            advance_position(pos, chars);
+            advance_position(pos, chars)?;
         }
         else if next == '<' { // Opening a new tag?
             match chars[(*pos).absolute_position + 1] {
@@ -289,7 +289,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                     break;
                 },
                 '!' => { // It's a comment
-                    advance_position(pos, chars);
+                    advance_position(pos, chars)?;
                     // TODO: handle that
                 },
                 _ => { // It's a child
@@ -305,7 +305,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                         Err(e) => { // Didn't work! Maybe because in math some characters looks like tags but aren't
                             if state == ParserState::Math { // If error, just interpret as regular text
                                 content.push(NodeContent::Character('<'));
-                                advance_position(pos, chars);
+                                advance_position(pos, chars)?;
                             }
                             else {
                                 return Err(e);
@@ -317,11 +317,11 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
             }
         }
         else if next == '$' {
-            advance_position(pos, chars);
+            advance_position(pos, chars)?;
 
             if state == ParserState::Normal { // Inner math tag
                 let mut start_inner_position = pos.clone();
-                advance_position(&mut start_inner_position, chars);
+                advance_position(&mut start_inner_position, chars)?;
 
                 let mut math_tag = Node {
                     name: String::from("math"),
@@ -347,12 +347,12 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
             else { unreachable!() }
         }
         else if next == '`' && state != ParserState::Math { // Code block
-            advance_position(pos, chars);
+            advance_position(pos, chars)?;
             
             let double = chars[(*pos).absolute_position] == '`';
 
             let mut start_inner_position = pos.clone();
-            advance_position(&mut start_inner_position, chars);
+            advance_position(&mut start_inner_position, chars)?;
 
             // Make it big if two backticks
             let attributes = if double { 
@@ -373,7 +373,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
             };
             
             if double {
-                advance_position(pos, chars);
+                advance_position(pos, chars)?;
             } 
 
             parse_inner_tag(chars, &mut math_tag, pos, if double { ParserState::BigCode } else { ParserState::Code }, context)?;
@@ -402,12 +402,12 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                 }
             }
             
-            advance_position(pos, chars);
+            advance_position(pos, chars)?;
         }
         else {
             // Add character
             content.push(NodeContent::Character(next));
-            advance_position(pos, chars);
+            advance_position(pos, chars)?;
         }
     }
 
@@ -450,45 +450,68 @@ pub fn get_attribute_value<'a>(node: &'a Node, attrib_name: &str) -> Result<&'a 
 }
 
 
-/// Advances the cursor until non-whitespace is found, then returns an error if the specified character isn't found
+/// Advances the cursor until non-whitespace is found (or end of file), then returns an error if the specified character isn't found
 fn expect(chars: &Vec<char>, pos: &mut FilePosition, char: char) -> Result<(), ParseError> {
-    advance_until_non_whitespace(chars, pos);
+    advance_until_non_whitespace(chars, pos)?;
 
-    if chars[(*pos).absolute_position] != char {
-        return Err(ParseError { message: format!("Expected \"{}\".", char), position: pos.clone(), length: 1 })
+    if (*pos).absolute_position >= chars.len() {
+        return Err(ParseError { 
+            message: format!("Expected \"{}\", found end of file.", char), 
+            position: pos.clone(), 
+            length: 1 
+        });
     }
 
-    advance_position(pos, chars);
+    if chars[(*pos).absolute_position] != char {
+        return Err(ParseError { 
+            message: format!("Expected \"{}\", found \"{}\".", char, chars[(*pos).absolute_position]), 
+            position: pos.clone(), 
+            length: 1 
+        });
+    }
+
+    advance_position(pos, chars)?;
 
     return Ok(());
 }
 
 
 /// Advances the cursor until non-whitespace is found. The cursor will be on the first non-whitespace character.
-/// If EOF is found, is places the cursor at the end of the file
-fn advance_until_non_whitespace(chars: &Vec<char>, pos: &mut FilePosition) {
-    while (*pos).absolute_position < chars.len() && chars[(*pos).absolute_position].is_whitespace() {
-        advance_position(pos, chars);
+/// If EOF is found, returns an error
+fn advance_until_non_whitespace(chars: &Vec<char>, pos: &mut FilePosition) -> Result<(), ParseError> {
+    if pos.absolute_position >= chars.len() {
+        return Err(ParseError { 
+            message: String::from("Unexpected end of file. Maybe you forgot to close a tag."), 
+            position: pos.clone(), 
+            length: 1 
+        });
     }
+
+    while chars[pos.absolute_position].is_whitespace() {
+        advance_position(pos, chars)?;
+    }
+
+    return Ok(());
 }
 
 
 /// Reads a word and moves the cursor (case insensitive, return lowered chars!)
-fn read_word(chars: &Vec<char>, pos: &mut FilePosition) -> String {
-   advance_until_non_whitespace(chars, pos);
+fn read_word(chars: &Vec<char>, pos: &mut FilePosition) -> Result<String, ParseError> {
+   advance_until_non_whitespace(chars, pos)?;
     let mut res = Vec::with_capacity(10);
 
-    while chars[(*pos).absolute_position].is_alphanumeric() || WORD_CHARS.contains(chars[(*pos).absolute_position]) {
+    while (*pos).absolute_position < chars.len() && 
+        (chars[(*pos).absolute_position].is_alphanumeric() || WORD_CHARS.contains(chars[(*pos).absolute_position])) {
         res.push(chars[(*pos).absolute_position]);
-        advance_position(pos, chars);
+        advance_position(pos, chars)?;
     }
 
-    return res.into_iter().collect::<String>().to_lowercase();
+    return Ok(res.into_iter().collect::<String>().to_lowercase());
 }
 
 
 /// Reads everything until a quote. The cursor is left after the quote (case insensitive, return lowered chars!)
-fn read_until_quote(chars: &Vec<char>, pos: &mut FilePosition) -> String {
+fn read_until_quote(chars: &Vec<char>, pos: &mut FilePosition) -> Result<String, ParseError> {
     let mut res = Vec::with_capacity(15);
 
     let start_pos = pos.to_owned();
@@ -503,26 +526,34 @@ fn read_until_quote(chars: &Vec<char>, pos: &mut FilePosition) -> String {
         advance_position_with_comments(pos, chars);
     }
     
-    advance_position(pos, chars);
+    advance_position(pos, chars)?;
 
-    return res.into_iter().collect::<String>().to_lowercase();
+    return Ok(res.into_iter().collect::<String>().to_lowercase());
 }
 
 
 /// Reads a word without moving the cursor
-fn lookahead_word(chars: &Vec<char>, pos: &mut FilePosition) -> String {
+fn lookahead_word(chars: &Vec<char>, pos: &mut FilePosition) -> Result<String, ParseError> {
     return read_word(chars, &mut pos.clone());
 }
 
 
 /// Advances a position, updating everything in the struct. Ignores "//" and "/**/" comments.
-pub fn advance_position(pos: &mut FilePosition, file: &Vec<char>) {
+pub fn advance_position(pos: &mut FilePosition, file: &Vec<char>) -> Result<(), ParseError> {
     let mut in_double_slash_comment = false;
     let mut in_slash_star_comment = false;
 
     loop {
         (*pos).absolute_position += 1;
         (*pos).line_character += 1;
+
+        if pos.absolute_position >= file.len() {
+            return Err(ParseError { 
+                message: String::from("Unexpected end of file. Maybe you forgot to close a tag."), 
+                position: pos.clone(), 
+                length: 1 
+            });
+        }
         
         let character_before = file[pos.absolute_position - 1];
         let character = 
@@ -559,6 +590,8 @@ pub fn advance_position(pos: &mut FilePosition, file: &Vec<char>) {
         }
         else { break };
     }
+
+    return Ok(());
 }
 
 
@@ -587,10 +620,12 @@ fn get_positions_difference(a: &FilePosition, b: &FilePosition) -> usize {
 
 
 /// basically call advance_position `count` times
-pub fn advance_position_many(pos: &mut FilePosition, file: &Vec<char>, count: usize) {
+pub fn advance_position_many(pos: &mut FilePosition, file: &Vec<char>, count: usize) -> Result<(), ParseError> {
     for _ in 0..count {
-        advance_position(pos, file);
+        advance_position(pos, file)?;
     }
+
+    return Ok(());
 }
 
 
@@ -611,14 +646,14 @@ fn get_file_pos_of_char_in_node(node: &Node, chars: &Vec<char>, id: usize) -> Fi
     
     for i in 0..id {
         match node.content[i] {
-            NodeContent::Character(_) => advance_position(&mut res, chars),
+            NodeContent::Character(_) => advance_position(&mut res, chars).expect("Uuh?"),
             NodeContent::EscapedCharacter(_) => {  // Advance twice. For the backslash AND the escaped character
-                advance_position(&mut res, chars);
-                advance_position(&mut res, chars);
+                advance_position(&mut res, chars).expect("Uuh?");
+                advance_position(&mut res, chars).expect("Uuh?");
             },
             NodeContent::Child(c) =>  {
                  for _ in 0..(node.children[c].source_length) {
-                    advance_position(&mut res, chars);
+                    advance_position(&mut res, chars).expect("Uuh?");
                 }
             },
         }

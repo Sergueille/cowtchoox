@@ -29,7 +29,7 @@ pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: TagHa
 
     let mut context = parser::ParserContext { args, math_operators: hash, ignore_aliases: is_default };
 
-    while pos.absolute_position < file.len() { // Repeat until end of the file
+    loop { // Repeat until end of the file
         let node = parser::parse_tag(file, pos, true, false, &context)?;
 
         // Check if a "?" was added
@@ -65,7 +65,10 @@ pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: TagHa
             content: node,
         }); 
 
-        super::advance_until_non_whitespace(file, pos);
+        match super::advance_until_non_whitespace(file, pos) {
+            Ok(()) => {},
+            Err(_) => break,
+        }
     }
 
     return Ok(context.math_operators);

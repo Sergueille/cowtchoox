@@ -359,10 +359,10 @@ fn get_file_pos_of_char_in_node_with_other_children(node: &Node, children: &Vec<
     
     for i in 0..id {
         match node.content[i] {
-            NodeContent::Character(_) => super::advance_position(&mut res, chars),
+            NodeContent::Character(_) => super::advance_position(&mut res, chars).expect("Uuh?"),
             NodeContent::EscapedCharacter(_) => {  // Advance twice. For the backslash AND the escaped character
-                super::advance_position(&mut res, chars);
-                super::advance_position(&mut res, chars);
+                super::advance_position(&mut res, chars).expect("Uuh?");
+                super::advance_position(&mut res, chars).expect("Uuh?");
             },
             NodeContent::Child(c) =>  {
                 let source_length = match &children[c] {
@@ -371,7 +371,7 @@ fn get_file_pos_of_char_in_node_with_other_children(node: &Node, children: &Vec<
                 };
 
                  for _ in 0..source_length {
-                    super::advance_position(&mut res, chars);
+                    super::advance_position(&mut res, chars).expect("Uuh?");
                 }
             },
         }
