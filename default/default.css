@@ -8,6 +8,7 @@
 page {
     padding: 2cm 1.5cm;
     font-family: latex-font;
+    background-color: white;
 }
 
 mathnode {
@@ -201,7 +202,7 @@ underset {
 }
 
 .underset-under {
-    margin-top: -0.5em;
+    margin-top: -0.8em;
     font-size: 0.6em;
 }
 
@@ -214,7 +215,7 @@ overset {
 }
 
 .overset-over {
-    margin-bottom: -0.5em;
+    margin-bottom: -0.8em;
     font-size: 0.6em;
 }
 
@@ -246,6 +247,19 @@ plus {
     margin-right: 0.15em;
 }
 
+/* ?inf */ 
+inf {
+    height: 1em;
+    vertical-align: 0%;
+}
+
+inf > svg{
+    display: inline;
+    width: 1em;
+    height: 0.5em;
+    overflow: visible;
+}
+
 
 /* ?belongsto */
 belongsto {
@@ -270,9 +284,55 @@ un::after {
 }
 
 
-/* ?leftrightdoublearrow, ?rightdoublearrow, ?leftdoublearrow */
+/* Arrows */
+leftarrow > svg, longleftarrow > svg, rightarrow > svg, longrightarrow > svg,
+leftrightdoublearrow > svg, rightdoublearrow > svg, leftdoublearrow > svg,
+longleftrightdoublearrow > svg, longrightdoublearrow > svg, longleftdoublearrow > svg {
+    height: 0.5em;
+    width: fit-content;
+    overflow: visible;
+    margin-bottom: 0.3em;
+}
+
 leftrightdoublearrow, rightdoublearrow, leftdoublearrow,
 longleftrightdoublearrow, longrightdoublearrow, longleftdoublearrow {
+    display: inline-flex !important;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 1.2em;
     margin-left: 0.5em;
     margin-right: 0.5em;
+}
+
+leftarrow, longleftarrow, rightarrow, longrightarrow {
+    display: inline-flex !important;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 1.2em;
+    margin-left: 0.2em;
+    margin-right: 0.2em;
+}
+
+leftarrow, leftdoublearrow, longleftarrow, longleftdoublearrow {
+    transform: rotate(180deg);
+}
+
+/* Additional styling for html viewing */
+@media screen {
+    page {
+        box-shadow: black 0 0 20px -10px;
+        margin: 20px auto;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    body {
+        background: #555;
+    }
+}
+
+@media screen and (prefers-color-scheme: light) {
+    body {
+        background: #eee;
+    }
 }
