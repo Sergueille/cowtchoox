@@ -6,6 +6,11 @@ struct PartialNode {
     content: Vec<super::NodeContent>,
 }
 
+struct MathParseInfo {
+    got_nothing: bool,
+    finished_with_bracket: bool
+}
+
 enum PotentialChild {
     Some(Node),
     None((FilePosition, usize)) // Contains (start position, source length)
@@ -75,7 +80,7 @@ pub fn parse_math(node: &mut Node, chars: &Vec<char>, context: &ParserContext) -
     let raw_children = std::mem::replace(&mut node.children, vec![]);
     let mut children = raw_children.into_iter().map(|el| { PotentialChild::Some(el) }).collect();
 
-    let res = parse_math_part(node, &mut children, chars, &mut pos, context, false)?;
+    let (res, _) = parse_math_part(node, &mut children, chars, &mut pos, context, false)?;
 
     // Check for unmatched }
     if pos < node.content.len() {
@@ -97,11 +102,12 @@ pub fn parse_math(node: &mut Node, chars: &Vec<char>, context: &ParserContext) -
 /// Sub-function of parse_math. `pos` is the position in the node's content array
 /// TODO: absolutely not finished
 fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &Vec<char>, index: &mut usize, context: &ParserContext, just_one_thing: bool) 
-    -> Result<PartialNode, ParseError> {
+    -> Result<(PartialNode, MathParseInfo), ParseError> {
     let mut res: Vec<NodeContent> = Vec::with_capacity(node.content.len());
     let mut res_children: Vec<Node> = Vec::with_capacity(5);
 
     let mut got_one_thing = false;
+    let mut finished_with_bracket = false;
 
     while *index < node.content.len() {
         let c = &node.content[*index];
@@ -114,16 +120,17 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
 
                 match tag {
                     Some(tag) => {
-                        *index += alias.alias.chars().count();
-
                         let (file_pos, _) = get_file_pos_of_node_content(node, &children, *index);
+
+                        let alias_len = alias.alias.chars().count();
+                        *index += alias_len;
 
                         let mut arguments: Vec<Node> = Vec::new();
                         if alias.is_infix {
                             if tag.arguments.len() != 2 { // Invalid argument count
                                 return Err(ParseError { 
                                     message: format!("Operator alias \"{}\" in infix but corresponds to the operator \"{}\" with {} arguments. This is probably because you have modified default.cowx.", alias.alias, alias.tag_name, tag.arguments.len()), 
-                                    position: file_pos, length: alias.alias.len() 
+                                    position: file_pos, length: alias_len 
                                 })
                             }
 
@@ -131,7 +138,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
                             if res.len() == 0 {
                                 return Err(ParseError { 
                                     message: format!("Expected something before \"{}\", because it's an infix operator. You should write {{left}}{}{{right}} instead of {}{{left}}{{right}}", alias.alias, alias.alias, alias.alias), 
-                                    position: file_pos, length: alias.alias.len() 
+                                    position: file_pos, length: alias_len 
                                 });
                             }
 
@@ -153,14 +160,48 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
                                 },
                             };
 
-                            let right = parse_math_subgroup(node, children, chars, index, context, true)?;
+                            if *index >= node.content.len() {
+                                let (position, _) = get_file_pos_of_node_content(node, children, node.content.len() - 1);
+                                return Err(ParseError { 
+                                    message: format!("Expected something after \"{}\" because it's an infix operator.", alias.alias), 
+                                    position, length: 1,
+                                });
+                            }
+
+                            let (right, info) = parse_math_subgroup(node, children, chars, index, context, true)?;
+
+                            if info.got_nothing {
+                                let (position, _) = get_file_pos_of_node_content(node, children, *index - 1);
+                                return Err(ParseError { 
+                                    message: format!("Expected something after \"{}\" because it's an infix operator.", alias.alias), 
+                                    position, length: 1,
+                                });
+                            }
 
                             arguments.push(left);
                             arguments.push(right);
                         }
                         else {
-                            for _ in 0..tag.arguments.len() {
-                                let child = parse_math_subgroup(node, children, chars, index, context, true)?;
+                            for i in 0..tag.arguments.len() {
+                                // Reached the end: not enough arguments
+                                if *index >= node.content.len() {
+                                    let (position, _) = get_file_pos_of_node_content(node, children, node.content.len() - 1);
+                                    return Err(ParseError { 
+                                        message: format!("Expected something here. \"{}\" expects {} arguments, and you provided only {}", alias.alias, tag.arguments.len(), i), 
+                                        position, length: 1,
+                                    });
+                                }
+
+                                let (child, info) = parse_math_subgroup(node, children, chars, index, context, true)?;
+
+                                if info.got_nothing {
+                                    let (position, _) = get_file_pos_of_node_content(node, children, *index - 1);
+                                    return Err(ParseError { 
+                                        message: format!("Expected something here. \"{}\" expects {} arguments, and you provided only {}", alias.alias, tag.arguments.len(), i), 
+                                        position, length: 1,
+                                    });
+                                }
+
                                 arguments.push(child);
                             }
                         }
@@ -189,9 +230,25 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
                             let op = expect_operator(node, &children, index, context)?;
         
                             let mut arguments = Vec::with_capacity(op.arguments.len());
-                            for _ in 0..op.arguments.len() {
-                                let child = parse_math_subgroup(node, children, chars, index, context, true)?;
+                            for i in 0..op.arguments.len() {
+                                if *index >= node.content.len() {
+                                    let (position, _) = get_file_pos_of_node_content(node, children, node.content.len() - 1);
+                                    return Err(ParseError { 
+                                        message: format!("Expected something here. \"{}\" expects {} arguments, and you provided only {}", op.content.name, op.arguments.len(), i), 
+                                        position, length: 1,
+                                    });
+                                }
+
+                                let (child, info) = parse_math_subgroup(node, children, chars, index, context, true)?;
                                 arguments.push(child);
+
+                                if info.got_nothing {
+                                    let (position, _) = get_file_pos_of_node_content(node, children, *index - 1);
+                                    return Err(ParseError { 
+                                        message: format!("Expected something here. \"{}\" expects {} arguments, and you provided only {}", op.content.name, op.arguments.len(), i), 
+                                        position, length: 1,
+                                    });
+                                }
                             }
         
                             let instantiated = super::custom::instantiate_tag(op, arguments);
@@ -203,7 +260,17 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
                         }
                         else if c == '{' { // Sub group. Make a recursive call
                             *index += 1;
-                            let child = parse_math_subgroup(node, children, chars, index, context, false)?;
+
+                            let (start_file_position, _) = get_file_pos_of_node_content(node, children, *index - 1);
+
+                            let (child, info) = parse_math_subgroup(node, children, chars, index, context, false)?;
+
+                            if !info.finished_with_bracket {
+                                return Err(ParseError { 
+                                    message: String::from("Unmatched \"{\""), 
+                                    position: start_file_position, length: 1,
+                                });
+                            }
         
                             let new_child_id = res_children.len();
                             res_children.push(child);
@@ -212,6 +279,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
                         }
                         else if c == '}' { // Finished!
                             *index += 1;
+                            finished_with_bracket = true;
                             break;
                         } 
                         else if c == '§' {
@@ -296,10 +364,16 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
         }
     }
 
-    return Ok(PartialNode {
-        children: res_children,
-        content: res,
-    });
+    return Ok((
+        PartialNode {
+            children: res_children,
+            content: res,
+        },
+        MathParseInfo {
+            got_nothing: !got_one_thing,
+            finished_with_bracket
+        }
+    ));
 }
 
 
@@ -373,7 +447,9 @@ fn expect_character(node: &Node, children: &Vec<PotentialChild>, id: usize) -> R
 /// * `children`: the children of the node (in case they are separated)
 /// * `content_id`: the position of the desired content in the content array of the node.
 fn get_file_pos_of_node_content(node: &Node, children: &Vec<PotentialChild>, content_id: usize) -> (FilePosition, usize) {
-    match &node.content[content_id] {
+    let id = std::cmp::min(content_id, node.content.len() - 1);
+
+    match &node.content[id] {
         NodeContent::Character((_, pos)) => {
             return (pos.clone(), 1);
         },
@@ -412,11 +488,18 @@ fn check_for_alias(node_content: &Vec<NodeContent>, index: usize) -> Option<&'st
 
             match opt_char {
                 Some(alias_char) => {
-                    let node_char = match node_content[index + pos] {
-                        NodeContent::Character((c, _)) => c,
-                        NodeContent::EscapedCharacter(_) => '\0',
-                        NodeContent::Child(_) => '\0',
-                    };
+                    let node_char;
+
+                    if index + pos >= node_content.len() {
+                        node_char = '\0';
+                    }
+                    else {
+                        node_char = match node_content[index + pos] {
+                            NodeContent::Character((c, _)) => c,
+                            NodeContent::EscapedCharacter(_) => '\0',
+                            NodeContent::Child(_) => '\0',
+                        };
+                    }
         
                     let still_ok = alias_char == node_char;
         
@@ -443,11 +526,12 @@ fn check_for_alias(node_content: &Vec<NodeContent>, index: usize) -> Option<&'st
 }
 
 
-fn parse_math_subgroup(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &Vec<char>, index: &mut usize, context: &ParserContext, just_one_thing: bool) -> Result<Node, ParseError> {
+fn parse_math_subgroup(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &Vec<char>, index: &mut usize, context: &ParserContext, just_one_thing: bool) 
+    -> Result<(Node, MathParseInfo), ParseError> {
     let start_pos = *index;
     let (start_position, _) = get_file_pos_of_node_content(node, children, *index);
 
-    let partial_child = parse_math_part(node, children, chars, index, context, just_one_thing)?;
+    let (partial_child, info) = parse_math_part(node, children, chars, index, context, just_one_thing)?;
 
     let res = Node {
         name: String::from("div"),
@@ -460,7 +544,7 @@ fn parse_math_subgroup(node: &mut Node, children: &mut Vec<PotentialChild>, char
         source_length: *index - start_pos,
     };
 
-    return Ok(res);
+    return Ok((res, info));
 }
 
 
