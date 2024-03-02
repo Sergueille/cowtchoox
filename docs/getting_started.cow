@@ -1,0 +1,149 @@
+
+<document>
+    <head>
+        <title>Getting started</title>
+        <css>docs.css</css>
+    </head>
+    <body>
+        <div style="font-size: 5em;">
+            CO<sup style="">W</sup>TCH<sub style="font-size: 1em;">O</sub>OX
+        </div>
+        <h1>Getting started with Cowtchoox</h1>
+        <p>
+            This document will provides basic information on Cowtchoox.
+        </p>
+
+        <p>
+            The features evolve quickly, and the documentation doesn't, and there is a lot of bugs everywhere, so if something doesn't work,
+            feel free to <a href="https:/\/github.com/Sergueille/cowtchoox/issues">complain here</a>.
+        </p>
+
+        <h2>Installation</h2>
+
+        <h3>Windows</h3>
+        <p>
+            Go here: <a href="https:/\/github.com/Sergueille/cowtchoox/tags">https:/\/github.com/Sergueille/cowtchoox/tags</a>, and download the latest release.
+            You should get a `.zip` file. Unzip it where you want Cowtchoox to be installed.
+            You now have to add this directory to your PATH. To do this, you can follow
+            <a href="https:/\/stackoverflow.com/questions/44272416/how-to-add-a-folder-to-path-environment-variable-in-windows-10-with-screensho#answer-44272417">
+                these instructions
+            </a>.
+        </p>
+
+        <h3>Other OS</h3>
+        <p>
+            I have no idea how to build this for you. You should consider 
+            <a href="https:/\/github.com/Sergueille/cowtchoox/issues">tell me how to do it</a>
+            or building it yourself form the <a href="https:/\/github.com/Sergueille/cowtchoox">source code</a>.
+        </p>
+
+        <h2>Compiling a file</h2>
+        <p>
+            Create a text file with your favorite editor, and save it as `hello_world.cow`.
+            It should contain the following:
+        </p>
+        ``
+<document>
+    <head>
+        <title>Hello world!</title>
+    </head>
+    <body>
+        Hello world!
+    </body>
+</document>
+        ``
+
+        <p>
+            Now, to compile the file, just call `cowtchoox hello_world.cow` in your command prompt. Cowtchoox will produce `out.pdf` and `out.html`.
+            You can open `out.pdf` to see your beautiful document.
+        </p>
+
+        <h2>Basic syntax</h2>
+        <p>
+            First, <a href="https:/\/developer.mozilla.org/en/docs/Learn/HTML/Introduction_to_HTML/Getting_started">learn how to write basic HTML</a>. 
+            You just need a basic understanding.
+            As you can see above, Cowtchoox looks a lot like HTML.
+        </p>
+
+        <h3>Document structure</h3>
+        ``
+<document>
+    <head>
+        <title>The title of the document</title>
+    </head>
+    <body>
+        Contents of the document
+    </body>
+</document>
+        ``
+
+        <ul>
+            <li>
+                The `<head>` tag contains metadata about your document, such as title, style, paper format...
+            </li>
+            <li>
+                The `<body>` tag contains the contents of the document.
+            </li>
+        </ul>
+        
+        <h3>Differences with HTML</h3>
+        <h4>Comments</h4>
+        <p>
+            You can use HTML comments in Cowtchoox. (actually this is not yet implemented, please use other methods).
+            Cowtchoox also supports <em>C-style comments</em>:
+        </p>
+        <ul>
+            <li>Everything after <pre>\/\/</pre> is ignored until the end of the line</li>
+            <li>Everything between <pre>\/\*</pre> and <pre>*\/</pre> is ignored, even across multiple lines</li>
+        </ul>
+                
+        <h4>Escaping with `\`</h4>
+        <p>
+            Imagine you want to add the character "\<" in your document.
+            An innocent soul will write:
+        </p>
+        ``
+            Here is a nice less-than symbol: <
+        ``
+
+        <p>
+            Then, the compiler will throw an error message at his face, because he thinks the "\<" is the beginning of a tag.
+            To prevent that kind of situation, you have to <em>Escape the character</em>.
+            In regular HTML you would write `&lt;`, but since this notation sucks, it is not supported in Cowtchoox.
+        </p>
+
+        <p>
+            To escape a character, simply put `\` before it. A `\` means "the following character is regular text and has no special meaning".
+            So you should write        
+        </p>
+        ``
+        Here is a nice less-than symbol: \<
+        ``
+
+        <h2>Using CSS</h2>
+        <p>
+            To change the style of documents, we will use <em>CSS</em>.
+            If you have no idea of what it is, <a href="https:/\/developer.mozilla.org/en-US/docs/Learn/CSS/First_steps/Getting_started">click here</a>.
+            To tell the compiler to use a CSS file, include a `<css>` tag in the `<head>` of the document.
+        </p>
+        ``
+<document>
+    <head>
+        <title>The title of the document</title>
+        <css>path to your file here</css>
+    </head>
+    <body>
+        Bla, bla, bla...
+    </body>
+</document>
+        ``
+
+        <p>
+            You need to specify the path from the `.cow` file to the `css` file. For instance, if it is located in the same directory, just put the name of the file.
+            You have to include the file extension.
+        </p>
+
+        To be continued...
+
+    </body>
+</document>

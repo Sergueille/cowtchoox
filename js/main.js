@@ -4,7 +4,7 @@
 
 // Tags that ar nonbreaking by default
 const defaultNonbreaking = [
-    "H1", "H2", "H3", "H4", "H5", "H6", "SVG"
+    "H1", "H2", "H3", "H4", "H5", "H6", "SVG", "PRE"
 ];
 
 
