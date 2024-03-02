@@ -119,7 +119,7 @@ pub fn get_node_html(node: &Node, no_text_tags: bool) -> String {
         let mut previous: &NodeContent = &NodeContent::Child(0); // Keep track of the last character
         for content in &node.content {
             match content {
-                crate::parser::NodeContent::Character(c) | NodeContent::EscapedCharacter(c) => {
+                crate::parser::NodeContent::Character((c, _)) | NodeContent::EscapedCharacter((c, _)) => {
                     if !in_text {
                         in_text = true;
                     }

@@ -28,8 +28,8 @@ const MATH_OPERATOR_ATTRIB_NAME: &'static str = "math-operator";
 
 #[derive(Debug, Clone)]
 pub enum NodeContent {
-    Character(char),
-    EscapedCharacter(char), // Character with backslash before it
+    Character((char, FilePosition)), // Contains the char, then it's absolute position in the file
+    EscapedCharacter((char, FilePosition)), // Character with backslash before it
     Child(usize), // The positon of the child in the child array
 }
 
@@ -237,7 +237,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
             if next == '`' {
                 advance_position(pos, chars)?;
             
-                let double = chars[(*pos).absolute_position] == '`';
+                let double = chars[pos.absolute_position] == '`';
 
                 if state == ParserState::Code {
                     if double {
@@ -258,13 +258,13 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                     }
                     else {
                         //It's a regular character
-                        content.push(NodeContent::Character('`'));
+                        content.push(NodeContent::Character(('`', pos.clone())));
                     }
                 }
             }
             else {
                 advance_position(pos, chars)?;
-                content.push(NodeContent::Character(next));
+                content.push(NodeContent::Character((next, pos.clone())));
             }
 
             continue; // Nothing else!
@@ -273,7 +273,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
         // If not code:
 
         if backslashed_character { // Escaped by backslash
-            content.push(NodeContent::EscapedCharacter(next));
+            content.push(NodeContent::EscapedCharacter((next, pos.clone())));
             advance_position(pos, chars)?;
             backslashed_character = false;
             continue;
@@ -304,7 +304,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                         }
                         Err(e) => { // Didn't work! Maybe because in math some characters looks like tags but aren't
                             if state == ParserState::Math { // If error, just interpret as regular text
-                                content.push(NodeContent::Character('<'));
+                                content.push(NodeContent::Character(('<', pos.clone())));
                                 advance_position(pos, chars)?;
                             }
                             else {
@@ -388,13 +388,13 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
             match content.last() {
                 Some(NodeContent::Child(_)) => {
                     // Add a space
-                    content.push(NodeContent::Character(' '));
+                    content.push(NodeContent::Character((' ', pos.clone())));
                 },
-                Some(NodeContent::Character(c)) | Some(NodeContent::EscapedCharacter(c)) => {
+                Some(NodeContent::Character((c, _))) | Some(NodeContent::EscapedCharacter((c, _))) => {
                     // Ignore if last chars is already whitespace
                     if !c.is_whitespace() {
                         // Add a space
-                        content.push(NodeContent::Character(' '));
+                        content.push(NodeContent::Character((' ', pos.clone())));
                     }
                 },
                 None => {
@@ -406,7 +406,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
         }
         else {
             // Add character
-            content.push(NodeContent::Character(next));
+            content.push(NodeContent::Character((next, pos.clone())));
             advance_position(pos, chars)?;
         }
     }
@@ -429,7 +429,7 @@ pub fn get_node_content_as_str(node: &Node) -> String {
 
     for cont in &node.content {
         match cont {
-            NodeContent::Character(c) => res.push(*c),
+            NodeContent::Character((c, _)) | NodeContent::EscapedCharacter((c, _)) => res.push(*c),
             _ => {},
         }
     }
@@ -638,28 +638,4 @@ pub fn get_start_of_file_position(path: PathBuf) -> FilePosition {
         line_character: 0
     };
 }
-
-
-/// Get the file position of a character of a node. It's slow, use only for error reporting
-fn get_file_pos_of_char_in_node(node: &Node, chars: &Vec<char>, id: usize) -> FilePosition {
-    let mut res = node.start_inner_position.clone();
-    
-    for i in 0..id {
-        match node.content[i] {
-            NodeContent::Character(_) => advance_position(&mut res, chars).expect("Uuh?"),
-            NodeContent::EscapedCharacter(_) => {  // Advance twice. For the backslash AND the escaped character
-                advance_position(&mut res, chars).expect("Uuh?");
-                advance_position(&mut res, chars).expect("Uuh?");
-            },
-            NodeContent::Child(c) =>  {
-                 for _ in 0..(node.children[c].source_length) {
-                    advance_position(&mut res, chars).expect("Uuh?");
-                }
-            },
-        }
-    }
-
-    return res;
-}
-
 

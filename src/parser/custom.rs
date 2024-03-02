@@ -98,15 +98,15 @@ fn instantiate_tag_inner(tag: &CustomTag, node: &Node, arguments: &Vec<Node>) ->
     };
 
     for c in &node.content {
-        match *c {
+        match c {
             super::NodeContent::Character(c) => {
-                res.content.push(super::NodeContent::Character(c));
+                res.content.push(super::NodeContent::Character(c.clone()));
             },
             super::NodeContent::EscapedCharacter(c) => {
-                res.content.push(super::NodeContent::EscapedCharacter(c));
+                res.content.push(super::NodeContent::EscapedCharacter(c.clone()));
             },
             super::NodeContent::Child(child_id) => {
-                let child = &node.children[child_id];
+                let child = &node.children[*child_id];
 
                 let mut replaced_argument = false;
                 if child.auto_closing {
@@ -114,16 +114,16 @@ fn instantiate_tag_inner(tag: &CustomTag, node: &Node, arguments: &Vec<Node>) ->
                     for (i, arg) in tag.arguments.iter().enumerate() {
                         if arg == &child.name {
                             replaced_argument = true;
-                            res.children[child_id] = arguments[i].clone();
+                            res.children[*child_id] = arguments[i].clone();
                         }
                     }
                 }
 
-                res.content.push(super::NodeContent::Child(child_id));
+                res.content.push(super::NodeContent::Child(*child_id));
 
                 if !replaced_argument {
                     let new_child = instantiate_tag_inner(tag, child, arguments);
-                    res.children[child_id] = new_child;
+                    res.children[*child_id] = new_child;
                 }
             },
         }

@@ -8,7 +8,7 @@ struct PartialNode {
 
 enum PotentialChild {
     Some(Node),
-    None(usize) // Contains the source length
+    None((FilePosition, usize)) // Contains (start position, source length)
 }
 
 
@@ -79,10 +79,10 @@ pub fn parse_math(node: &mut Node, chars: &Vec<char>, context: &ParserContext) -
 
     // Check for unmatched }
     if pos < node.content.len() {
+        let (position, length) = get_file_pos_of_node_content(node, &children, pos);
         return Err(ParseError {
             message: String::from("Unexpected \"}\". Maybe you forgot to add the matching curly bracket."),
-            position: get_file_pos_of_char_in_node_with_other_children(node, &children, chars, pos),
-            length: 1,
+            position, length,
         });
     }
 
@@ -116,7 +116,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
                     Some(tag) => {
                         *index += alias.alias.chars().count();
 
-                        let file_pos = get_file_pos_of_char_in_node_with_other_children(node, &children, chars, *index);
+                        let (file_pos, _) = get_file_pos_of_node_content(node, &children, *index);
 
                         let mut arguments: Vec<Node> = Vec::new();
                         if alias.is_infix {
@@ -172,18 +172,21 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
 
                         got_one_thing = true;
                     },
-                    None => return Err(ParseError { 
-                        message: format!("Operator alias \"{}\" found, but corresponding tag \"{}\" not found. This is probably because you have modified default.cowx.", alias.alias, alias.tag_name), 
-                        position: get_file_pos_of_char_in_node_with_other_children(node, &children, chars, *index), length: alias.alias.len() 
-                    }),
+                    None => {
+                        let (position, _) = get_file_pos_of_node_content(node, children, *index);
+                        return Err(ParseError { 
+                            message: format!("Operator alias \"{}\" found, but corresponding tag \"{}\" not found. This is probably because you have modified default.cowx.", alias.alias, alias.tag_name), 
+                            position, length: alias.alias.len()
+                        });
+                    }
                 }
             },
             None => { // No alias found, check as a regular character 
-                match *c {
-                    NodeContent::Character(c) => {
+                match c.clone() {
+                    NodeContent::Character((c, char_pos)) => {
                         if c == '?' { // Parse a math operator
                             *index += 1;
-                            let op = expect_operator(node, chars, &children, index, context)?;
+                            let op = expect_operator(node, &children, index, context)?;
         
                             let mut arguments = Vec::with_capacity(op.arguments.len());
                             for _ in 0..op.arguments.len() {
@@ -214,21 +217,21 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
                         else if c == '§' {
                             *index += 1;
 
-                            let letter_to_convert = match node.content[*index] {
-                                NodeContent::Character(l) => l,
+                            let (letter_to_convert, letter_position) = match &node.content[*index] {
+                                NodeContent::Character(l) => l.clone(),
                                 NodeContent::EscapedCharacter(l) => {
+                                    let (position, length) = get_file_pos_of_node_content(node, children, *index);
                                     crate::log::warning_position(
                                         "Escaped character after \"§\". Consider removing the backslash.", 
-                                        &get_file_pos_of_char_in_node_with_other_children(node, &children, chars, *index - 1), 
-                                        3,
+                                        &position, length
                                     );
-                                    l
+                                    l.clone()
                                 },
                                 NodeContent::Child(_) => {
+                                    let (position, length) = get_file_pos_of_node_content(node, children, *index);
                                     return Err(ParseError {
                                         message: format!("Expected a character after \"§\", found a tag."),
-                                        position: get_file_pos_of_char_in_node_with_other_children(node, &children, chars, *index - 1),
-                                        length: 1,
+                                        position, length
                                     });
                                 },
                             };
@@ -236,15 +239,15 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
                             let greek_letter = letter_to_greek(letter_to_convert);
                             match greek_letter {
                                 Some(l) => {
-                                    res.push(NodeContent::Character(l));
+                                    res.push(NodeContent::Character((l, letter_position)));
                                     *index += 1;
                                     got_one_thing = true;
                                 },
                                 None => {
+                                    let (position, length) = get_file_pos_of_node_content(node, children, *index);
                                     return Err(ParseError {
                                         message: format!("Character \"{}\" after \"§\" does not correspond to a greek letter. Only a-z, A-Z are accepted, except for q, Q, w and W", letter_to_convert),
-                                        position: get_file_pos_of_char_in_node_with_other_children(node, &children, chars, *index - 1),
-                                        length: 2,
+                                        position, length
                                     });
                                 },
                             }
@@ -254,7 +257,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
                             *index += 1;
                         }
                         else { // A normal character
-                            res.push(NodeContent::Character(c));
+                            res.push(NodeContent::Character((c, char_pos)));
                             *index += 1;
                             got_one_thing = true;
                         }
@@ -265,12 +268,12 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
                         got_one_thing = true;
                     }
                     NodeContent::Child(c) => { // A child, just push it as a normal NodeContent
-                        let length = match &children[c] {
-                            PotentialChild::Some(child) => child.source_length,
-                            PotentialChild::None(_) => panic!("Should be Some"),
+                        let source_infos = match &children[c] {
+                            PotentialChild::Some(child) => (child.start_position.clone(), child.source_length),
+                            PotentialChild::None(..) => panic!("Should be Some"),
                         };
         
-                        let child = std::mem::replace(&mut children[c], PotentialChild::None(length));
+                        let child = std::mem::replace(&mut children[c], PotentialChild::None(source_infos));
         
                         match child {
                             PotentialChild::Some(child) =>{
@@ -301,7 +304,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
 
 
 /// Tries to read an operator AFTER the question mark
-fn expect_operator<'a>(node: &Node, chars: &Vec<char>, children: &Vec<PotentialChild>, pos: &mut usize, context: &'a ParserContext) -> Result<&'a CustomTag, ParseError> {
+fn expect_operator<'a>(node: &Node, children: &Vec<PotentialChild>, pos: &mut usize, context: &'a ParserContext) -> Result<&'a CustomTag, ParseError> {
     let mut word = String::with_capacity(15);
     let start_pos = *pos - 1;
 
@@ -309,7 +312,7 @@ fn expect_operator<'a>(node: &Node, chars: &Vec<char>, children: &Vec<PotentialC
         let el = &node.content[*pos];
 
         match *el {
-            NodeContent::Character(c) => {
+            NodeContent::Character((c, _)) => {
                 if super::WORD_CHARS.contains(c) || c.is_alphabetic() {
                     word.push(c);
                 }
@@ -328,56 +331,66 @@ fn expect_operator<'a>(node: &Node, chars: &Vec<char>, children: &Vec<PotentialC
         *pos += 1;
     }
 
+    if word == "" {
+        let (position, _) = get_file_pos_of_node_content(node, children, start_pos);
+        return Err(ParseError { 
+            message: format!("Nothing found after \"?\". Question marks are used for operators. If you wanted to add a question mark in math, put a backslash before: \"\\?\""), 
+            position, 
+            length: word.len() + 1,
+        });
+    }
+
     match context.math_operators.get(&word) {
         Some(op) => return Ok(op),
-        None => 
-            Err(ParseError { 
+        None => {
+            let (position, _) = get_file_pos_of_node_content(node, children, start_pos);
+            return Err(ParseError { 
                 message: format!("Unknown math operator name \"{}\"", word), 
-                position: get_file_pos_of_char_in_node_with_other_children(node, children, chars, start_pos), 
-                length: word.len() + 1
-            }),
+                position, 
+                length: word.len() + 1,
+            });
+        }
     }
 
 }
 
 
 /// Returns the proper error if a tag is present instead of a character
-fn expect_character(node: &Node, chars: &Vec<char>, children: &Vec<PotentialChild>, id: usize) -> Result<char, ParseError> {
+fn expect_character(node: &Node, children: &Vec<PotentialChild>, id: usize) -> Result<char, ParseError> {
     match node.content[id] {
-        NodeContent::Character(c) => return Ok(c),
+        NodeContent::Character((c, _)) => return Ok(c),
         _ => {
-            let err_pos = get_file_pos_of_char_in_node_with_other_children(node, children, chars, id);
-            return Err(ParseError { message: String::from("Didn't expected a tag here."), position: err_pos, length: 1 });
+            let (position, length) = get_file_pos_of_node_content(node, children, id);
+            return Err(ParseError { message: String::from("Didn't expected a tag here."), position, length });
         }
     }
 }
 
 
-/// Same as parser::get_file_pos_of_char_in_node
-fn get_file_pos_of_char_in_node_with_other_children(node: &Node, children: &Vec<PotentialChild>, chars: &Vec<char>, id: usize) -> FilePosition {
-    let mut res = node.start_inner_position.clone();
-    
-    for i in 0..id {
-        match node.content[i] {
-            NodeContent::Character(_) => super::advance_position(&mut res, chars).expect("Uuh?"),
-            NodeContent::EscapedCharacter(_) => {  // Advance twice. For the backslash AND the escaped character
-                super::advance_position(&mut res, chars).expect("Uuh?");
-                super::advance_position(&mut res, chars).expect("Uuh?");
-            },
-            NodeContent::Child(c) =>  {
-                let source_length = match &children[c] {
-                    PotentialChild::Some(child) => child.source_length,
-                    PotentialChild::None(l) => *l,
-                };
-
-                 for _ in 0..source_length {
-                    super::advance_position(&mut res, chars).expect("Uuh?");
-                }
-            },
+/// Returns the source position and source length of a content element in a node
+///
+/// # Arguments
+/// * `children`: the children of the node (in case they are separated)
+/// * `content_id`: the position of the desired content in the content array of the node.
+fn get_file_pos_of_node_content(node: &Node, children: &Vec<PotentialChild>, content_id: usize) -> (FilePosition, usize) {
+    match &node.content[content_id] {
+        NodeContent::Character((_, pos)) => {
+            return (pos.clone(), 1);
+        },
+        NodeContent::EscapedCharacter((_, pos)) => {
+            return (pos.clone(), 2);
+        },
+        NodeContent::Child(c) => {
+            match &children[*c] {
+                PotentialChild::Some(child) => {
+                    return (child.start_position.clone(), child.source_length);
+                },
+                PotentialChild::None((start_pos, source_len)) => {
+                    return (start_pos.clone(), *source_len);
+                },
+            }
         }
-    }
-
-    return res;
+    };
 }
 
 
@@ -400,7 +413,7 @@ fn check_for_alias(node_content: &Vec<NodeContent>, index: usize) -> Option<&'st
             match opt_char {
                 Some(alias_char) => {
                     let node_char = match node_content[index + pos] {
-                        NodeContent::Character(c) => c,
+                        NodeContent::Character((c, _)) => c,
                         NodeContent::EscapedCharacter(_) => '\0',
                         NodeContent::Child(_) => '\0',
                     };
@@ -432,7 +445,7 @@ fn check_for_alias(node_content: &Vec<NodeContent>, index: usize) -> Option<&'st
 
 fn parse_math_subgroup(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &Vec<char>, index: &mut usize, context: &ParserContext, just_one_thing: bool) -> Result<Node, ParseError> {
     let start_pos = *index;
-    let start_pos_in_file = get_file_pos_of_char_in_node_with_other_children(node, &children, chars, start_pos);
+    let (start_position, _) = get_file_pos_of_node_content(node, children, *index);
 
     let partial_child = parse_math_part(node, children, chars, index, context, just_one_thing)?;
 
@@ -442,8 +455,8 @@ fn parse_math_subgroup(node: &mut Node, children: &mut Vec<PotentialChild>, char
         children: partial_child.children,
         content: partial_child.content,
         auto_closing: false,
-        start_position: start_pos_in_file.clone(),
-        start_inner_position: start_pos_in_file,
+        start_position: start_position.clone(),
+        start_inner_position: start_position,
         source_length: *index - start_pos,
     };
 
