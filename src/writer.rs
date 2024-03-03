@@ -116,7 +116,6 @@ pub fn get_node_html(node: &Node, no_text_tags: bool) -> String {
         let mut in_text = false;
         let mut current_text_tag = String::new(); // Accumulate text here, and push it at the end, or when a child is encountered
 
-        let mut previous: &NodeContent = &NodeContent::Child(0); // Keep track of the last character
         for content in &node.content {
             match content {
                 crate::parser::NodeContent::Character((c, _)) | NodeContent::EscapedCharacter((c, _)) => {
@@ -157,8 +156,6 @@ pub fn get_node_html(node: &Node, no_text_tags: bool) -> String {
                     inner_html.push_str(&get_node_html(&node.children[*id], no_text_tags || node.children[*id].name == "svg" || node.children[*id].name == "pre"))
                 },
             }
-
-            previous = content;
         }
 
         if in_text && current_text_tag.trim().len() != 0 {
@@ -170,15 +167,6 @@ pub fn get_node_html(node: &Node, no_text_tags: bool) -> String {
 
             if !no_text_tags {
                 inner_html.push_str("</text>");
-            }
-        }
-        
-        if !no_text_tags {
-            match previous {
-                NodeContent::Character(_) | NodeContent::EscapedCharacter(_) => {
-                    inner_html.push_str("</text>"); // End text tag
-                },
-                NodeContent::Child(_) => {},
             }
         }
 

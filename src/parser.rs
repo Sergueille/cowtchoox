@@ -354,16 +354,17 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
             let mut start_inner_position = pos.clone();
             advance_position(&mut start_inner_position, chars)?;
 
-            // Make it big if two backticks
-            let attributes = if double { 
-                vec![(String::from("class"), String::from("center"))] 
-            } else { 
-                vec![] 
+            // Make big code if two backticks
+            let tag_name = if double {
+                String::from("pre")
+            }
+            else {
+                String::from("code")
             };
 
             let mut math_tag = Node {
-                name: String::from("pre"),
-                attributes: attributes,
+                name: tag_name,
+                attributes: vec![],
                 children: vec![],
                 content: vec![],
                 auto_closing: false,

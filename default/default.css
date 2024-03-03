@@ -22,6 +22,11 @@ mathnode.center {
     margin: 1em 0;
 }
 
+a {
+    font-family: cascadia-code;
+    font-size: 0.85em;
+}
+
 @font-face {
     font-family: latex-font;
     src: url("../fonts/cmunrm.ttf");
@@ -40,7 +45,7 @@ mathnode.center {
 
 
 /* Code */
-pre {
+code {
     display: inline-block;
     font-family: cascadia-code;
     font-size: 0.85em;
@@ -51,9 +56,12 @@ pre {
     margin: 0;
 }
 
-pre.center {
-    background-color: white;
+pre {
     display: block;
+    font-family: cascadia-code;
+    font-size: 0.85em;
+
+    background-color: white;
     margin: 3mm 0;
     padding: 3mm 5mm;
 

@@ -6,3 +6,4 @@
 /build
 build.zip
 !/docs/*.pdf
+/docs/out.pdf
