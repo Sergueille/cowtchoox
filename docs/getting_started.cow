@@ -15,17 +15,17 @@
 
         <p>
             The features evolve quickly, and the documentation doesn't, and there is a lot of bugs everywhere, so if something doesn't work,
-            feel free to <a href="https:/\/github.com/Sergueille/cowtchoox/issues">complain here</a>.
+            feel free to <a href="https://github.com/Sergueille/cowtchoox/issues">complain here</a>.
         </p>
 
         <h2>Installation</h2>
 
         <h3>Windows</h3>
         <p>
-            Go here: <a href="https:/\/github.com/Sergueille/cowtchoox/tags">https:/\/github.com/Sergueille/cowtchoox/tags</a>, and download the latest release.
+            Go here: <a href="https://github.com/Sergueille/cowtchoox/tags">https:\/\/github.com/Sergueille/cowtchoox/tags</a>, and download the latest release.
             You should get a `.zip` file. Unzip it where you want Cowtchoox to be installed.
             You now have to add this directory to your PATH. To do this, you can follow
-            <a href="https:/\/stackoverflow.com/questions/44272416/how-to-add-a-folder-to-path-environment-variable-in-windows-10-with-screensho#answer-44272417">
+            <a href="https://stackoverflow.com/questions/44272416/how-to-add-a-folder-to-path-environment-variable-in-windows-10-with-screensho#answer-44272417">
                 these instructions
             </a>.
         </p>
@@ -33,8 +33,8 @@
         <h3>Other OS</h3>
         <p>
             I have no idea how to build this for you. You should consider 
-            <a href="https:/\/github.com/Sergueille/cowtchoox/issues">tell me how to do it</a>
-            or building it yourself form the <a href="https:/\/github.com/Sergueille/cowtchoox">source code</a>.
+            <a href="https://github.com/Sergueille/cowtchoox/issues">tell me how to do it</a>
+            or building it yourself form the <a href="https://github.com/Sergueille/cowtchoox">source code</a>.
         </p>
 
         <h2>Compiling a file</h2>
@@ -60,7 +60,7 @@
 
         <h2>Basic syntax</h2>
         <p>
-            First, <a href="https:/\/developer.mozilla.org/en/docs/Learn/HTML/Introduction_to_HTML/Getting_started">learn how to write basic HTML</a>. 
+            First, <a href="https://developer.mozilla.org/en/docs/Learn/HTML/Introduction_to_HTML/Getting_started">learn how to write basic HTML</a>. 
             You just need a basic understanding.
             As you can see above, Cowtchoox looks a lot like HTML.
         </p>
@@ -93,8 +93,8 @@
             Cowtchoox also supports <em>C-style comments</em>:
         </p>
         <ul>
-            <li>Everything after <pre>\/\/</pre> is ignored until the end of the line</li>
-            <li>Everything between <pre>\/\*</pre> and <pre>*\/</pre> is ignored, even across multiple lines</li>
+            <li>Everything after `//` is ignored until the end of the line</li>
+            <li>Everything between `/*` and `*/` is ignored, even across multiple lines</li>
         </ul>
                 
         <h4>Escaping with `\`</h4>
@@ -108,7 +108,7 @@
 
         <p>
             Then, the compiler will throw an error message at his face, because he thinks the "\<" is the beginning of a tag.
-            To prevent that kind of situation, you have to <em>Escape the character</em>.
+            To prevent that kind of situation, you have to <em>escape the character</em>.
             In regular HTML you would write `&lt;`, but since this notation sucks, it is not supported in Cowtchoox.
         </p>
 
@@ -123,7 +123,7 @@
         <h2>Using CSS</h2>
         <p>
             To change the style of documents, we will use <em>CSS</em>.
-            If you have no idea of what it is, <a href="https:/\/developer.mozilla.org/en-US/docs/Learn/CSS/First_steps/Getting_started">click here</a>.
+            If you have no idea of what it is, <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/First_steps/Getting_started">click here</a>.
             To tell the compiler to use a CSS file, include a `<css>` tag in the `<head>` of the document.
         </p>
         ``

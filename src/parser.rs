@@ -139,7 +139,7 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_
 
                 let value;
                 if use_quotes {
-                    advance_position(pos, chars)?;
+                    advance_position_with_comments(pos, chars)?;
                     value = read_until_quote(chars, pos)?;
                 }
                 else {
@@ -235,7 +235,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
         // Code: ignore all but backticks
         if state == ParserState::Code || state == ParserState::BigCode {
             if next == '`' {
-                advance_position(pos, chars)?;
+                advance_position_with_comments(pos, chars)?;
             
                 let double = chars[pos.absolute_position] == '`';
 
@@ -253,7 +253,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                 }
                 else if state == ParserState::BigCode {
                     if double {
-                        advance_position(pos, chars)?;
+                        advance_position_with_comments(pos, chars)?;
                         break;
                     }
                     else {
@@ -263,7 +263,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                 }
             }
             else {
-                advance_position(pos, chars)?;
+                advance_position_with_comments(pos, chars)?;
                 content.push(NodeContent::Character((next, pos.clone())));
             }
 
@@ -347,12 +347,12 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
             else { unreachable!() }
         }
         else if next == '`' && state != ParserState::Math { // Code block
-            advance_position(pos, chars)?;
+            advance_position_with_comments(pos, chars)?;
             
             let double = chars[(*pos).absolute_position] == '`';
 
             let mut start_inner_position = pos.clone();
-            advance_position(&mut start_inner_position, chars)?;
+            advance_position_with_comments(&mut start_inner_position, chars)?;
 
             // Make big code if two backticks
             let tag_name = if double {
@@ -374,7 +374,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
             };
             
             if double {
-                advance_position(pos, chars)?;
+                advance_position_with_comments(pos, chars)?;
             } 
 
             parse_inner_tag(chars, &mut math_tag, pos, if double { ParserState::BigCode } else { ParserState::Code }, context)?;
@@ -520,11 +520,14 @@ fn read_until_quote(chars: &Vec<char>, pos: &mut FilePosition) -> Result<String,
     while chars[pos.absolute_position] != '"' {
         res.push(chars[(*pos).absolute_position]);
 
-        if (*pos).absolute_position >= chars.len() - 1 {
-            crate::log::error_position("Unmatched \".", &start_pos, 1);
+        match advance_position_with_comments(pos, chars) {
+            Ok(()) => {},
+            Err(_) => return Err(ParseError {
+                message: String::from("Unmatched \"."),
+                position: start_pos,
+                length: 1,
+            })
         }
-
-        advance_position_with_comments(pos, chars);
     }
     
     advance_position(pos, chars)?;
@@ -596,18 +599,28 @@ pub fn advance_position(pos: &mut FilePosition, file: &Vec<char>) -> Result<(), 
 }
 
 
-/// Same as advance_position, but ignores comments
-pub fn advance_position_with_comments(pos: &mut FilePosition, file: &Vec<char>) {
+/// Same as `advance_position`, but reads comments.
+pub fn advance_position_with_comments(pos: &mut FilePosition, file: &Vec<char>) -> Result<(), ParseError> {
     (*pos).absolute_position += 1;
     (*pos).line_character += 1;
+
+    if pos.absolute_position >= file.len() {
+        return Err(ParseError { 
+            message: String::from("Unexpected end of file. Maybe you forgot to close a tag."), 
+            position: pos.clone(), 
+            length: 1 
+        });
+    }
     
     let character_before = file[pos.absolute_position - 1];
-        
+    
     // FIXME: will not count lines for os that use \r
     if character_before == '\n' {
         (*pos).line += 1;
         (*pos).line_character = 0;
     }
+        
+    return Ok(());
 }
 
 
