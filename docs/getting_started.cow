@@ -98,34 +98,14 @@
         </ul>
                 
         <h4>Escaping with `\`</h4>
-        <p>
-            Imagine you want to add the character "\<" in your document.
-            An innocent soul will write:
-        </p>
-        ``
-            Here is a nice less-than symbol: <
-        ``
 
-        <p>
-            Then, the compiler will throw an error message at his face, because he thinks the "\<" is the beginning of a tag.
-            To prevent that kind of situation, you have to <em>escape the character</em>.
-            In regular HTML you would write `&lt;`, but since this notation sucks, it is not supported in Cowtchoox.
-        </p>
-
-        <p>
-            To escape a character, simply put `\` before it. A `\` means "the following character is regular text and has no special meaning".
-            So you should write        
-        </p>
-        ``
-        Here is a nice less-than symbol: \<
-        ``
+        To escape characters (tell the compiler that they are regular character and have no special meaning), use a backslash: `\`.
+        It escapes any character. HTML escaping like `&lt;` isn't supported.
 
         <h2>Using CSS</h2>
-        <p>
-            To change the style of documents, we will use <em>CSS</em>.
-            If you have no idea of what it is, <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/First_steps/Getting_started">click here</a>.
-            To tell the compiler to use a CSS file, include a `<css>` tag in the `<head>` of the document.
-        </p>
+        To change the style of documents, we will use <em>CSS</em>.
+        If you have no idea of what it is, <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/First_steps/Getting_started">click here</a>.
+        To tell the compiler to use a CSS file, include a `<css>` tag in the `<head>` of the document.
         ``
 <document>
     <head>
@@ -138,12 +118,71 @@
 </document>
         ``
 
-        <p>
-            You need to specify the path from the `.cow` file to the `css` file. For instance, if it is located in the same directory, just put the name of the file.
-            You have to include the file extension.
-        </p>
+        You need to specify the path from the `.cow` file to the `css` file. For instance, if it is located in the same directory, just put the name of the file.
+        You have to include the file extension.
 
-        To be continued...
+        <h2>Math</h2>
+
+        Cowtchoox have some special syntax to write math.
+        There are several ways to create math:
+        <ul>
+            <li>Put it in a math tag: `<math>This is math</math>`</li>
+            <li>Put it in between dollars: `$This is math$`</li>
+        </ul> 
+
+        Inside math, comments, HTML tags and everything else is still supported.
+        All spaces in math are not displayed, you can add them manually by escaping them: `\ ` (yes there is a space after the backslash).
+
+        <br/>
+        <br/>
+
+        In math you can use <strong>math operators</strong>. The syntax is:
+        ``
+            ?operator_name {first argument} {second argument} ...
+        ``
+        For instance, `?frac{1}{2}` gives $?frac{1}{2}$.
+
+        If an argument is only one objet, you can omit the braces: `?frac 1 2`
+
+        <br/><br/>
+
+        Some operators have an <strong>alias</strong>. It allow them to be called in a shorted way.
+        For instance, to show $?belongsto$, you can use `?belongsto` or `€`.
+        Aliases takes arguments exactly in the same way.
+
+        <br/>
+
+        Some aliases are <strong>infix</strong>. That means they have two arguments, and that the first should be placed <em>before</em>
+        the alias. Here for a fraction: `1 / 2` or an exponent: `2 ^ n`.
+
+        <br/><br/>
+
+        You can add braces (`{}`) to group things. (It will create additional `<div>`s)
+
+        <h2>Code blocks</h2>
+        To add a code block:
+        <ul>
+            <li><code>\`your code here\`</code> for an inline code block</li>
+            <li><code>\`\`your code here\`\`</code> for a big code block</li>
+        </ul>
+
+        Everything inside these will be <em>escaped</em>, that means that comments, backslash, etc will be displayed in the document.
+
+        <br/>
+
+        To make a code block, but with regular parsing inside:
+        <ul>
+            <li>`<code>your code here</code>` for an inline code block</li>
+            <li>`<pre>your code here</pre>` for a big code block</li>
+        </ul>
+
+        <h2>Tips</h2>
+        To edit your documents quickly, you can open `out.html` in the browser.
+        When recompiling, Cowtchoox creates `out.html` in less than a second, and then takes some time to produce `out.pdf`, 
+        so you just have to reload the page in your browser to see instant changes in the document.
+        Note that some things may differ from the final pdf file.
+
+        You will also be able to use the devtools to debug your CSS.
 
     </body>
 </document>
