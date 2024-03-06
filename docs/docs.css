@@ -1,2 +1,8 @@
 
-
+.alias {
+    display: inline-block;
+    margin-left: 1em;
+    font-weight: lighter;
+    font-size: 1rem;
+    color: #888;
+}

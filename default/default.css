@@ -296,7 +296,7 @@ un::after {
 /* Arrows */
 leftarrow > svg, longleftarrow > svg, rightarrow > svg, longrightarrow > svg,
 leftrightdoublearrow > svg, rightdoublearrow > svg, leftdoublearrow > svg,
-longleftrightdoublearrow > svg, longrightdoublearrow > svg, longleftdoublearrow > svg {
+longleftrightdoublearrow > svg, longrightdoublearrow > svg, longleftdoublearrow > svg, longleftrightarrow > svg {
     height: 0.5em;
     width: fit-content;
     overflow: visible;
@@ -304,7 +304,7 @@ longleftrightdoublearrow > svg, longrightdoublearrow > svg, longleftdoublearrow 
 }
 
 leftrightdoublearrow, rightdoublearrow, leftdoublearrow,
-longleftrightdoublearrow, longrightdoublearrow, longleftdoublearrow {
+longleftrightdoublearrow, longrightdoublearrow, longleftdoublearrow, longleftrightarrow {
     display: inline-flex !important;
     flex-direction: column;
     justify-content: flex-end;

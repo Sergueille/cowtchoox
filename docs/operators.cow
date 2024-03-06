@@ -1,0 +1,235 @@
+
+<document>
+    <head>
+        <title>Cowtchoox's math operators</title>
+        <css>docs.css</css>
+    </head>
+    <body>
+        <div style="font-size: 5em;">
+            CO<sup>W</sup>TCH<sub style="font-size: 1em;">O</sub>OX
+        </div>
+        <h1>Cowtchoox's math operators</h1>
+
+        Here is the list of math operators:
+
+// This is generated with doc-generator.rs
+<h3>`sqrt` <div class="alias">Alias `v/`</div></h3>
+``?sqrt{under}``
+<mathnode class="center">?sqrt{under}</mathnode>
+Square root. <br/>
+`under`: the thing in the square root <br/>
+
+
+<h3>`frac` <div class="alias">Infix alias `/`</div></h3>
+``?frac{up}{down}``
+<mathnode class="center">?frac{up}{down}</mathnode>
+Horizontal fraction. <br/>
+`up`: the thing over the bar <br/>
+`down`: the thing under the bar <br/>
+
+
+<h3>`normalfont` <div class="alias">Alias `|`</div></h3>
+``?normalfont{inner}``
+<mathnode class="center">?normalfont{inner}</mathnode>
+Makes inner not use math font. <br/>
+
+
+<h3>`txt` </h3>
+``?txt{inner}``
+<mathnode class="center">?txt{inner}</mathnode>
+Same as normalfont, but with additionnal margins. <br/>
+
+
+<h3>`exponent` <div class="alias">Infix alias `^`</div></h3>
+``?exponent{before}{inner}``
+<mathnode class="center">?exponent{before}{inner}</mathnode>
+Exponent. <br/>
+
+
+<h3>`subscript` <div class="alias">Infix alias `_`</div></h3>
+``?subscript{before}{inner}``
+<mathnode class="center">?subscript{before}{inner}</mathnode>
+Subscript. <br/>
+
+
+<h3>`underset` <div class="alias">Infix alias `__`</div></h3>
+``?underset{middle}{down}``
+<mathnode class="center">?underset{middle}{down}</mathnode>
+Put down under middle. <br/>
+
+
+<h3>`overset` <div class="alias">Infix alias `^^`</div></h3>
+``?overset{middle}{up}``
+<mathnode class="center">?overset{middle}{up}</mathnode>
+Put up over middle. <br/>
+
+
+<h3>`comma` <div class="alias">Alias `,`</div></h3>
+``?comma``
+<mathnode class="center">?comma</mathnode>
+Properly spaced comma. <br/>
+
+
+<h3>`equal` <div class="alias">Alias `=`</div></h3>
+``?equal``
+<mathnode class="center">?equal</mathnode>
+Properly spaced equal. <br/>
+
+
+<h3>`minus` <div class="alias">Alias `-`</div></h3>
+``?minus``
+<mathnode class="center">?minus</mathnode>
+A minus sign. (U+2013) <br/>
+
+
+<h3>`plus` <div class="alias">Alias `+`</div></h3>
+``?plus``
+<mathnode class="center">?plus</mathnode>
+A plus sign. <br/>
+
+
+<h3>`forall` </h3>
+``?forall``
+<mathnode class="center">?forall</mathnode>
+For all. (U+2200) <br/>
+
+
+<h3>`exists` </h3>
+``?exists``
+<mathnode class="center">?exists</mathnode>
+There exists. (U+2203) <br/>
+
+
+<h3>`belongsto` <div class="alias">Alias `€`</div></h3>
+``?belongsto``
+<mathnode class="center">?belongsto</mathnode>
+Belongs to. (U+2208) <br/>
+
+
+<h3>`inf` </h3>
+``?inf``
+<mathnode class="center">?inf</mathnode>
+Infinity. (U+221E) <br/>
+
+
+<h3>`rightarrow` <div class="alias">Alias `->`</div></h3>
+``?rightarrow``
+<mathnode class="center">?rightarrow</mathnode>
+Right arrow. <br/>
+
+
+<h3>`leftarrow` <div class="alias">Alias `<-`</div></h3>
+``?leftarrow``
+<mathnode class="center">?leftarrow</mathnode>
+Left arrow. (U+2190) <br/>
+
+
+<h3>`longrightarrow` <div class="alias">Alias `-->`</div></h3>
+``?longrightarrow``
+<mathnode class="center">?longrightarrow</mathnode>
+Long right arrow. <br/>
+
+
+<h3>`longleftarrow` <div class="alias">Alias `<--`</div></h3>
+``?longleftarrow``
+<mathnode class="center">?longleftarrow</mathnode>
+Long left arrow. <br/>
+
+
+<h3>`rightdoublearrow` <div class="alias">Alias `=>`</div></h3>
+``?rightdoublearrow``
+<mathnode class="center">?rightdoublearrow</mathnode>
+Right double arrow. <br/>
+
+
+<h3>`leftdoublearrow` <div class="alias">Alias `<=`</div></h3>
+``?leftdoublearrow``
+<mathnode class="center">?leftdoublearrow</mathnode>
+Left double arrow. <br/>
+
+
+<h3>`longrightdoublearrow` <div class="alias">Alias `==>`</div></h3>
+``?longrightdoublearrow``
+<mathnode class="center">?longrightdoublearrow</mathnode>
+Long right double arrow. <br/>
+
+
+<h3>`longleftdoublearrow` <div class="alias">Alias `<==`</div></h3>
+``?longleftdoublearrow``
+<mathnode class="center">?longleftdoublearrow</mathnode>
+Long left double arrow. <br/>
+
+
+<h3>`longleftrightarrow` <div class="alias">Alias `<-->`</div></h3>
+``?longleftrightarrow``
+<mathnode class="center">?longleftrightarrow</mathnode>
+Long left right arrow. <br/>
+
+
+<h3>`leftrightdoublearrow` <div class="alias">Alias `<=>`</div></h3>
+``?leftrightdoublearrow``
+<mathnode class="center">?leftrightdoublearrow</mathnode>
+Left right double arrow. <br/>
+
+
+<h3>`longleftrightdoublearrow` <div class="alias">Alias `<==>`</div></h3>
+``?longleftrightdoublearrow``
+<mathnode class="center">?longleftrightdoublearrow</mathnode>
+Long left right double arrow. <br/>
+
+
+<h3>`un` </h3>
+``?un{inner}``
+<mathnode class="center">?un{inner}</mathnode>
+Underlines argument. <br/>
+
+
+<h3>`simeq` </h3>
+``?simeq``
+<mathnode class="center">?simeq</mathnode>
+Almost equal. (U+2243) <br/>
+
+
+<h3>`equiv` <div class="alias">Alias `~`</div></h3>
+``?equiv``
+<mathnode class="center">?equiv</mathnode>
+Equivalent / tilde operator. (U+223C) <br/>
+
+
+<h3>`less` <div class="alias">Alias `<`</div></h3>
+``?less``
+<mathnode class="center">?less</mathnode>
+Less than. <br/>
+
+
+<h3>`greater` <div class="alias">Alias `>`</div></h3>
+``?greater``
+<mathnode class="center">?greater</mathnode>
+Greater than. <br/>
+
+
+<h3>`leq` <div class="alias">Alias `=<`</div></h3>
+``?leq``
+<mathnode class="center">?leq</mathnode>
+Less than or equal. (U+2264) <br/>
+
+
+<h3>`geq` <div class="alias">Alias `>=`</div></h3>
+``?geq``
+<mathnode class="center">?geq</mathnode>
+Greater than. (U+2265) <br/>
+
+
+<h3>`mless` <div class="alias">Alias `<<`</div></h3>
+``?mless``
+<mathnode class="center">?mless</mathnode>
+Much less than. (U+226A) <br/>
+
+
+<h3>`mgreater` <div class="alias">Alias `>>`</div></h3>
+``?mgreater``
+<mathnode class="center">?mgreater</mathnode>
+Much greater than. (U+226B) <br/>
+
+    </body>
+</document>
