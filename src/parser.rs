@@ -70,7 +70,7 @@ pub struct ParserContext<'a> {
 /// Used internally to determine if inside math node or code block
 #[derive(PartialEq, Eq, Debug)]
 enum ParserState {
-    Normal, Math, Code, BigCode
+    Normal, Math, BigMath, Code, BigCode
 }
 
 
@@ -317,15 +317,28 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
             }
         }
         else if next == '$' {
+            let pos_before_dollar = pos.clone();
             advance_position(pos, chars)?;
+
+            let double = chars[pos.absolute_position] == '$';
+            if double {
+                advance_position(pos, chars)?;
+            }
 
             if state == ParserState::Normal { // Inner math tag
                 let mut start_inner_position = pos.clone();
                 advance_position(&mut start_inner_position, chars)?;
 
+                let attributes = if double {
+                    vec![(String::from("class"), String::from("center"))]
+                }
+                else {
+                    vec![]
+                };
+
                 let mut math_tag = Node {
                     name: String::from("math"),
-                    attributes: vec![],
+                    attributes,
                     children: vec![],
                     content: vec![],
                     auto_closing: false,
@@ -334,7 +347,9 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                     source_length: 0
                 };
 
-                parse_inner_tag(chars, &mut math_tag, pos, ParserState::Math, context)?;
+                let math_type = if double { ParserState::BigMath } else { ParserState::Math }; 
+
+                parse_inner_tag(chars, &mut math_tag, pos, math_type, context)?;
 
                 math_tag.source_length = get_positions_difference(&pos, &math_tag.start_position);
 
@@ -342,11 +357,30 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                 content.push(NodeContent::Child(children.len() - 1));
             }
             else if state == ParserState::Math { // Finished math
+                if double {
+                    return Err(ParseError {
+                        message: String::from("Closing inline math with \"$$\" but it started with\"\". Consider removing one dollar, or putting a space between them."),
+                        position: pos_before_dollar, // TODO: not the right position
+                        length: 2,
+                    });
+                }
+
+                break;
+            }
+            else if state == ParserState::BigMath { // Finished big math
+                if !double {
+                    return Err(ParseError {
+                        message: String::from("Closing math with \"$\", but it started with \"$$\". Consider adding one extra dollar."),
+                        position: pos_before_dollar, // TODO: not the right position
+                        length: 1,
+                    });
+                }
+
                 break;
             }
             else { unreachable!() }
         }
-        else if next == '`' && state != ParserState::Math { // Code block
+        else if next == '`' && state != ParserState::Math && state != ParserState::BigMath { // Code block
             advance_position_with_comments(pos, chars)?;
             
             let double = chars[(*pos).absolute_position] == '`';
@@ -416,7 +450,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
     node.content = content;
 
     // Now that the tag is parsed, if it's math, parse math
-    if state == ParserState::Math {
+    if state == ParserState::Math || state == ParserState::BigMath {
         math::parse_math(node, chars, context)?;
     }
 

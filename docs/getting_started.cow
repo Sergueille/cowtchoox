@@ -124,10 +124,10 @@
         <h2>Math</h2>
 
         Cowtchoox have some special syntax to write math.
-        There are several ways to create math:
+        There are several ways to create  math:
         <ul>
-            <li>Put it in a math tag: `<math>This is math</math>`</li>
-            <li>Put it in between dollars: `$This is math$`</li>
+            <li>Use dollars for <em>inline</em> math: `$This is math$`</li>
+            <li>Use double dollars for a big, centered block of math: `$$This is math$$`</li>
         </ul> 
 
         Inside math, comments, HTML tags and everything else is still supported.

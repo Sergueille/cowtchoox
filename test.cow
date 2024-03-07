@@ -44,6 +44,10 @@
         Also escaping in math $\$ \< \{ \\ \} 123456789Δ$
 
         <br/>
+
+        This is big math: $$that's\ {some}^{really}\ big\ math$$
+
+        <br/>
         This tag is escaped: \<look at this tag!>, and so is this backslash \\ and this ampersand \&.
 
         <br/>
