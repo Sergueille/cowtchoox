@@ -21,10 +21,6 @@ pub mod custom;
 /// Chars to make a word (tag name, attribute, ...). Alphanumeric characters also included. 
 const WORD_CHARS: &str = "_-:"; 
 
-/// Attribute nam usd to indicate that a th tag has a "?" whn parsed.
-/// FIXME: th user can declare it as a real attribute and break everything!
-const MATH_OPERATOR_ATTRIB_NAME: &'static str = "math-operator";
-
 
 #[derive(Debug, Clone)]
 pub enum NodeContent {
@@ -44,8 +40,9 @@ pub struct Node {
     pub children: Vec<Node>,
     pub content: Vec<NodeContent>,
     pub auto_closing: bool,
+    pub declared_with_question_mark: bool,
     pub start_position: FilePosition, // Where it is located in the source file
-    pub start_inner_position: FilePosition, // Where  =the inner content is located in the source file
+    pub start_inner_position: FilePosition, // Where the inner content is located in the source file
     pub source_length: usize, // How long it is in th source file
 }
 
@@ -92,7 +89,7 @@ pub fn parse_file(file_path: &PathBuf, chars: &Vec<char>, context: &ParserContex
 /// # Arguments
 /// * `file`: the raw contents of the file
 /// * `pos`: the index of the character where the function should start parsing
-/// * `accept_question_mark`: is <?tag_name> allowed? Used for math operators declarations (if one is found, it's the attribute MATH_OPERATOR_ATTRIB_NAME is set)
+/// * `accept_question_mark`: accepts a question mark before the tag name
 /// 
 /// # Returns
 /// * the parsed node
@@ -112,11 +109,6 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_
     }
 
     let mut attributes = Vec::with_capacity(10);
-
-    if has_question_mark {
-        attributes.push((String::from(MATH_OPERATOR_ATTRIB_NAME), String::from("")));
-    }
-
 
     // Read tag name
     let tag_name = read_word(chars, &mut pos)?;
@@ -172,6 +164,7 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_
                 children: vec![],
                 content: vec![],
                 auto_closing: true,
+                declared_with_question_mark: has_question_mark,
                 start_position: start_pos,
                 start_inner_position: inner_start_pos,
                 source_length: length,
@@ -190,6 +183,7 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, accept_question_
         children: vec![],
         content: vec![],
         auto_closing: false,
+        declared_with_question_mark: false,
         start_position: start_pos,
         start_inner_position: inner_start_pos,
         source_length: 0,
@@ -342,6 +336,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                     children: vec![],
                     content: vec![],
                     auto_closing: false,
+                    declared_with_question_mark: false,
                     start_position: pos.clone(),
                     start_inner_position,
                     source_length: 0
@@ -402,6 +397,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                 children: vec![],
                 content: vec![],
                 auto_closing: false,
+                declared_with_question_mark: false,
                 start_position: pos.clone(),
                 start_inner_position,
                 source_length: 0

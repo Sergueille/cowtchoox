@@ -151,6 +151,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
                                     children: vec![], 
                                     content: vec![NodeContent::Character(c)], 
                                     auto_closing: false, 
+                                    declared_with_question_mark: false, 
                                     start_position: file_pos.clone(),
                                     start_inner_position: file_pos, 
                                     source_length: 1 
@@ -539,6 +540,7 @@ fn parse_math_subgroup(node: &mut Node, children: &mut Vec<PotentialChild>, char
         children: partial_child.children,
         content: partial_child.content,
         auto_closing: false,
+        declared_with_question_mark: false, 
         start_position: start_position.clone(),
         start_inner_position: start_position,
         source_length: *index - start_pos,

@@ -1,6 +1,10 @@
 
 Additional things to do (other ars scattered in the source file):
 
+TODO: custom tags
+    -> definition in cowx `<!tag_name>contents, and <inner/> to say where thing in the tag should go</tag_name>`
+    -> usage `<!tag_name/>` or `<!tag_name>things inside</tag_name>`
+
 HACK: currently, when failing to parse a tag in maths, it represents it a regular text
     - because if in maths there is for example <=>, it shouldn't be a tag
     - problematic because if user uses large tags, they can't see where is the error

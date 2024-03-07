@@ -33,13 +33,10 @@ pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: TagHa
         let node = parser::parse_tag(file, pos, true, false, &context)?;
 
         // Check if a "?" was added
-        let is_math = parser::get_attribute_value(&node, parser::MATH_OPERATOR_ATTRIB_NAME).is_ok(); 
+        let is_math = node.declared_with_question_mark; 
 
         let mut arguments = Vec::with_capacity(node.attributes.len());
         for (name, value) in &node.attributes {
-            if name == parser::MATH_OPERATOR_ATTRIB_NAME {
-                continue; // An internal thing. Just ignore
-            }
 
             let mut chars = name.chars();
             if chars.next() == Some(':') { // It's an argument
@@ -92,6 +89,7 @@ fn instantiate_tag_inner(tag: &CustomTag, node: &Node, arguments: &Vec<Node>) ->
         children: node.children.clone(),
         content: Vec::with_capacity(node.content.len()),
         auto_closing: node.auto_closing,
+        declared_with_question_mark: false, 
         start_position: node.start_position.clone(),
         start_inner_position: node.start_inner_position.clone(),
         source_length: node.source_length,
