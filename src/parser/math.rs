@@ -73,14 +73,14 @@ static ALIASES: [Alias; 30] = [
 /// # Returns
 /// The node that contains all the math.
 /// 
-pub fn parse_math(node: &mut Node, chars: &Vec<char>, context: &ParserContext) -> Result<(), ParseError> {
+pub fn parse_math(node: &mut Node, context: &ParserContext) -> Result<(), ParseError> {
     let mut pos = 0;
 
     // Remove children from node to take ownership
     let raw_children = std::mem::replace(&mut node.children, vec![]);
     let mut children = raw_children.into_iter().map(|el| { PotentialChild::Some(el) }).collect();
 
-    let (res, _) = parse_math_part(node, &mut children, chars, &mut pos, context, false)?;
+    let (res, _) = parse_math_part(node, &mut children, &mut pos, context, false)?;
 
     // Check for unmatched }
     if pos < node.content.len() {
@@ -100,8 +100,7 @@ pub fn parse_math(node: &mut Node, chars: &Vec<char>, context: &ParserContext) -
 
 
 /// Sub-function of parse_math. `pos` is the position in the node's content array
-/// TODO: absolutely not finished
-fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &Vec<char>, index: &mut usize, context: &ParserContext, just_one_thing: bool) 
+fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &mut usize, context: &ParserContext, just_one_thing: bool) 
     -> Result<(PartialNode, MathParseInfo), ParseError> {
     let mut res: Vec<NodeContent> = Vec::with_capacity(node.content.len());
     let mut res_children: Vec<Node> = Vec::with_capacity(5);
@@ -110,12 +109,8 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
     let mut finished_with_bracket = false;
 
     while *index < node.content.len() {
-        let c = &node.content[*index];
-
-        // Look for aliases
-        let alias = if context.ignore_aliases { None } else { check_for_alias(&node.content, *index) };
-        match alias {
-            Some(alias) => {
+        match match_next_thing_in_math(node, index, &children, context)? {
+            MathToken::Alias(alias) => {
                 let tag = context.math_operators.get(alias.tag_name);
 
                 match tag {
@@ -169,7 +164,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
                                 });
                             }
 
-                            let (right, info) = parse_math_subgroup(node, children, chars, index, context, true)?;
+                            let (right, info) = parse_math_subgroup(node, children, index, context, true)?;
 
                             if info.got_nothing {
                                 let (position, _) = get_file_pos_of_node_content(node, children, *index - 1);
@@ -193,7 +188,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
                                     });
                                 }
 
-                                let (child, info) = parse_math_subgroup(node, children, chars, index, context, true)?;
+                                let (child, info) = parse_math_subgroup(node, children, index, context, true)?;
 
                                 if info.got_nothing {
                                     let (position, _) = get_file_pos_of_node_content(node, children, *index - 1);
@@ -223,142 +218,134 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
                     }
                 }
             },
-            None => { // No alias found, check as a regular character 
-                match c.clone() {
-                    NodeContent::Character((c, char_pos)) => {
-                        if c == '?' { // Parse a math operator
-                            *index += 1;
-                            let op = expect_operator(node, &children, index, context)?;
+            MathToken::Operator(op) => {
+                let mut arguments = Vec::with_capacity(op.arguments.len());
+                for i in 0..op.arguments.len() {
+                    if *index >= node.content.len() {
+                        let (position, _) = get_file_pos_of_node_content(node, children, node.content.len() - 1);
+                        return Err(ParseError { 
+                            message: format!("Expected something here. \"{}\" expects {} arguments, and you provided only {}", op.content.name, op.arguments.len(), i), 
+                            position, length: 1,
+                        });
+                    }
+
+                    let (child, info) = parse_math_subgroup(node, children, index, context, true)?;
+                    arguments.push(child);
+
+                    if info.got_nothing {
+                        let (position, _) = get_file_pos_of_node_content(node, children, *index - 1);
+                        return Err(ParseError { 
+                            message: format!("Expected something here. \"{}\" expects {} arguments, and you provided only {}", op.content.name, op.arguments.len(), i), 
+                            position, length: 1,
+                        });
+                    }
+                }
         
-                            let mut arguments = Vec::with_capacity(op.arguments.len());
-                            for i in 0..op.arguments.len() {
-                                if *index >= node.content.len() {
-                                    let (position, _) = get_file_pos_of_node_content(node, children, node.content.len() - 1);
-                                    return Err(ParseError { 
-                                        message: format!("Expected something here. \"{}\" expects {} arguments, and you provided only {}", op.content.name, op.arguments.len(), i), 
-                                        position, length: 1,
-                                    });
-                                }
+                let instantiated = super::custom::instantiate_tag(op, arguments);
 
-                                let (child, info) = parse_math_subgroup(node, children, chars, index, context, true)?;
-                                arguments.push(child);
+                let new_child_id = res_children.len();
+                res_children.push(instantiated);
+                res.push(NodeContent::Child(new_child_id));
+                got_one_thing = true;
+            },
+            MathToken::Other(('{', _)) => { // Sub group. Make a recursive call
+                *index += 1;
+                
+                let (start_file_position, _) = get_file_pos_of_node_content(node, children, *index - 1);
 
-                                if info.got_nothing {
-                                    let (position, _) = get_file_pos_of_node_content(node, children, *index - 1);
-                                    return Err(ParseError { 
-                                        message: format!("Expected something here. \"{}\" expects {} arguments, and you provided only {}", op.content.name, op.arguments.len(), i), 
-                                        position, length: 1,
-                                    });
-                                }
-                            }
-        
-                            let instantiated = super::custom::instantiate_tag(op, arguments);
-        
-                            let new_child_id = res_children.len();
-                            res_children.push(instantiated);
-                            res.push(NodeContent::Child(new_child_id));
-                            got_one_thing = true;
-                        }
-                        else if c == '{' { // Sub group. Make a recursive call
-                            *index += 1;
+                let (child, info) = parse_math_subgroup(node, children, index, context, false)?;
 
-                            let (start_file_position, _) = get_file_pos_of_node_content(node, children, *index - 1);
+                if !info.finished_with_bracket {
+                    return Err(ParseError { 
+                        message: String::from("Unmatched \"{\""), 
+                        position: start_file_position, length: 1,
+                    });
+                }
 
-                            let (child, info) = parse_math_subgroup(node, children, chars, index, context, false)?;
+                let new_child_id = res_children.len();
+                res_children.push(child);
+                res.push(NodeContent::Child(new_child_id));
+                got_one_thing = true;
+            },
+            MathToken::Other(('}', _)) => { // Finished!
+                *index += 1;
+                finished_with_bracket = true;
+                break;
+            },
+            MathToken::Other(('§', _)) => {
+                *index += 1;
 
-                            if !info.finished_with_bracket {
-                                return Err(ParseError { 
-                                    message: String::from("Unmatched \"{\""), 
-                                    position: start_file_position, length: 1,
-                                });
-                            }
-        
-                            let new_child_id = res_children.len();
-                            res_children.push(child);
-                            res.push(NodeContent::Child(new_child_id));
-                            got_one_thing = true;
-                        }
-                        else if c == '}' { // Finished!
-                            *index += 1;
-                            finished_with_bracket = true;
-                            break;
-                        } 
-                        else if c == '§' {
-                            *index += 1;
-
-                            let (letter_to_convert, letter_position) = match &node.content[*index] {
-                                NodeContent::Character(l) => l.clone(),
-                                NodeContent::EscapedCharacter(l) => {
-                                    let (position, length) = get_file_pos_of_node_content(node, children, *index);
-                                    crate::log::warning_position(
-                                        "Escaped character after \"§\". Consider removing the backslash.", 
-                                        &position, length
-                                    );
-                                    l.clone()
-                                },
-                                NodeContent::Child(_) => {
-                                    let (position, length) = get_file_pos_of_node_content(node, children, *index);
-                                    return Err(ParseError {
-                                        message: format!("Expected a character after \"§\", found a tag."),
-                                        position, length
-                                    });
-                                },
-                            };
-
-                            let greek_letter = letter_to_greek(letter_to_convert);
-                            match greek_letter {
-                                Some(l) => {
-                                    res.push(NodeContent::Character((l, letter_position)));
-                                    *index += 1;
-                                    got_one_thing = true;
-                                },
-                                None => {
-                                    let (position, length) = get_file_pos_of_node_content(node, children, *index);
-                                    return Err(ParseError {
-                                        message: format!("Character \"{}\" after \"§\" does not correspond to a greek letter. Only a-z, A-Z are accepted, except for q, Q, w and W", letter_to_convert),
-                                        position, length
-                                    });
-                                },
-                            }
-
-                        }
-                        else if c.is_whitespace() { // Ignore whitespace!
-                            *index += 1;
-                        }
-                        else { // A normal character
-                            res.push(NodeContent::Character((c, char_pos)));
-                            *index += 1;
-                            got_one_thing = true;
-                        }
+                let (letter_to_convert, letter_position) = match &node.content[*index] {
+                    NodeContent::Character(l) => l.clone(),
+                    NodeContent::EscapedCharacter(l) => {
+                        let (position, length) = get_file_pos_of_node_content(node, children, *index);
+                        crate::log::warning_position(
+                            "Escaped character after \"§\". Consider removing the backslash.", 
+                            &position, length
+                        );
+                        l.clone()
                     },
-                    NodeContent::EscapedCharacter(c) => { // A normal character
-                        res.push(NodeContent::Character(c));
+                    NodeContent::Child(_) => {
+                        let (position, length) = get_file_pos_of_node_content(node, children, *index);
+                        return Err(ParseError {
+                            message: format!("Expected a character after \"§\", found a tag."),
+                            position, length
+                        });
+                    },
+                };
+
+                let greek_letter = letter_to_greek(letter_to_convert);
+                match greek_letter {
+                    Some(l) => {
+                        res.push(NodeContent::Character((l, letter_position)));
                         *index += 1;
                         got_one_thing = true;
-                    }
-                    NodeContent::Child(c) => { // A child, just push it as a normal NodeContent
-                        let source_infos = match &children[c] {
-                            PotentialChild::Some(child) => (child.start_position.clone(), child.source_length),
-                            PotentialChild::None(..) => panic!("Should be Some"),
-                        };
-        
-                        let child = std::mem::replace(&mut children[c], PotentialChild::None(source_infos));
-        
-                        match child {
-                            PotentialChild::Some(child) =>{
-                                res_children.push(child);
-                                res.push(NodeContent::Child(res_children.len() - 1));
-                                
-                                *index += 1;
-                            },
-                            PotentialChild::None(_) => unreachable!(),
-                        }
-
-                        got_one_thing = true;
+                    },
+                    None => {
+                        let (position, length) = get_file_pos_of_node_content(node, children, *index);
+                        return Err(ParseError {
+                            message: format!("Character \"{}\" after \"§\" does not correspond to a greek letter. Only a-z, A-Z are accepted, except for q, Q, w and W", letter_to_convert),
+                            position, length
+                        });
                     },
                 }
             }
-        };
+            MathToken::Other((c, file_position)) => {
+                if c.is_whitespace() { // Ignore whitespace!
+                    *index += 1;
+                }
+                else { // A normal character
+                    res.push(NodeContent::Character((c, file_position)));
+                    *index += 1;
+                    got_one_thing = true;
+                }
+            },
+            MathToken::EscapedCharacter(c) => {
+                res.push(NodeContent::Character(c));
+                *index += 1;
+                got_one_thing = true;
+            },
+            MathToken::Child(c) => { // A child, just push it as a normal NodeContent
+                let source_infos = match &children[c] {
+                    PotentialChild::Some(child) => (child.start_position.clone(), child.source_length),
+                    PotentialChild::None(..) => panic!("Should be Some"),
+                };
+
+                let child = std::mem::replace(&mut children[c], PotentialChild::None(source_infos));
+
+                match child {
+                    PotentialChild::Some(child) =>{
+                        res_children.push(child);
+                        res.push(NodeContent::Child(res_children.len() - 1));
+                        
+                        *index += 1;
+                    },
+                    PotentialChild::None(_) => unreachable!(),
+                }
+
+                got_one_thing = true;
+            },
+        }
 
         if got_one_thing && just_one_thing {
             break;
@@ -375,6 +362,43 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &
             finished_with_bracket
         }
     ));
+}
+
+
+// TODO: move this
+enum MathToken<'a> {
+    Alias(&'a Alias),
+    Operator(&'a CustomTag),
+    Other((char, FilePosition)),
+    EscapedCharacter((char, FilePosition)),
+    Child(usize),
+}
+
+
+fn match_next_thing_in_math<'a>(node: &mut Node, index: &mut usize, children: &Vec<PotentialChild>, context: &'a ParserContext) -> Result<MathToken<'a>, ParseError> {
+    let alias = if context.ignore_aliases { None } else { check_for_alias(&node.content, *index) };
+
+    match alias {
+        Some(alias) => return Ok(MathToken::Alias(alias)),
+        None => {
+            match &node.content[*index] {
+                NodeContent::Character((c, pos)) => {
+                    if *c == '?' {
+                        *index += 1; // TODO: berk
+                        let op = expect_operator(node, &children, index, context)?;
+                        return Ok(MathToken::Operator(op));
+                    }
+                    else {
+                        return Ok(MathToken::Other((*c, pos.clone())));
+                    }
+                },
+                NodeContent::EscapedCharacter(c) => return Ok(MathToken::EscapedCharacter(c.clone())),
+                NodeContent::Child(c) => return Ok(MathToken::Child(*c)),
+            }
+        },
+    }
+
+    // TODO
 }
 
 
@@ -527,12 +551,12 @@ fn check_for_alias(node_content: &Vec<NodeContent>, index: usize) -> Option<&'st
 }
 
 
-fn parse_math_subgroup(node: &mut Node, children: &mut Vec<PotentialChild>, chars: &Vec<char>, index: &mut usize, context: &ParserContext, just_one_thing: bool) 
+fn parse_math_subgroup(node: &mut Node, children: &mut Vec<PotentialChild>, index: &mut usize, context: &ParserContext, just_one_thing: bool) 
     -> Result<(Node, MathParseInfo), ParseError> {
     let start_pos = *index;
     let (start_position, _) = get_file_pos_of_node_content(node, children, *index);
 
-    let (partial_child, info) = parse_math_part(node, children, chars, index, context, just_one_thing)?;
+    let (partial_child, info) = parse_math_part(node, children, index, context, just_one_thing)?;
 
     let res = Node {
         name: String::from("div"),

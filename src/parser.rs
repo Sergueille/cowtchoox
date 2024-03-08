@@ -447,7 +447,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
 
     // Now that the tag is parsed, if it's math, parse math
     if state == ParserState::Math || state == ParserState::BigMath {
-        math::parse_math(node, chars, context)?;
+        math::parse_math(node, context)?;
     }
 
     return Ok(());
