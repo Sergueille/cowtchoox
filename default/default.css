@@ -211,8 +211,8 @@ underset {
 }
 
 .underset-under {
-    margin-top: -0.8em;
-    font-size: 0.6em;
+    margin-top: -0.4em;
+    font-size: 0.7em;
 }
 
 
@@ -224,8 +224,8 @@ overset {
 }
 
 .overset-over {
-    margin-bottom: -0.8em;
-    font-size: 0.6em;
+    margin-bottom: -0.4em;
+    font-size: 0.7em;
 }
 
 
