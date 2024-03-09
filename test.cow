@@ -54,6 +54,9 @@
         This is a fraction: $1 / 2$
 
         <br/>
+        Error test: $v/$
+
+        <br/>
         Sqrt test:
         $
             {

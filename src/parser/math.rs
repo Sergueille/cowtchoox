@@ -1,15 +1,27 @@
 use super::{Node, NodeContent, ParseError, ParserContext, FilePosition};
 use super::custom::CustomTag;
 
+
 struct PartialNode {
     children: Vec<Node>,
     content: Vec<super::NodeContent>,
 }
 
+
 struct MathParseInfo {
     got_nothing: bool,
-    finished_with_bracket: bool
 }
+
+
+#[derive(PartialEq, Eq)]
+enum MathStopType {
+    MathEnd,
+    OneThing,
+    Brace,
+    Parenthesis,
+    SquareBracket,
+}
+
 
 enum PotentialChild {
     Some(Node),
@@ -80,16 +92,7 @@ pub fn parse_math(node: &mut Node, context: &ParserContext) -> Result<(), ParseE
     let raw_children = std::mem::replace(&mut node.children, vec![]);
     let mut children = raw_children.into_iter().map(|el| { PotentialChild::Some(el) }).collect();
 
-    let (res, _) = parse_math_part(node, &mut children, &mut pos, context, false)?;
-
-    // Check for unmatched }
-    if pos < node.content.len() {
-        let (position, length) = get_file_pos_of_node_content(node, &children, pos);
-        return Err(ParseError {
-            message: String::from("Unexpected \"}\". Maybe you forgot to add the matching curly bracket."),
-            position, length,
-        });
-    }
+    let (res, _) = parse_math_part(node, &mut children, &mut pos, context, MathStopType::MathEnd)?;
 
     // Replace node's contents
     node.children = res.children;
@@ -100,15 +103,30 @@ pub fn parse_math(node: &mut Node, context: &ParserContext) -> Result<(), ParseE
 
 
 /// Sub-function of parse_math. `pos` is the position in the node's content array
-fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &mut usize, context: &ParserContext, just_one_thing: bool) 
+fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &mut usize, context: &ParserContext, how_to_stop: MathStopType) 
     -> Result<(PartialNode, MathParseInfo), ParseError> {
     let mut res: Vec<NodeContent> = Vec::with_capacity(node.content.len());
     let mut res_children: Vec<Node> = Vec::with_capacity(5);
 
     let mut got_one_thing = false;
-    let mut finished_with_bracket = false;
 
-    while *index < node.content.len() {
+    loop {
+        // Check for end of math
+        if *index >= node.content.len() { // TEST
+            if how_to_stop != MathStopType::MathEnd {
+                let position = get_file_pos_of_node_char(node, *index);
+                
+                return Err(ParseError {
+                    message: String::from("Unexpected end of math or closing tag."),
+                    position,
+                    length: 1,
+                });
+            }  
+            else {
+                break;
+            }
+        }
+
         match match_next_thing_in_math(node, index, &children, context)? {
             MathToken::Alias(alias) => {
                 let tag = context.math_operators.get(alias.tag_name);
@@ -164,7 +182,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                                 });
                             }
 
-                            let (right, info) = parse_math_subgroup(node, children, index, context, true)?;
+                            let (right, info) = parse_math_subgroup(node, children, index, context, MathStopType::OneThing)?;
 
                             if info.got_nothing {
                                 let (position, _) = get_file_pos_of_node_content(node, children, *index - 1);
@@ -188,7 +206,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                                     });
                                 }
 
-                                let (child, info) = parse_math_subgroup(node, children, index, context, true)?;
+                                let (child, info) = parse_math_subgroup(node, children, index, context, MathStopType::OneThing)?;
 
                                 if info.got_nothing {
                                     let (position, _) = get_file_pos_of_node_content(node, children, *index - 1);
@@ -229,7 +247,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                         });
                     }
 
-                    let (child, info) = parse_math_subgroup(node, children, index, context, true)?;
+                    let (child, info) = parse_math_subgroup(node, children, index, context, MathStopType::OneThing)?;
                     arguments.push(child);
 
                     if info.got_nothing {
@@ -250,17 +268,8 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
             },
             MathToken::Other(('{', _)) => { // Sub group. Make a recursive call
                 *index += 1;
-                
-                let (start_file_position, _) = get_file_pos_of_node_content(node, children, *index - 1);
 
-                let (child, info) = parse_math_subgroup(node, children, index, context, false)?;
-
-                if !info.finished_with_bracket {
-                    return Err(ParseError { 
-                        message: String::from("Unmatched \"{\""), 
-                        position: start_file_position, length: 1,
-                    });
-                }
+                let (child, _) = parse_math_subgroup(node, children, index, context, MathStopType::Brace)?;
 
                 let new_child_id = res_children.len();
                 res_children.push(child);
@@ -269,7 +278,11 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
             },
             MathToken::Other(('}', _)) => { // Finished!
                 *index += 1;
-                finished_with_bracket = true;
+
+                if how_to_stop != MathStopType::Brace {
+                    return Err(report_stop_error(node, how_to_stop, "}", *index));
+                }
+
                 break;
             },
             MathToken::Other(('§', _)) => {
@@ -347,7 +360,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
             },
         }
 
-        if got_one_thing && just_one_thing {
+        if got_one_thing && how_to_stop == MathStopType::OneThing {
             break;
         }
     }
@@ -359,7 +372,6 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
         },
         MathParseInfo {
             got_nothing: !got_one_thing,
-            finished_with_bracket
         }
     ));
 }
@@ -495,6 +507,22 @@ fn get_file_pos_of_node_content(node: &Node, children: &Vec<PotentialChild>, con
 }
 
 
+// Same as `get_file_pos_of_node_content`, but panics if a child is found and returns only a position
+fn get_file_pos_of_node_char(node: &Node, content_id: usize) -> FilePosition {
+    let id = std::cmp::min(content_id, node.content.len() - 1);
+
+    match &node.content[id] {
+        NodeContent::Character((_, pos)) => {
+            return pos.clone();
+        },
+        NodeContent::EscapedCharacter((_, pos)) => {
+            return pos.clone();
+        },
+        NodeContent::Child(_) => panic!("This shouldn't have been called.")
+    };
+}
+
+
 // OPTI: that's O(n²) because of chars().nth(). Also a lot of vec allocations
 /// Returns the longest possible alias at specified position, returns None if no alias found 
 fn check_for_alias(node_content: &Vec<NodeContent>, index: usize) -> Option<&'static Alias> {
@@ -551,12 +579,13 @@ fn check_for_alias(node_content: &Vec<NodeContent>, index: usize) -> Option<&'st
 }
 
 
-fn parse_math_subgroup(node: &mut Node, children: &mut Vec<PotentialChild>, index: &mut usize, context: &ParserContext, just_one_thing: bool) 
+// Helper for parse_math_part
+fn parse_math_subgroup(node: &mut Node, children: &mut Vec<PotentialChild>, index: &mut usize, context: &ParserContext, how_to_stop: MathStopType) 
     -> Result<(Node, MathParseInfo), ParseError> {
     let start_pos = *index;
     let (start_position, _) = get_file_pos_of_node_content(node, children, *index);
 
-    let (partial_child, info) = parse_math_part(node, children, index, context, just_one_thing)?;
+    let (partial_child, info) = parse_math_part(node, children, index, context, how_to_stop)?;
 
     let res = Node {
         name: String::from("div"),
@@ -588,5 +617,39 @@ fn letter_to_greek(c: char) -> Option<char> {
     }
 
     return None;
+}
+
+
+// Helper for parse_math_part
+fn report_stop_error(node: &Node, expected: MathStopType, found: &str, index: usize) -> ParseError {
+    let position = get_file_pos_of_node_char(node, index - 1);
+    
+    match expected {
+        MathStopType::MathEnd => ParseError {
+            message: format!("Unmatched \"{}\".", found),
+            position: position,
+            length: 1,
+        },
+        MathStopType::OneThing => ParseError {
+            message: format!("Expected something before \"{}\".", found),
+            position: position,
+            length: 1,
+        },
+        MathStopType::Brace => ParseError {
+            message: format!("Unmatched \"{}\". Opened with \"{{\", but closed with \"{}\".", found, found),
+            position: position,
+            length: 1,
+        },
+        MathStopType::Parenthesis => ParseError {
+            message: format!("Unmatched \"{}\". Opened with \"(\", but closed with \"{}\".", found, found),
+            position: position,
+            length: 1,
+        },
+        MathStopType::SquareBracket => ParseError {
+            message: format!("Unmatched \"{}\". Opened with \"[\", but closed with \"{}\".", found, found),
+            position: position,
+            length: 1,
+        },
+    }
 }
 
