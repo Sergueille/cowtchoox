@@ -23,6 +23,21 @@ enum MathStopType {
 }
 
 
+enum MathToken<'a> {
+    Alias(&'a Alias),
+    Operator(&'a CustomTag),
+    Other((char, FilePosition)),
+    EscapedCharacter((char, FilePosition)),
+    Child(usize),
+    OpeningBrace,
+    ClosingBrace,
+    OpeningParenthesis,
+    ClosingParenthesis,
+    OpeningSquareBracket,
+    ClosingSquareBracket,
+}
+
+
 enum PotentialChild {
     Some(Node),
     None((FilePosition, usize)) // Contains (start position, source length)
@@ -127,7 +142,9 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
             }
         }
 
-        match match_next_thing_in_math(node, index, &children, context)? {
+        let next_token = match_next_thing_in_math(node, index, &children, context)?;
+
+        match next_token {
             MathToken::Alias(alias) => {
                 let tag = context.math_operators.get(alias.tag_name);
 
@@ -266,7 +283,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                 res.push(NodeContent::Child(new_child_id));
                 got_one_thing = true;
             },
-            MathToken::Other(('{', _)) => { // Sub group. Make a recursive call
+            MathToken::OpeningBrace => { // Sub group. Make a recursive call
                 *index += 1;
 
                 let (child, _) = parse_math_subgroup(node, children, index, context, MathStopType::Brace)?;
@@ -276,14 +293,81 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                 res.push(NodeContent::Child(new_child_id));
                 got_one_thing = true;
             },
-            MathToken::Other(('}', _)) => { // Finished!
+            MathToken::ClosingBrace => {
                 *index += 1;
 
                 if how_to_stop != MathStopType::Brace {
-                    return Err(report_stop_error(node, how_to_stop, "}", *index));
+                    return Err(report_stop_error(node, how_to_stop, &next_token, *index));
                 }
 
                 break;
+            },
+            MathToken::ClosingParenthesis | MathToken::ClosingSquareBracket => {
+                *index += 1;
+
+                let op_name = match next_token {
+                    MathToken::ClosingParenthesis => "closingparenthesis",
+                    MathToken::ClosingSquareBracket => "closingsquarebracket",
+                    _ => unreachable!(),
+                };
+
+                let operator = match context.math_operators.get(op_name) {
+                    Some(op) => op,
+                    None => {
+                        return Err(ParseError {
+                            message: format!("Operator \"{}\" not found! This may be because you modified default.cowx.", op_name),
+                            position: get_file_pos_of_node_char(node, *index - 1),
+                            length: 1,
+                        });
+                    }
+                };
+
+                // Add a parenthesis before finish
+                res.push(NodeContent::Child(res_children.len()));
+                res_children.push(super::custom::instantiate_tag(operator, vec![]));
+
+                if !compare_math_token_and_math_stop(&next_token, &how_to_stop) {
+                    return Err(report_stop_error(node, how_to_stop, &next_token, *index));
+                }
+
+                break;
+            },
+            MathToken::OpeningParenthesis | MathToken::OpeningSquareBracket => {
+                *index += 1;
+
+                let op_name = match next_token {
+                    MathToken::OpeningParenthesis => "openingparenthesis",
+                    MathToken::OpeningSquareBracket => "openingsquarebracket",
+                    _ => unreachable!(),
+                };
+
+                let operator = match context.math_operators.get(op_name) {
+                    Some(op) => op,
+                    None => {
+                        return Err(ParseError {
+                            message: format!("Operator \"{}\" not found! This may be because you modified default.cowx.", op_name),
+                            position: get_file_pos_of_node_char(node, *index - 1),
+                            length: 1,
+                        });
+                    }
+                };
+
+                let stop_type = match next_token {
+                    MathToken::OpeningParenthesis => MathStopType::Parenthesis,
+                    MathToken::OpeningSquareBracket => MathStopType::SquareBracket,
+                    _ => unreachable!(),
+                };
+
+                let (mut child, _) = parse_math_subgroup(node, children, index, context, stop_type)?;
+
+                // Add a parenthesis at th beginning of the child
+                child.content.insert(0, NodeContent::Child(child.children.len()));
+                child.children.push(super::custom::instantiate_tag(operator, vec![]));
+
+                let new_child_id = res_children.len();
+                res_children.push(child);
+                res.push(NodeContent::Child(new_child_id));
+                got_one_thing = true;
             },
             MathToken::Other(('§', _)) => {
                 *index += 1;
@@ -322,7 +406,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                         });
                     },
                 }
-            }
+            },
             MathToken::Other((c, file_position)) => {
                 if c.is_whitespace() { // Ignore whitespace!
                     *index += 1;
@@ -377,16 +461,6 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
 }
 
 
-// TODO: move this
-enum MathToken<'a> {
-    Alias(&'a Alias),
-    Operator(&'a CustomTag),
-    Other((char, FilePosition)),
-    EscapedCharacter((char, FilePosition)),
-    Child(usize),
-}
-
-
 fn match_next_thing_in_math<'a>(node: &mut Node, index: &mut usize, children: &Vec<PotentialChild>, context: &'a ParserContext) -> Result<MathToken<'a>, ParseError> {
     let alias = if context.ignore_aliases { None } else { check_for_alias(&node.content, *index) };
 
@@ -399,6 +473,24 @@ fn match_next_thing_in_math<'a>(node: &mut Node, index: &mut usize, children: &V
                         *index += 1; // TODO: berk
                         let op = expect_operator(node, &children, index, context)?;
                         return Ok(MathToken::Operator(op));
+                    }
+                    else if *c == '{' {
+                        return Ok(MathToken::OpeningBrace);
+                    }
+                    else if *c == '}' {
+                        return Ok(MathToken::ClosingBrace);
+                    }
+                    else if *c == '(' {
+                        return Ok(MathToken::OpeningParenthesis);
+                    }
+                    else if *c == ')' {
+                        return Ok(MathToken::ClosingParenthesis);
+                    }
+                    else if *c == '[' {
+                        return Ok(MathToken::OpeningSquareBracket);
+                    }
+                    else if *c == ']' {
+                        return Ok(MathToken::ClosingSquareBracket);
                     }
                     else {
                         return Ok(MathToken::Other((*c, pos.clone())));
@@ -620,35 +712,67 @@ fn letter_to_greek(c: char) -> Option<char> {
 }
 
 
-// Helper for parse_math_part
-fn report_stop_error(node: &Node, expected: MathStopType, found: &str, index: usize) -> ParseError {
+/// Helper for parse_math_part
+/// Reports errors due to unexpected braces and similar 
+fn report_stop_error(node: &Node, expected: MathStopType, found: &MathToken, index: usize) -> ParseError {
     let position = get_file_pos_of_node_char(node, index - 1);
+
+    let found_str = match found {
+        MathToken::OpeningBrace => "{",
+        MathToken::ClosingBrace => "}",
+        MathToken::OpeningParenthesis => "(",
+        MathToken::ClosingParenthesis => ")",
+        MathToken::OpeningSquareBracket => "[",
+        MathToken::ClosingSquareBracket => "]",
+        _ => panic!("Uuh?")
+    };
     
     match expected {
         MathStopType::MathEnd => ParseError {
-            message: format!("Unmatched \"{}\".", found),
+            message: format!("Unmatched \"{}\".", found_str),
             position: position,
             length: 1,
         },
         MathStopType::OneThing => ParseError {
-            message: format!("Expected something before \"{}\".", found),
+            message: format!("Expected something before \"{}\".", found_str),
             position: position,
             length: 1,
         },
         MathStopType::Brace => ParseError {
-            message: format!("Unmatched \"{}\". Opened with \"{{\", but closed with \"{}\".", found, found),
+            message: format!("Unmatched \"{}\". Opened with \"{{\", but closed with \"{}\".", found_str, found_str),
             position: position,
             length: 1,
         },
         MathStopType::Parenthesis => ParseError {
-            message: format!("Unmatched \"{}\". Opened with \"(\", but closed with \"{}\".", found, found),
+            message: format!("Unmatched \"{}\". Opened with \"(\", but closed with \"{}\".", found_str, found_str),
             position: position,
             length: 1,
         },
         MathStopType::SquareBracket => ParseError {
-            message: format!("Unmatched \"{}\". Opened with \"[\", but closed with \"{}\".", found, found),
+            message: format!("Unmatched \"{}\". Opened with \"[\", but closed with \"{}\".", found_str, found_str),
             position: position,
             length: 1,
+        },
+    }
+}
+
+
+// Helper for parse_math_part
+fn compare_math_token_and_math_stop(token: &MathToken, stop: &MathStopType) -> bool {
+    match stop {
+        MathStopType::MathEnd => false,
+        MathStopType::OneThing => false,
+        MathStopType::Brace => match token {
+            MathToken::ClosingBrace => true,
+            _ => false
+        },
+        MathStopType::Parenthesis => match token {
+            MathToken::ClosingParenthesis => true,
+            _ => false
+        },
+        MathStopType::SquareBracket => match token {
+            MathToken::ClosingSquareBracket => true,
+            _ => false
         },
     }
 }

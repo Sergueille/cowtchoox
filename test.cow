@@ -54,7 +54,7 @@
         This is a fraction: $1 / 2$
 
         <br/>
-        Error test: $v/$
+        $(1, 2), (1 / 2, v/5), (|{lim}__{n -> +?inf} u_n), [a, b], [0, §p / 2]$
 
         <br/>
         Sqrt test:

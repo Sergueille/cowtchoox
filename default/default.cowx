@@ -240,3 +240,31 @@
 <?mgreater>
     ≫
 </mgreater>
+
+
+// Opening parenthesis.
+/* hidden in docs */
+<?openingparenthesis>
+    <div></div>
+</openingparenthesis>
+
+
+// Closing parenthesis.
+/* hidden in docs */
+<?closingparenthesis>
+    <div></div>
+</closingparenthesis>
+
+
+// Opening square bracket.
+/* hidden in docs */
+<?openingsquarebracket>
+    <div></div>
+</openingsquarebracket>
+
+
+// Closing square bracket.
+/* hidden in docs */
+<?closingsquarebracket>
+    <div></div>
+</closingsquarebracket>

@@ -326,6 +326,48 @@ leftarrow, leftdoublearrow, longleftarrow, longleftdoublearrow {
     transform: rotate(180deg);
 }
 
+
+/* Parenthesizes */
+*:has(openingparenthesis, closingparenthesis, openingsquarebracket, closingsquarebracket) {
+    position: relative;
+}
+
+openingparenthesis, closingparenthesis,
+openingsquarebracket, closingsquarebracket {
+    height: 0;
+    width: 0.4em;
+    overflow: visible;
+}
+
+openingparenthesis > div, closingparenthesis > div,
+openingsquarebracket > div, closingsquarebracket > div {
+    position: absolute;
+    top: 0.05em;
+    width: 0.25em;
+    height: 90%;
+}
+
+openingparenthesis > div, openingsquarebracket > div {
+    left: 0.15em;
+}
+
+closingparenthesis > div, closingsquarebracket > div {
+    right: 0.1em;
+    transform: scaleX(-1);
+}
+
+openingparenthesis > div, closingparenthesis > div {
+    background: url(parenthesis.svg);
+    background-size: 100% 100%;
+}
+
+openingsquarebracket > div, closingsquarebracket > div {
+    border-top: 0.02em solid currentColor;
+    border-bottom: 0.02em solid currentColor;
+    border-left: 0.02em solid currentColor;
+}
+
+
 /* Additional styling for html viewing */
 @media screen {
     page {
