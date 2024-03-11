@@ -23,6 +23,8 @@ enum MathStopType {
 }
 
 
+/// A helper struct for `parse_math_part`. Represent the same hing as NodeContent, but with extended meaning.
+/// For parenthesizes, `true` means that it should be displayed left instead of right or vice versa 
 enum MathToken<'a> {
     Alias(&'a Alias),
     Operator(&'a CustomTag),
@@ -30,11 +32,13 @@ enum MathToken<'a> {
     EscapedCharacter((char, FilePosition)),
     Child(usize),
     OpeningBrace,
+    OpeningVisibleBrace(bool),
     ClosingBrace,
-    OpeningParenthesis,
-    ClosingParenthesis,
-    OpeningSquareBracket,
-    ClosingSquareBracket,
+    ClosingVisibleBrace(bool),
+    OpeningParenthesis(bool),
+    ClosingParenthesis(bool),
+    OpeningSquareBracket(bool),
+    ClosingSquareBracket(bool),
 }
 
 
@@ -284,8 +288,6 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                 got_one_thing = true;
             },
             MathToken::OpeningBrace => { // Sub group. Make a recursive call
-                *index += 1;
-
                 let (child, _) = parse_math_subgroup(node, children, index, context, MathStopType::Brace)?;
 
                 let new_child_id = res_children.len();
@@ -294,20 +296,19 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                 got_one_thing = true;
             },
             MathToken::ClosingBrace => {
-                *index += 1;
-
                 if how_to_stop != MathStopType::Brace {
                     return Err(report_stop_error(node, how_to_stop, &next_token, *index));
                 }
 
                 break;
             },
-            MathToken::ClosingParenthesis | MathToken::ClosingSquareBracket => {
-                *index += 1;
-
+            MathToken::ClosingParenthesis(_) | MathToken::ClosingSquareBracket(_) | MathToken::ClosingVisibleBrace(_) => {
                 let op_name = match next_token {
-                    MathToken::ClosingParenthesis => "closingparenthesis",
-                    MathToken::ClosingSquareBracket => "closingsquarebracket",
+                    MathToken::ClosingParenthesis(false) => "closingparenthesis",
+                    MathToken::ClosingParenthesis(true) => "openingparenthesis",
+                    MathToken::ClosingSquareBracket(false) => "closingsquarebracket",
+                    MathToken::ClosingSquareBracket(true) => "openingsquarebracket",
+                    MathToken::ClosingVisibleBrace(_) => todo!("That's not implemented yet."),
                     _ => unreachable!(),
                 };
 
@@ -332,12 +333,13 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
 
                 break;
             },
-            MathToken::OpeningParenthesis | MathToken::OpeningSquareBracket => {
-                *index += 1;
-
+            MathToken::OpeningParenthesis(_) | MathToken::OpeningSquareBracket(_) | MathToken::OpeningVisibleBrace(_) => {
                 let op_name = match next_token {
-                    MathToken::OpeningParenthesis => "openingparenthesis",
-                    MathToken::OpeningSquareBracket => "openingsquarebracket",
+                    MathToken::OpeningParenthesis(false) => "openingparenthesis",
+                    MathToken::OpeningParenthesis(true) => "closingparenthesis",
+                    MathToken::OpeningSquareBracket(false) => "openingsquarebracket",
+                    MathToken::OpeningSquareBracket(true) => "closingsquarebracket",
+                    MathToken::OpeningVisibleBrace(_) => todo!("That's not implemented yet."),
                     _ => unreachable!(),
                 };
 
@@ -353,8 +355,8 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                 };
 
                 let stop_type = match next_token {
-                    MathToken::OpeningParenthesis => MathStopType::Parenthesis,
-                    MathToken::OpeningSquareBracket => MathStopType::SquareBracket,
+                    MathToken::OpeningParenthesis(_) => MathStopType::Parenthesis,
+                    MathToken::OpeningSquareBracket(_) => MathStopType::SquareBracket,
                     _ => unreachable!(),
                 };
 
@@ -370,8 +372,6 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                 got_one_thing = true;
             },
             MathToken::Other(('§', _)) => {
-                *index += 1;
-
                 let (letter_to_convert, letter_position) = match &node.content[*index] {
                     NodeContent::Character(l) => l.clone(),
                     NodeContent::EscapedCharacter(l) => {
@@ -408,18 +408,16 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                 }
             },
             MathToken::Other((c, file_position)) => {
-                if c.is_whitespace() { // Ignore whitespace!
-                    *index += 1;
+                if c.is_whitespace() { 
+                    // Ignore whitespace!
                 }
                 else { // A normal character
                     res.push(NodeContent::Character((c, file_position)));
-                    *index += 1;
                     got_one_thing = true;
                 }
             },
             MathToken::EscapedCharacter(c) => {
                 res.push(NodeContent::Character(c));
-                *index += 1;
                 got_one_thing = true;
             },
             MathToken::Child(c) => { // A child, just push it as a normal NodeContent
@@ -434,8 +432,6 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                     PotentialChild::Some(child) =>{
                         res_children.push(child);
                         res.push(NodeContent::Child(res_children.len() - 1));
-                        
-                        *index += 1;
                     },
                     PotentialChild::None(_) => unreachable!(),
                 }
@@ -461,43 +457,136 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
 }
 
 
+/// Another helper for `parse_math_part`.
+/// Advances `index` past the next found thing
 fn match_next_thing_in_math<'a>(node: &mut Node, index: &mut usize, children: &Vec<PotentialChild>, context: &'a ParserContext) -> Result<MathToken<'a>, ParseError> {
+    // See if there is an alias (if necessary)
     let alias = if context.ignore_aliases { None } else { check_for_alias(&node.content, *index) };
 
     match alias {
         Some(alias) => return Ok(MathToken::Alias(alias)),
         None => {
-            match &node.content[*index] {
+            let current = &node.content[*index];
+            
+            // Check for characters after current, if they exists
+            // Ys, this code is ugly
+
+            let after = if node.content.len() >= 1 && *index < node.content.len() - 1 {
+                match node.content[*index + 1] {
+                    NodeContent::Character((c, _)) => c,
+                    _ => '\0'
+                }
+            } else {
+                '\0'
+            };
+            
+            let after_after = if node.content.len() >= 2 && *index < node.content.len() - 2 {
+                match node.content[*index + 2] {
+                    NodeContent::Character((c, _)) => c,
+                    _ => '\0'
+                }
+            } else {
+                '\0'
+            };
+
+            // Try to find out what is the next thing
+
+            match &current {
                 NodeContent::Character((c, pos)) => {
-                    if *c == '?' {
-                        *index += 1; // TODO: berk
-                        let op = expect_operator(node, &children, index, context)?;
-                        return Ok(MathToken::Operator(op));
-                    }
-                    else if *c == '{' {
+                    if      *c == '{' {
+                        *index += 1;
                         return Ok(MathToken::OpeningBrace);
                     }
                     else if *c == '}' {
+                        *index += 1;
                         return Ok(MathToken::ClosingBrace);
                     }
+                    else if *c == '!' && after == '{' {
+                        return Err(ParseError {
+                            message: String::from("\
+You used \"!{\". The exclamation mark means \"this brace means closing instead of opening\". \
+Since this one isn't visible, it makes no sense. \
+You should either use \"}\", \"!%{\", or \"! {\"."),
+                            position: pos.clone(),
+                            length: 2,
+                        });
+                    }
+                    else if *c == '!' && after == '}' {
+                        return Err(ParseError {
+                            message: String::from("\
+You used \"!}\". The exclamation mark means \"this brace means closing instead of opening\". \
+Since this one isn't visible, it makes no sense. \
+You should either use \"{\", \"!%}\", or \"! }\"."),
+                            position: pos.clone(),
+                            length: 2,
+                        });
+                    }
+                    else if *c == '%' && after == '{' {
+                        *index += 2;
+                        return Ok(MathToken::OpeningVisibleBrace(false));
+                    }
+                    else if *c == '%' && after == '}' {
+                        *index += 2;
+                        return Ok(MathToken::ClosingVisibleBrace(false));
+                    }
+                    else if *c == '!' && after == '%' && after_after == '{' {
+                        *index += 3;
+                        return Ok(MathToken::ClosingVisibleBrace(true));
+                    }
+                    else if *c == '!' && after == '%' && after_after == '}' {
+                        *index += 3;
+                        return Ok(MathToken::OpeningVisibleBrace(true));
+                    }
                     else if *c == '(' {
-                        return Ok(MathToken::OpeningParenthesis);
+                        *index += 1;
+                        return Ok(MathToken::OpeningParenthesis(false));
                     }
                     else if *c == ')' {
-                        return Ok(MathToken::ClosingParenthesis);
+                        *index += 1;
+                        return Ok(MathToken::ClosingParenthesis(false));
+                    }
+                    else if *c == '!' && after == '(' {
+                        *index += 2;
+                        return Ok(MathToken::ClosingParenthesis(true));
+                    }
+                    else if *c == '!' && after == ')' {
+                        *index += 2;
+                        return Ok(MathToken::OpeningParenthesis(true));
                     }
                     else if *c == '[' {
-                        return Ok(MathToken::OpeningSquareBracket);
+                        *index += 1;
+                        return Ok(MathToken::OpeningSquareBracket(false));
                     }
                     else if *c == ']' {
-                        return Ok(MathToken::ClosingSquareBracket);
+                        *index += 1;
+                        return Ok(MathToken::ClosingSquareBracket(false));
                     }
-                    else {
+                    else if *c == '!' && after == '[' {
+                        *index += 2;
+                        return Ok(MathToken::ClosingSquareBracket(true));
+                    }
+                    else if *c == '!' && after == ']' {
+                        *index += 2;
+                        return Ok(MathToken::OpeningSquareBracket(true));
+                    }
+                    else if *c == '?' {
+                        *index += 1;
+                        let op = expect_operator(node, &children, index, context)?;
+                        return Ok(MathToken::Operator(op));
+                    }
+                    else { // Any other character
+                        *index += 1;
                         return Ok(MathToken::Other((*c, pos.clone())));
                     }
                 },
-                NodeContent::EscapedCharacter(c) => return Ok(MathToken::EscapedCharacter(c.clone())),
-                NodeContent::Child(c) => return Ok(MathToken::Child(*c)),
+                NodeContent::EscapedCharacter(c) => {
+                    *index += 1;
+                    return Ok(MathToken::EscapedCharacter(c.clone()));
+                },
+                NodeContent::Child(c) => {
+                    *index += 1;
+                    return Ok(MathToken::Child(*c));
+                },
             }
         },
     }
@@ -720,10 +809,14 @@ fn report_stop_error(node: &Node, expected: MathStopType, found: &MathToken, ind
     let found_str = match found {
         MathToken::OpeningBrace => "{",
         MathToken::ClosingBrace => "}",
-        MathToken::OpeningParenthesis => "(",
-        MathToken::ClosingParenthesis => ")",
-        MathToken::OpeningSquareBracket => "[",
-        MathToken::ClosingSquareBracket => "]",
+        MathToken::OpeningParenthesis(false) => "(",
+        MathToken::OpeningParenthesis(true) => "!)",
+        MathToken::ClosingParenthesis(false) => ")",
+        MathToken::ClosingParenthesis(true) => "!(",
+        MathToken::OpeningSquareBracket(false) => "[",
+        MathToken::OpeningSquareBracket(true) => "!]",
+        MathToken::ClosingSquareBracket(false) => "]",
+        MathToken::ClosingSquareBracket(true) => "![",
         _ => panic!("Uuh?")
     };
     
@@ -764,14 +857,15 @@ fn compare_math_token_and_math_stop(token: &MathToken, stop: &MathStopType) -> b
         MathStopType::OneThing => false,
         MathStopType::Brace => match token {
             MathToken::ClosingBrace => true,
+            MathToken::ClosingVisibleBrace(_) => true,
             _ => false
         },
         MathStopType::Parenthesis => match token {
-            MathToken::ClosingParenthesis => true,
+            MathToken::ClosingParenthesis(_) => true,
             _ => false
         },
         MathStopType::SquareBracket => match token {
-            MathToken::ClosingSquareBracket => true,
+            MathToken::ClosingSquareBracket(_) => true,
             _ => false
         },
     }

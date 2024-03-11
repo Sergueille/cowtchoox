@@ -328,14 +328,22 @@ leftarrow, leftdoublearrow, longleftarrow, longleftdoublearrow {
 
 
 /* Parenthesizes */
-*:has(openingparenthesis, closingparenthesis, openingsquarebracket, closingsquarebracket) {
+div:has(> openingparenthesis, > closingparenthesis, > openingsquarebracket, > closingsquarebracket) {
     position: relative;
+}
+
+openingparenthesis, openingsquarebracket {
+    margin-left: 0.2em;
+}
+
+closingparenthesis, closingsquarebracket {
+    margin-right: 0.15em;
 }
 
 openingparenthesis, closingparenthesis,
 openingsquarebracket, closingsquarebracket {
     height: 0;
-    width: 0.4em;
+    width: 0.25em;
     overflow: visible;
 }
 
@@ -347,12 +355,7 @@ openingsquarebracket > div, closingsquarebracket > div {
     height: 90%;
 }
 
-openingparenthesis > div, openingsquarebracket > div {
-    left: 0.15em;
-}
-
 closingparenthesis > div, closingsquarebracket > div {
-    right: 0.1em;
     transform: scaleX(-1);
 }
 
