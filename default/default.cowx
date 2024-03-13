@@ -242,6 +242,12 @@
 </mgreater>
 
 
+// Absolute value
+<?abs :inner>
+    <inner/>
+</abs>
+
+
 // Opening parenthesis.
 /* hidden in docs */
 <?openingparenthesis>

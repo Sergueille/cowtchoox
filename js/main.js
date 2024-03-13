@@ -2,18 +2,27 @@
 // This file will create nice page elements, and fil them with the content of the document
 // This allows to place headers and to have specific rules for page layout
 
-// Tags that ar nonbreaking by default
+// Tags that as nonbreaking by default
 const defaultNonbreaking = [
     "H1", "H2", "H3", "H4", "H5", "H6", "SVG", "PRE"
 ];
 
 
-console.log("Hello world from JS!")
-main();
+/** Errors will be stored here until cowtchoox evaluate this to show them in the terminal
+ * @type{Array<String>}
+ */
+let errors = [];
 
 
-// FIXME: this will create an infinite loop if one element is too big to fit one one page
-//        please fix this
+try {
+    main();
+}
+catch (err) {
+    errors.push(err.message);
+    createErrorElement();
+}
+
+
 async function main() {
     // Gather all document elements
     let children = Array.from(document.body.children);
@@ -30,14 +39,26 @@ async function main() {
             pageElement.appendChild(child);
         }
 
-        let remaining = await fillUntilOverflow(pageElement, pageElement);
-        
+        let [remaining, addedSomething] = await fillUntilOverflow(pageElement, pageElement);
+
         if (remaining == null) break; // No more elements
+        
+        // Nothing was added, because the next nonbreaking element is too large...
+        // To prevent endless loops, force-add the next element and report a warning 
+        if (!addedSomething) {
+            let firstChild = remaining.children[0];
+            remaining.removeChild(firstChild);
+            pageElement.appendChild(firstChild);
+
+            logError(`A nonbreaking element (${firstChild.tagName}) is too large to fit in the page.`);
+        }
 
         children = Array.from(remaining.children);
 
         pageNumber++;
     }
+    
+    createErrorElement();
 }
 
 
@@ -45,11 +66,14 @@ async function main() {
  * Inserts an element into parentElement, inside pageElement, and cuts it if necessary
  * @param {HTMLElement} pageElement 
  * @param {HTMLElement} parentElement 
- * @returns {HTMLElement} The rest of the element that couldn't be inserted in the page. Returns null if everything were inserted.
+ * @returns {[HTMLElement, bool]} The rest of the element that couldn't be inserted in the page. Returns null if everything were inserted. 
+ *                                The boolean is true if at least a part of an element was inserted
  */
 async function fillUntilOverflow(pageElement, parentElement) {
     let children = Array.from(parentElement.children);
     children.reverse();
+
+    let addedSomething = false;
 
     parentElement.innerText = ""; // Remove children
 
@@ -96,6 +120,7 @@ async function fillUntilOverflow(pageElement, parentElement) {
                         }
 
                         word += ch;
+                        addedSomething = true;
                     }
 
                     let secondHalf = top.cloneNode(false);
@@ -122,7 +147,8 @@ async function fillUntilOverflow(pageElement, parentElement) {
                     parentElement.removeChild(cloned);
                     parentElement.appendChild(top);
 
-                    let remaining = await fillUntilOverflow(pageElement, top);
+                    let [remaining, addedPartOfTop] = await fillUntilOverflow(pageElement, top);
+                    addedSomething = addedPartOfTop;
 
                     if (remaining != null) {
                         top.classList.add("first-half");
@@ -134,10 +160,13 @@ async function fillUntilOverflow(pageElement, parentElement) {
 
             break;
         }
+        else {
+            addedSomething = true;
+        }
     }
 
     if (children.length == 0) {
-        return null;
+        return [null, addedSomething];
     }
     else {
         let copy = parentElement.cloneNode(false);
@@ -148,7 +177,7 @@ async function fillUntilOverflow(pageElement, parentElement) {
             copy.appendChild(child);
         }
 
-        return copy;
+        return [copy, addedSomething];
     }
 }
 
@@ -198,5 +227,27 @@ function isOverflowing(el) {
  */
 function isNonbreaking(tag) {
     return tag.getAttribute("nonbreaking") != null || defaultNonbreaking.includes(tag.tagName);
+}
+
+
+/**
+ * Crates an element 
+ * @param {String} message
+ */
+function logError(message) {
+    errors.push(message);
+}
+
+
+/**
+ * Creates an element on the page so that cowtchoox can show the errors in the log
+ */
+function createErrorElement() {
+    let el = document.createElement("div");
+    el.id = "cowtchoox-error-reporter"
+    el.style.display = "none";
+    el.textContent = errors.join("\0");
+    
+    document.body.appendChild(el);
 }
 

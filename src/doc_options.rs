@@ -50,7 +50,11 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
                 res.css_files.push(inner_text);
             }
             tag_name => {
-                log::warning(&format!("Unknown tag \"{}\" in head.", tag_name)); // TODO: pass the position when it will be stored in nodes
+                log::warning_position(
+                    &format!("Unknown tag \"{}\" in head.", tag_name), 
+                    &child.start_position, 
+                    child.source_length
+                );
             }
         }
     };

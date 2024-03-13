@@ -13,6 +13,7 @@ page {
 
 mathnode {
     font-family: maths-font, latex-font;
+    --frac-shrink: 1em;
 }
 
 mathnode.center {
@@ -136,6 +137,8 @@ frac {
     text-align: center;
     vertical-align: 7%; /* https://xymaths.fr/Informatique-Programmation/html-css/ecrire-maths-fractions.php#frac */
     margin: 0 0.1em;
+    font-size: var(--frac-shrink);
+    --temp: max(calc(var(--frac-shrink) * 0.75), 0.4rem);
 }
 
 .frac-bar {
@@ -149,6 +152,7 @@ frac {
 
 .frac-up, .frac-down {
     display: inline-block;
+    --frac-shrink: var(--temp);
 }
 
 .frac-down {
@@ -324,6 +328,14 @@ leftarrow, longleftarrow, rightarrow, longrightarrow {
 
 leftarrow, leftdoublearrow, longleftarrow, longleftdoublearrow {
     transform: rotate(180deg);
+}
+
+
+/* ?abs */
+abs {
+    border-right: 0.02em solid currentColor;
+    border-left: 0.02em solid currentColor;
+    padding: 0 0.1em;
 }
 
 

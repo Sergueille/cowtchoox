@@ -37,7 +37,7 @@ Makes inner not use math font. <br/>
 <h3>`txt` </h3>
 ``?txt{inner}``
 <mathnode class="center">?txt{inner}</mathnode>
-Same as normalfont, but with additionnal margins. <br/>
+Same as normalfont, but with additional margins. <br/>
 
 
 <h3>`exponent` <div class="alias">Infix alias `^`</div></h3>
@@ -230,6 +230,12 @@ Much less than. (U+226A) <br/>
 ``?mgreater``
 <mathnode class="center">?mgreater</mathnode>
 Much greater than. (U+226B) <br/>
+
+
+<h3>`abs` </h3>
+``?abs{inner}``
+<mathnode class="center">?abs{inner}</mathnode>
+Absolute value <br/>
 
     </body>
 </document>

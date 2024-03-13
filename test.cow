@@ -19,7 +19,7 @@
         // Contents of the rest of the document
 
         <div style="font-size: 5em;">
-            CO<sup style="">W</sup>TCH<sub style="font-size: 1em;">O</sub>OX<sub style="font-size: 0.5em; color: #d99;">α</sub>
+            CO<sup>W</sup>TCH<sub style="font-size: 1em;">O</sub>OX<sub style="font-size: 0.5em; color: #d99;">α</sub>
         </div>
         <br/>
 
@@ -30,8 +30,6 @@
         </p>
 
         TEEEEST
-
-        ${5}$
 
         <br/>
 
@@ -57,7 +55,7 @@
         $(1, 2), (1 / 2, v/5), (|{lim}__{n -> +?inf} u_n), [a, b], [0, §p / 2], !]1 / 2; b![, [a; 1 / 2![, (a; 1 / 2!(, !)1 / 2; b!($
 
         <br/>
-        Sqrt test:
+        More math:
         $
             {
                 - b + v/{b^2 - 4ac}
@@ -83,7 +81,16 @@
                 1 / 2
             },
             |{lim}__x \  f(x),
-            |{lim}__{v/ x} \  f(v/ x)
+            |{lim}__{v/ x} \  f(v/ x),
+            ?abs{-5},
+            ?abs{v/§p},
+            1/{
+                1 + 1 / {
+                    1 + 1 / {
+                        1 + 1 / {1 + 1 / {1 + ...}}
+                    }
+                }
+            }
         $
 
         <br/>
@@ -110,97 +117,5 @@
             It ignores everything except double backticks: no need for backslash!
             <tag>, \ ` $ 
         ``
-
-        <div style="border: 0.5mm solid black; padding: 2mm;">
-            <p>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            <br/>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            <br/>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            <br/>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            </p>
-            <p>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            <br/>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            <br/>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            <br/>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            </p>
-            <p>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            </p>
-            <p>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            <br/>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            <br/>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            <br/>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            </p>
-            <p>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            <br/>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            <br/>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            <br/>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            </p>
-            <p>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            <br/>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            <br/>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            <br/>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            </p>
-            <p style="color:red;">
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            <br/>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            <br/>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            <br/>
-            And even more text to test if the program is able to handle multiple page. 
-            I need to put a lot of text here so I will say a lot of things. I don't know what to write now, I guess I will have to copy this a lot of times.
-            </p>
-        </div>
-        
     </body>
 </document>

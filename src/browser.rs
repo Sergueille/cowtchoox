@@ -1,6 +1,7 @@
 
 use std::path::PathBuf; 
-use std::fs;
+use std::time::Duration;
+use std::{fs, thread};
 use crate::Args;
 use crate::doc_options::DocOptions;
 use crate::log;
@@ -28,6 +29,22 @@ pub fn render_to_pdf(path: PathBuf, args: &Args, options: &DocOptions) -> Result
     const SCALE_CONSTANT: f64 = 1.21; // A random constant to make things work
     const MM_TO_PX: f64 = 1.0 / 30.7; // Convert from mm to px (https://developer.mozilla.org/en-US/docs/Web/CSS/length#absolute_length_units)
 
+    // Check for error reporting element: if it's produced, it's finished! If not, wait.
+    let errors_object;
+    loop {
+        let try_errors_object = tab.find_element("#cowtchoox-error-reporter");
+
+        match try_errors_object {
+            Ok(obj) => {
+                errors_object = obj;
+                break;
+            },
+            Err(_) => {}, // Wait more
+        }
+
+        thread::sleep(Duration::from_millis(200));
+    }
+
     log::log("Creating PDF...");
 
     // Export tp pdf
@@ -45,12 +62,20 @@ pub fn render_to_pdf(path: PathBuf, args: &Args, options: &DocOptions) -> Result
         ..Default::default()
     })).unwrap();
 
-    // FIXME: someone who knows rust please help
-    let mut ancestors = path.ancestors();
-    ancestors.next();
-    let mut pdf_path = ancestors.next().unwrap().to_path_buf();
+    let mut pdf_path = path.parent().unwrap().to_path_buf();
     pdf_path.push("out.pdf");
     fs::write(pdf_path, pdf).unwrap();
+
+    // Collect errors, stored in an html element. (Yes, it's ridiculous, but evaluate() isn't working)
+    let all_errors = errors_object.get_inner_text().unwrap();
+    
+    if all_errors.len() > 0 {            
+        for message in all_errors.split('\0') {
+            log::warning(&format!("The browser is complaining: {}", message));
+        }
+    }
+
+    // Cleanup
 
     if args.keep_alive {
         log::log("Keeping the browser alive forever, stop it manually");

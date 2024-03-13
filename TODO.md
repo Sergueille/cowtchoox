@@ -26,5 +26,3 @@ TODO: report error if custom tag created with invalid names ("div", "span", etc)
 
 TODO: make SVG for arrows, infinity, forall, exists, belongsto, etc...
 
-FIXME: error reporting inside tags noes not take source files spaces into account, resulting in incorrect error positions
-

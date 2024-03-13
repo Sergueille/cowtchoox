@@ -10,9 +10,7 @@ pub mod custom;
 
 // This file is parsing raw text into the Node struct
 
-// TODO: copy the file position struct in th nodes, for later error reporting
-// TODO: handle unexpected EOF (currently panics because accesses out of the bounds of the array)
-// TODO: handle comments (currently it reads them as text)
+// TODO: handle HTML comments
 
 // NOTE: currently auto-closing tags needs to include a / at the end (<br/>)
 //       should-it be mandatory?
@@ -354,8 +352,8 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
             else if state == ParserState::Math { // Finished math
                 if double {
                     return Err(ParseError {
-                        message: String::from("Closing inline math with \"$$\" but it started with\"\". Consider removing one dollar, or putting a space between them."),
-                        position: pos_before_dollar, // TODO: not the right position
+                        message: String::from("Closing inline math with \"$$\" but it started with\"$\". Consider removing one dollar, or putting a space between them."),
+                        position: pos_before_dollar,
                         length: 2,
                     });
                 }
@@ -366,7 +364,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                 if !double {
                     return Err(ParseError {
                         message: String::from("Closing math with \"$\", but it started with \"$$\". Consider adding one extra dollar."),
-                        position: pos_before_dollar, // TODO: not the right position
+                        position: pos_before_dollar,
                         length: 1,
                     });
                 }

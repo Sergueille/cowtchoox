@@ -131,7 +131,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
 
     loop {
         // Check for end of math
-        if *index >= node.content.len() { // TEST
+        if *index >= node.content.len() {
             if how_to_stop != MathStopType::MathEnd {
                 let position = get_file_pos_of_node_char(node, *index);
                 
@@ -308,7 +308,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                     MathToken::ClosingParenthesis(true) => "openingparenthesis",
                     MathToken::ClosingSquareBracket(false) => "closingsquarebracket",
                     MathToken::ClosingSquareBracket(true) => "openingsquarebracket",
-                    MathToken::ClosingVisibleBrace(_) => todo!("That's not implemented yet."),
+                    MathToken::ClosingVisibleBrace(_) => todo!("That's not implemented yet."), // TODO: do it
                     _ => unreachable!(),
                 };
 
@@ -339,7 +339,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                     MathToken::OpeningParenthesis(true) => "closingparenthesis",
                     MathToken::OpeningSquareBracket(false) => "openingsquarebracket",
                     MathToken::OpeningSquareBracket(true) => "closingsquarebracket",
-                    MathToken::OpeningVisibleBrace(_) => todo!("That's not implemented yet."),
+                    MathToken::OpeningVisibleBrace(_) => todo!("That's not implemented yet."), // TODO: do it
                     _ => unreachable!(),
                 };
 
@@ -590,8 +590,6 @@ You should either use \"{\", \"!%}\", or \"! }\"."),
             }
         },
     }
-
-    // TODO
 }
 
 
