@@ -26,3 +26,5 @@ TODO: report error if custom tag created with invalid names ("div", "span", etc)
 
 TODO: make SVG for arrows, infinity, forall, exists, belongsto, etc...
 
+TODO: make nested /* */ comments ?
+

@@ -2,6 +2,12 @@
 // Default tags and math operators
 
 
+// The cowtchoox logo.
+<!cowtchoox>
+    CO<sup style="margin-left: -0.2em; margin-right: -0.1em;">W</sup>TCH<sub style="font-size: 1em; margin-right: -0.05em;">O</sub>OX
+</cowtchoox>
+
+
 // Square root. Alias v/
 // under: the thing in the square root
 <?sqrt :under nonbreaking>

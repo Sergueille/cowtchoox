@@ -12,13 +12,22 @@ use std::{collections::HashMap, fs, path::PathBuf};
 use clap;
 use parser::custom::{CustomTag, TagHash};
 
-// Interpret command line arguments
+// This file interprets command line arguments, and call the different modules's functions
 
 pub struct Args {
     pub headful: bool,
     pub keep_alive: bool,
     pub filepath: String,
 }
+
+
+/// Contains useful information to parse a document
+pub struct Context<'a> {
+    pub args: &'a crate::Args, // Command line arguments
+    pub custom_tags: TagHash,
+    pub ignore_aliases: bool,
+}
+
 
 fn main() -> Result<(), ()> {
     log::override_panic_message();
@@ -107,14 +116,14 @@ fn main() -> Result<(), ()> {
 
 
 fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tags_hash: TagHash, exe_path: PathBuf) -> Result<(), ()> {
-    let parser_context = parser::ParserContext {
+    let context = Context {
         args,
-        math_operators: custom_tags_hash,
+        custom_tags: custom_tags_hash,
         ignore_aliases: false,
     };
 
     log::log("Parsing document...");
-    let document = match parser::parse_file(&absolute_path, &content.chars().collect(), &parser_context) {
+    let document = match parser::parse_file(&absolute_path, &content.chars().collect(), &context) {
         Ok(node) => node,
         Err(err) => {
             log::error_position(&err.message, &err.position, err.length);
@@ -123,7 +132,7 @@ fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tag
     };
     
     log::log("Creating HTML...");
-    let (text, options) = match writer::get_file_text(&document, exe_path) {
+    let (text, options) = match writer::get_file_text(&document, &context, exe_path) {
         Ok(res) => res,
         Err(_) => {
             return Err(());

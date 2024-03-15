@@ -2,6 +2,7 @@
 use std::path::PathBuf;
 
 use crate::log;
+use crate::Context;
 use crate::parser::{Node, NodeContent};
 use crate::doc_options::{self, DocOptions};
 
@@ -10,7 +11,7 @@ use crate::doc_options::{self, DocOptions};
 
 
 // Get the entire text of the document, ready for being displayed
-pub fn get_file_text(document: &Node, exe_path: PathBuf) -> Result<(String, DocOptions), ()> {
+pub fn get_file_text(document: &Node, context: &Context, exe_path: PathBuf) -> Result<(String, DocOptions), ()> {
     let mut res = String::new();
 
     let head = match try_get_children_with_name(document, "head") {
@@ -34,7 +35,7 @@ pub fn get_file_text(document: &Node, exe_path: PathBuf) -> Result<(String, DocO
         }
     };
 
-    res.push_str(&get_node_html(&body, false));
+    res.push_str(&get_node_html(&body, false, &context));
 
     res.push_str("</html>");
 
@@ -94,7 +95,7 @@ pub fn try_get_children_with_name<'a>(document: &'a Node, name: &str) -> Result<
 ///
 /// # Arguments
 /// * `no_text_tags`: will not create <text> tags (for pre of svg)
-pub fn get_node_html(node: &Node, no_text_tags: bool) -> String {
+pub fn get_node_html(node: &Node, no_text_tags: bool, context: &Context) -> String {
     let mut res = String::from("<");
 
     res.push_str(&escape_tag_name(&node.name));
@@ -153,7 +154,7 @@ pub fn get_node_html(node: &Node, no_text_tags: bool) -> String {
                         current_text_tag = String::new();
                     }
 
-                    inner_html.push_str(&get_node_html(&node.children[*id], no_text_tags || node.children[*id].name == "svg" || node.children[*id].name == "pre"))
+                    inner_html.push_str(&get_node_html(&node.children[*id], no_text_tags || node.children[*id].name == "svg" || node.children[*id].name == "pre", context))
                 },
             }
         }

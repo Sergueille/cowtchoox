@@ -89,8 +89,7 @@
         <h3>Differences with HTML</h3>
         <h4>Comments</h4>
         <p>
-            You can use HTML comments in Cowtchoox. (actually this is not yet implemented, please use other methods).
-            Cowtchoox also supports <em>C-style comments</em>:
+            HTML comments are not supported. However, Cowtchoox uses <em>C-style comments</em>:
         </p>
         <ul>
             <li>Everything after `//` is ignored until the end of the line</li>

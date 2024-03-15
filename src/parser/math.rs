@@ -1,4 +1,4 @@
-use super::{Node, NodeContent, ParseError, ParserContext, FilePosition};
+use super::{FilePosition, Node, NodeContent, ParseError, Context, TagSymbol};
 use super::custom::CustomTag;
 
 
@@ -104,7 +104,7 @@ static ALIASES: [Alias; 30] = [
 /// # Returns
 /// The node that contains all the math.
 /// 
-pub fn parse_math(node: &mut Node, context: &ParserContext) -> Result<(), ParseError> {
+pub fn parse_math(node: &mut Node, context: &Context) -> Result<(), ParseError> {
     let mut pos = 0;
 
     // Remove children from node to take ownership
@@ -122,7 +122,7 @@ pub fn parse_math(node: &mut Node, context: &ParserContext) -> Result<(), ParseE
 
 
 /// Sub-function of parse_math. `pos` is the position in the node's content array
-fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &mut usize, context: &ParserContext, how_to_stop: MathStopType) 
+fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &mut usize, context: &Context, how_to_stop: MathStopType) 
     -> Result<(PartialNode, MathParseInfo), ParseError> {
     let mut res: Vec<NodeContent> = Vec::with_capacity(node.content.len());
     let mut res_children: Vec<Node> = Vec::with_capacity(5);
@@ -150,7 +150,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
 
         match next_token {
             MathToken::Alias(alias) => {
-                let tag = context.math_operators.get(alias.tag_name);
+                let tag = context.custom_tags.get(alias.tag_name);
 
                 match tag {
                     Some(tag) => {
@@ -185,7 +185,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                                     children: vec![], 
                                     content: vec![NodeContent::Character(c)], 
                                     auto_closing: false, 
-                                    declared_with_question_mark: false, 
+                                    declaration_symbol: TagSymbol::NOTHING, 
                                     start_position: file_pos.clone(),
                                     start_inner_position: file_pos, 
                                     source_length: 1 
@@ -312,7 +312,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                     _ => unreachable!(),
                 };
 
-                let operator = match context.math_operators.get(op_name) {
+                let operator = match context.custom_tags.get(op_name) {
                     Some(op) => op,
                     None => {
                         return Err(ParseError {
@@ -343,7 +343,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                     _ => unreachable!(),
                 };
 
-                let operator = match context.math_operators.get(op_name) {
+                let operator = match context.custom_tags.get(op_name) {
                     Some(op) => op,
                     None => {
                         return Err(ParseError {
@@ -459,7 +459,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
 
 /// Another helper for `parse_math_part`.
 /// Advances `index` past the next found thing
-fn match_next_thing_in_math<'a>(node: &mut Node, index: &mut usize, children: &Vec<PotentialChild>, context: &'a ParserContext) -> Result<MathToken<'a>, ParseError> {
+fn match_next_thing_in_math<'a>(node: &mut Node, index: &mut usize, children: &Vec<PotentialChild>, context: &'a Context) -> Result<MathToken<'a>, ParseError> {
     // See if there is an alias (if necessary)
     let alias = if context.ignore_aliases { None } else { check_for_alias(&node.content, *index) };
 
@@ -594,7 +594,7 @@ You should either use \"{\", \"!%}\", or \"! }\"."),
 
 
 /// Tries to read an operator AFTER the question mark
-fn expect_operator<'a>(node: &Node, children: &Vec<PotentialChild>, pos: &mut usize, context: &'a ParserContext) -> Result<&'a CustomTag, ParseError> {
+fn expect_operator<'a>(node: &Node, children: &Vec<PotentialChild>, pos: &mut usize, context: &'a Context) -> Result<&'a CustomTag, ParseError> {
     let mut word = String::with_capacity(15);
     let start_pos = *pos - 1;
 
@@ -630,12 +630,22 @@ fn expect_operator<'a>(node: &Node, children: &Vec<PotentialChild>, pos: &mut us
         });
     }
 
-    match context.math_operators.get(&word) {
-        Some(op) => return Ok(op),
+    let (position, _) = get_file_pos_of_node_content(node, children, start_pos);
+    match context.custom_tags.get(&word) {
+        Some(op) => {
+            if !op.is_math {
+                return Err(ParseError { 
+                    message: format!("You tried to use the math operator \"{}\", but it was declared as a regular tag. You should use it like that: \"<!{}></{}>\".", word, word, word), 
+                    position, 
+                    length: word.len() + 1,
+                });
+            }
+
+            return Ok(op);
+        },
         None => {
-            let (position, _) = get_file_pos_of_node_content(node, children, start_pos);
             return Err(ParseError { 
-                message: format!("Unknown math operator name \"{}\"", word), 
+                message: format!("Unknown math operator name \"{}\".", word), 
                 position, 
                 length: word.len() + 1,
             });
@@ -759,7 +769,7 @@ fn check_for_alias(node_content: &Vec<NodeContent>, index: usize) -> Option<&'st
 
 
 // Helper for parse_math_part
-fn parse_math_subgroup(node: &mut Node, children: &mut Vec<PotentialChild>, index: &mut usize, context: &ParserContext, how_to_stop: MathStopType) 
+fn parse_math_subgroup(node: &mut Node, children: &mut Vec<PotentialChild>, index: &mut usize, context: &Context, how_to_stop: MathStopType) 
     -> Result<(Node, MathParseInfo), ParseError> {
     let start_pos = *index;
     let (start_position, _) = get_file_pos_of_node_content(node, children, *index);
@@ -772,7 +782,7 @@ fn parse_math_subgroup(node: &mut Node, children: &mut Vec<PotentialChild>, inde
         children: partial_child.children,
         content: partial_child.content,
         auto_closing: false,
-        declared_with_question_mark: false, 
+        declaration_symbol: TagSymbol::NOTHING, 
         start_position: start_position.clone(),
         start_inner_position: start_position,
         source_length: *index - start_pos,
