@@ -89,6 +89,16 @@ question {
     content: ".";
 }
 
+figure-caption::before {
+    content: "Fig." counter(figure) ": " !important;
+    font-variant: small-caps;
+}
+
+table-caption::before {
+    content: "Table " counter(table) ": " !important;
+    font-variant: small-caps;
+}
+
 @font-face {
     font-family: calligra;
     src: url("calligra.otf");

@@ -148,7 +148,7 @@ async function fillUntilOverflow(pageElement, parentElement) {
                     parentElement.appendChild(top);
 
                     let [remaining, addedPartOfTop] = await fillUntilOverflow(pageElement, top);
-                    addedSomething = addedPartOfTop;
+                    addedSomething = addedSomething || addedPartOfTop;
 
                     if (remaining != null) {
                         top.classList.add("first-half");

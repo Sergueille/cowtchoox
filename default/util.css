@@ -7,6 +7,9 @@ box {
     padding: 0 0.3em;
 }
 
+table {
+    border: 0.2mm solid black;
+}
 
 .variations {
     position: relative;

@@ -85,20 +85,42 @@ figure > * {
     margin: 0 3mm;
 }
 
-figure-caption {
-    counter-increment: figure;
+figure-caption, table-caption {
     display: block;
     text-align: center;
     margin-bottom: 7mm;
 }
 
+figure-caption {
+    counter-increment: figure;
+}
+
 figure-caption::before {
-    content: "Fig." counter(figure) ": ";
-    font-variant: small-caps;
+    content: "Figure " counter(figure) ": ";
+}
+
+table-caption {
+    counter-increment: table;
+}
+
+table-caption::before {
+    content: "Table " counter(table) ": ";
 }
 
 body {
     counter-reset: figure var(--counter-reset);
+}
+
+table {
+    border: 0.02mm solid black;
+    border-spacing: 0;
+    border-collapse: collapse; 
+}
+
+th {
+    font-weight: normal;
+    border: 0.02mm solid black;
+    padding: 0.2em;
 }
 
 
