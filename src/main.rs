@@ -72,7 +72,7 @@ fn main() -> Result<(), ()> {
     }
 
     #[cfg(not(debug_assertions))] {
-        let mut exe_path_owned = std::env::current_exe().expect("Cant' get executable location");
+        let exe_path_owned = std::env::current_exe().expect("Cant' get executable location");
         exe_path = exe_path_owned.parent().expect("Uuh?").to_owned();
     }
 

@@ -28,6 +28,8 @@ It's currently an alpha version, so nothing is working properly.
 - Call `cowtchoox my_file.cow`
 - Cowtchoox will produce `out.pdf` in the same folder
 
+See `docs\getting_started.pdf`
+
 ## Code organization
 The main program is in rust
 - `main`: read input, find files

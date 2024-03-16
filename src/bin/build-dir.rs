@@ -4,17 +4,29 @@ use zip_archive::Format;
 use zip_archive::Archiver;
 
 // This file builds the project for windows.
-// Call it with "cargo run --bin build-windows"
+// Usage: "cargo run --bin build-dir [target]"
+// To build for windows, use "cargo run --bin build-dir x86_64-pc-windows-msvc"
 
 fn main() {
     println!("Building");
 
-    std::process::Command::new("cargo").arg("build").arg("--release").stdout(std::process::Stdio::null()).output().expect("Failed to build!");
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 2 {
+        panic!("Incorrect number of arguments ({}, need 2)", args.len());
+    }
+
+    std::process::Command::new("cargo")
+        .arg("build")
+        .arg("--release")
+        .arg(format!("--target={}", args[1]))
+        .stdout(std::io::stdout())
+        .status()
+        .expect("Failed to build!");
 
     println!("Moving files");
 
     fs::create_dir_all("./build").expect("Failed to create build dir");
-    fs::copy("./target/release/cowtchoox.exe", "./build/cowtchoox.exe").expect("Failed to copy exe");
+    fs::copy(format!("./target/{}/release/cowtchoox.exe", args[1]), "./build/cowtchoox.exe").expect("Failed to copy exe");
     fs::copy("./README.md", "./build/README.md").expect("Failed to copy readme");
     copy_dir("./default", "./build/default").expect("Failed to copy default dir");
     copy_dir("./fonts", "./build/fonts").expect("Failed to copy default dir");

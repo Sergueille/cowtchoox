@@ -20,7 +20,7 @@
 
         <h2>Installation</h2>
 
-        <h3>Windows</h3>
+        <h3>Download it (only windows)</h3>
         <p>
             Go here: <a href="https://github.com/Sergueille/cowtchoox/tags">https:\/\/github.com/Sergueille/cowtchoox/tags</a>, and download the latest release.
             You should get a `.zip` file. Unzip it where you want Cowtchoox to be installed.
@@ -30,11 +30,12 @@
             </a>.
         </p>
 
-        <h3>Other OS</h3>
+        <h3>Compile it yourself</h3>
         <p>
-            I have no idea how to build this for you. You should consider 
-            <a href="https://github.com/Sergueille/cowtchoox/issues">tell me how to do it</a>
-            or building it yourself form the <a href="https://github.com/Sergueille/cowtchoox">source code</a>.
+            Clone the <a href="https://github.com/Sergueille/cowtchoox">repository</a> and install the rust compiler.
+            Then run `cargo run --bin build-dir [target]`, where `[target]` is the target you want to build for 
+            (see the list <a href="https://doc.rust-lang.org/rustc/platform-support.html">here</a>).
+            The script will create a build directory, which you can move wherever you want. (On windows you may have to add it to your PATH). 
         </p>
 
         <h2>Compiling a file</h2>
