@@ -66,6 +66,10 @@ h2::before {
 h3 {
     width: 100%;
     border-bottom: 0.3mm solid black;
+    font-weight: normal;
+    overflow: visible;
+    height: 1.2em;
+    font-size: 1em;
 }
 
 question {
