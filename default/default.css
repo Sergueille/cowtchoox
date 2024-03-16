@@ -77,6 +77,7 @@ figure {
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
     margin: 7mm 0;
 }
 
@@ -106,6 +107,7 @@ sqrt {
     position: relative;
     display: inline-block;
     padding-left: 0.15em;
+    margin-top: 0.1em;
 }
 
 sqrt > svg {
@@ -113,7 +115,7 @@ sqrt > svg {
     position: absolute;
     width: 0.5em;
     height: calc(100% - 0.25em);
-    top: 0;
+    top: 0.05em;
     left: 0;
 }
 
@@ -126,7 +128,7 @@ sqrt > svg {
 .sqrt-bar {
     display: block;
     border-top: 0.02em solid currentcolor;
-    margin-bottom: -0.12em;
+    margin-top: 0.05em;
     margin-left: 0.295em;
 }
 
@@ -147,7 +149,7 @@ frac {
     height: 0.04em;
     background-color: currentcolor; 
     margin-top: 0;
-    margin-bottom: 0.15em;
+    margin-bottom: 0.1em;
 }
 
 .frac-up, .frac-down {

@@ -15,17 +15,12 @@ page > text:nth-child(1) {
     margin: 0 10mm;
 }
 
-.box {
+.title-box {
     font-family: 'Times New Roman', Times, serif;
     border: 0.3mm solid black;
     box-shadow: 2mm 2mm 0 0 black;
-}
-
-.box {
     font-size: 1.4em;
     font-weight: bold;
-    border: 0.5mm solid black;
-    box-shadow: 1.5mm 1.5mm 0 0 black;
     padding: 3mm 4mm;
 }
 
@@ -68,20 +63,26 @@ h2::before {
     padding: 0 1mm 0 1mm;
 }
 
-.question {
-    padding-left: 2.2em;
-    text-indent: -2.2em;
+h3 {
+    width: 100%;
+    border-bottom: 0.3mm solid black;
 }
 
-.question > * {
-    text-indent: 0;
+question {
+    padding-left: 2.2em;
+    display: block;
 }
 
 .question-num {
+    margin-left: -2.2rem;
     display: inline-block;
     width: 1.7em;
     text-align: right;
     margin-right: 0.15em;
+}
+
+.question-num::after {
+    content: ".";
 }
 
 @font-face {

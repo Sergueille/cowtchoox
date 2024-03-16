@@ -363,7 +363,14 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                 },
                 _ => { // It's a child
                     let mut res_pos = pos.clone();
-                    let result = parse_tag(chars, &mut res_pos, TagSymbol::NOTHING | TagSymbol::EXCLAMATION_MARK, state == ParserState::Math, false, context);
+                    let result = parse_tag(
+                        chars, 
+                        &mut res_pos, 
+                        TagSymbol::NOTHING | TagSymbol::EXCLAMATION_MARK, 
+                        state == ParserState::Math || state == ParserState::BigMath, 
+                        false, 
+                        context
+                    );
 
                     match result {
                         Ok(child) => {

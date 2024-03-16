@@ -3,7 +3,7 @@
 
 box {
     border: 0.2mm solid black;
-    display: inline-block;
+    display: inline;
     padding: 0 0.3em;
 }
 
