@@ -15,7 +15,7 @@ pub fn render_to_pdf(path: PathBuf, args: &Args, options: &DocOptions) -> Result
         headless_chrome::LaunchOptions { 
             headless: !args.headful,
             ..Default::default()
-        }), "Couldn't find chromium")?;
+        }), "Couldn't find chromium on your computer. In order to create PDFs, a chromium must be installed.")?;
 
     let tab = log::log_if_err(browser.new_tab(), "Can't crate new tab")?;
 

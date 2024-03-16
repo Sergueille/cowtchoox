@@ -18,6 +18,7 @@ pub struct Args {
     pub headful: bool,
     pub keep_alive: bool,
     pub filepath: String,
+    pub no_pdf: bool,
 }
 
 
@@ -45,6 +46,9 @@ fn main() -> Result<(), ()> {
                 clap::arg!(--keepalive "Keeps the browser opened until the program is forced to stop")
             )
             .arg(
+                clap::arg!(--"no-pdf" "Create no pdf file")
+            )
+            .arg(
                 clap::arg!(--cowx <FILE> "Includes a cowx file")
             )
             .get_matches();
@@ -54,6 +58,7 @@ fn main() -> Result<(), ()> {
         filepath: matches.get_one::<String>("FILE").unwrap().clone(),
         headful: *matches.get_one::<bool>("headful").unwrap(),
         keep_alive: *matches.get_one::<bool>("keepalive").unwrap(),
+        no_pdf: *matches.get_one::<bool>("no-pdf").unwrap(),
     };
 
     let mut custom_tags_hash = HashMap::new(); // Store tags in this
@@ -145,7 +150,18 @@ fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tag
     fs::write(out_path.clone(), text).unwrap();
 
     // Render to pdf!
-    let _res = browser::render_to_pdf(out_path, args, &options);
+    if args.no_pdf {
+        log::log("No PDF created because you used --no-pdf");
+    }
+    else {
+        let res = browser::render_to_pdf(out_path, args, &options);
+        match res {
+            Ok(()) => {},
+            Err(()) => {
+                log::log("Failed to create PDF file, but the HTML file have been created.")
+            },
+        }
+    }
 
     log::log("Done!");
     return Ok(());
