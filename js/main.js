@@ -40,6 +40,9 @@ async function main() {
         }
 
         let [remaining, addedSomething] = await fillUntilOverflow(pageElement, pageElement);
+        
+        // Remove scrollbars that may have appeared and prevent bugs related to the page becoming slightly less wide
+        pageElement.style.setProperty("overflow", "hidden"); 
 
         if (remaining == null) break; // No more elements
         
@@ -110,7 +113,6 @@ async function fillUntilOverflow(pageElement, parentElement) {
                             top.textContent += word;
 
                             if (isOverflowing(pageElement)) {
-                                pageElement.style.setProperty("overflow", "hidden")
                                 top.textContent = top.textContent.slice(0, top.textContent.length - word.length);
                                 break;
                             }
