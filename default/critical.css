@@ -5,6 +5,7 @@
 
 body {
     font-optical-sizing: none; /* Just in case */
+    text-rendering: geometricPrecision;
     
     margin: 0px;
     padding: 0px;

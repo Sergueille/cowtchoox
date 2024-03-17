@@ -280,3 +280,59 @@
 <?closingsquarebracket>
     <div></div>
 </closingsquarebracket>
+
+
+// Put an arrow over the argument, like a vector.
+<?v :inner>
+    <div class="v-bar"></div>
+    <div class="v-arrow-cap"></div>
+    <inner/>\ 
+</v>
+
+
+// Logical and, or GCD, or cross product (U+2227)
+<?and>
+    ∧
+</and>
+
+
+// Logical or, or LCM (U+2228)
+<?or>
+    ∨
+</or>
+
+
+// Creates a vertical flex display. All contained HTML tags will be listed vertically, and horizontally centered
+<?vert-flex :inner>
+    <inner/>
+</vert-flex>
+
+
+// Put a dot over argument. Alias ^.
+<?overdot :inner>
+    <span class="overdot-dots">
+        <span class="overdot-dot"></span>
+    </span>
+    <inner/>
+</overdot>
+
+
+// Put two dots over argument. Alias ^..
+<?overddot :inner>
+    <span class="overdot-dots">
+        <span class="overdot-dot"></span>
+        <span class="overdot-dot"></span>
+    </span>
+    <inner/>
+</overddot>
+
+
+// Put two dots over argument. Alias ^...
+<?overdddot :inner>
+    <span class="overdot-dots">
+        <span class="overdot-dot"></span>
+        <span class="overdot-dot"></span>
+        <span class="overdot-dot"></span>
+    </span>
+    <inner/>
+</overdddot>
