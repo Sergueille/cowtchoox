@@ -84,6 +84,12 @@ async function fillUntilOverflow(pageElement, parentElement) {
     while (children.length > 0) {
         let top = children.pop();
 
+        // Handle page break
+        if (top.tagName == "PAGEBREAK") {
+            addedSomething = true;
+            break;
+        }
+
         parentElement.appendChild(top);
         
         // Wait to make sure the browser have updated the layout

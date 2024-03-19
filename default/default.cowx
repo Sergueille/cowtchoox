@@ -8,6 +8,11 @@
 </cowtchoox>
 
 
+// A page break. The next thing on the document will be placed on the next page.
+<!pagebreak>
+</pagebreak>
+
+
 // Square root. Alias v/
 // under: the thing in the square root
 <?sqrt :under nonbreaking>

@@ -105,15 +105,16 @@ pub fn white_head(options: &doc_options::DocOptions, exe_path: PathBuf) -> Strin
     // Link JS script, so that it executes when the page loads
     res.push_str(&format!("<script defer=\"defer\" src=\"file:///{}/JS/main.js\"></script>", default_resources_path));
 
+    // Link default CSS
+    res.push_str(&format!("<link rel=\"stylesheet\" href=\"file:///{}/default/util.css\"/>", default_resources_path));
+    res.push_str(&format!("<link rel=\"stylesheet\" href=\"file:///{}/default/default.css\"/>", default_resources_path));
+
     // Link additional CSS
     for file_path in &options.css_files {
         res.push_str(&format!("<link rel=\"stylesheet\" href=\"{}\"/>", file_path));
     }
 
-    // Link default CSS
     // IMPORTANT NOTE: make sure this tag is the last CSS tag, to make sure users don't accidentally change critical CSS rules (such as pag elements) 
-    res.push_str(&format!("<link rel=\"stylesheet\" href=\"file:///{}/default/util.css\"/>", default_resources_path));
-    res.push_str(&format!("<link rel=\"stylesheet\" href=\"file:///{}/default/default.css\"/>", default_resources_path));
     res.push_str(&format!("<link rel=\"stylesheet\" href=\"file:///{}/default/critical.css\"/>", default_resources_path));
 
     // Page size

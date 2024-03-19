@@ -74,7 +74,9 @@ h3 {
 
 question {
     padding-left: 2.2em;
-    display: block;
+    display: inline-block;
+    vertical-align: top;
+    width: calc(100% - 2.2em);
 }
 
 .question-num {

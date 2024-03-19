@@ -47,6 +47,10 @@
 
         <br/>
 
+        Also escaping in math $\$ \< \{ \\ \} 123456789Δ$
+
+        <br/>
+
         This is big math: $$that's\ {some}^{really}\ big\ math$$
 
         <br/>
@@ -121,5 +125,13 @@
             It ignores everything except double backticks: no need for backslash!
             <tag>, \ ` $ 
         ``
+
+        <div style="border: 0.3mm solid black;">
+            See you on next page!
+
+            <!pagebreak/>
+
+            Hello again!
+        </div>
     </body>
 </document>
