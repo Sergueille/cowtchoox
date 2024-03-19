@@ -1,0 +1,18 @@
+
+// In cowx files, the used can declare custom tags and custom math operators
+
+
+// Fancy styling
+<!my_tag :inner :number style="background-color: #ff5088">
+    <span style="color: blue;">This is inside a custom tag:</span>
+    <em>
+        <inner/>
+    </em>
+    (<number/>)
+</my_tag>
+
+// A math symbol
+<?my_op :x>
+    ?a <x/> € A,
+</my_op>
+

@@ -442,8 +442,9 @@ overdot, overddot, overdddot {
 
 .overdot-dots {
     position: absolute;
+    text-align: center;
     top: 0.1em;
-    left: 0;
+    left: 0.1em;
     width: 100%;
     white-space: nowrap;
 }
@@ -462,7 +463,7 @@ vert-flex > div > div {
     display: inline-flex !important; 
     flex-direction: column;
     align-items: center; 
-    vertical-align: 100%;
+    vertical-align: middle;
 }
 
 

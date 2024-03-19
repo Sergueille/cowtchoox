@@ -29,10 +29,13 @@ pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: TagHa
     let mut context = parser::Context { args, custom_tags: hash, ignore_aliases: is_default };
 
     loop { // Repeat until end of the file
-        let node = parser::parse_tag(file, pos, TagSymbol::QUESTION_MARK | TagSymbol::EXCLAMATION_MARK, false, true, &context)?;
+        let mut node = parser::parse_tag(file, pos, TagSymbol::QUESTION_MARK | TagSymbol::EXCLAMATION_MARK, false, &context)?;
 
         // Check if a "?" was added
         let is_math = node.declaration_symbol == TagSymbol::QUESTION_MARK; 
+
+        // Parse math immediately
+        super::math::parse_all_math(&mut node, is_math, &context)?;
 
         let mut arguments = Vec::with_capacity(node.attributes.len());
         for (name, value) in &node.attributes {
@@ -90,7 +93,7 @@ pub fn instantiate_tag(tag: &CustomTag, arguments: Vec<Node>) -> Node {
 /// * `arguments`: a list of argument names and values
 /// 
 pub fn instantiate_tag_with_named_parameters(tag: &CustomTag, arguments: Vec<(String, Node)>, pos: &FilePosition) -> Result<Node, ParseError> {
-    let mut arg_values = vec![None; arguments.len()];
+    let mut arg_values = vec![None; tag.arguments.len()];
 
     for (name, value) in arguments {
         // Search for the argument position
@@ -134,6 +137,7 @@ fn instantiate_tag_inner(tag: &CustomTag, node: &Node, arguments: &Vec<Node>) ->
         children: node.children.clone(),
         content: Vec::with_capacity(node.content.len()),
         auto_closing: node.auto_closing,
+        is_math: false,
         declaration_symbol: TagSymbol::NOTHING, 
         start_position: node.start_position.clone(),
         start_inner_position: node.start_inner_position.clone(),

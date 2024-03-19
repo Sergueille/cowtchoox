@@ -1,9 +1,11 @@
 
+use std::fs;
 use std::path::PathBuf;
 
 use crate::log;
 use crate::Context;
-use crate::parser::{Node, NodeContent};
+use crate::parser::{Node, NodeContent, ParseError};
+use crate::parser::custom;
 use crate::doc_options::{self, DocOptions};
 
 // Transform the struct back to raw HTML
@@ -11,10 +13,10 @@ use crate::doc_options::{self, DocOptions};
 
 
 // Get the entire text of the document, ready for being displayed
-pub fn get_file_text(document: &Node, context: &Context, exe_path: PathBuf) -> Result<(String, DocOptions), ()> {
+pub fn get_file_text(document: Node, context: &mut Context, exe_path: PathBuf) -> Result<(String, DocOptions), ()> {
     let mut res = String::new();
 
-    let head = match try_get_children_with_name(document, "head") {
+    let head = match try_get_children_with_name(&document, "head") {
         Ok(head) => head,
         Err(()) => {
             log::error("The document has no head.");
@@ -23,11 +25,56 @@ pub fn get_file_text(document: &Node, context: &Context, exe_path: PathBuf) -> R
     };
     let options = doc_options::get_options_form_head(head);
 
+    // Look for additional cowx files listed in head
+    for cowx_file in &options.cowx_files {
+        let content = match fs::read_to_string(cowx_file.clone()) {
+            Ok(content) => content,
+            Err(err) => {
+                log::error(
+                    &format!("Could not read cowx file \"{}\" specified in document head. ({}) Make sure the path is relative to the compiled file.", cowx_file, err)
+                );
+                return Err(());
+            },
+        };
+
+        // Parse the file!
+        match custom::parse_custom_tags(
+            &content.chars().collect(), 
+            &mut crate::parser::get_start_of_file_position(PathBuf::from(cowx_file)), 
+            std::mem::replace(&mut context.custom_tags, std::collections::HashMap::new()),
+            &context.args, 
+            false
+        ) {
+            Ok(res) => context.custom_tags = res,
+            Err(err) => {
+                log::error_position(&err.message, &err.position, err.length);
+            },
+        }
+    } 
+
+    // Instantiate the custom tags used in the document
+    let mut with_custom_tags = match instantiate_all_custom_tags(document, false, context) {
+        Ok(node) => node,
+        Err(err) => {
+            log::error_position(&err.message, &err.position, err.length);
+            return Err(());
+        },
+    };
+
+    // Parse the math
+    match crate::parser::math::parse_all_math(&mut with_custom_tags, false, context) {
+        Ok(()) => {},
+        Err(err) => {
+            log::error_position(&err.message, &err.position, err.length);
+            return Err(());
+        },
+    }
+
     res.push_str("<html>"); // Quirks is better!
 
     res.push_str(&white_head(&options, exe_path));
 
-    let body = match try_get_children_with_name(document, "body") {
+    let body = match try_get_children_with_name(&with_custom_tags, "body") {
         Ok(res) => res,
         Err(()) => {
             log::error("The document has no body");
@@ -35,6 +82,7 @@ pub fn get_file_text(document: &Node, context: &Context, exe_path: PathBuf) -> R
         }
     };
 
+    // Write the body text
     res.push_str(&get_node_html(&body, false, &context));
 
     res.push_str("</html>");
@@ -179,6 +227,89 @@ pub fn get_node_html(node: &Node, no_text_tags: bool, context: &Context) -> Stri
     }
 
     return res;
+}
+
+
+/// Looks for custom tags in document, then replaces them with their definition
+pub fn instantiate_all_custom_tags(mut node: Node, only_children: bool, context: &Context) -> Result<Node, ParseError> {
+    // Put children in an option array
+    let owned_children = std::mem::replace(&mut node.children, Vec::new());
+    let mut opt_children : Vec<_> = owned_children.into_iter().map(|c| Some(c)).collect();
+
+    for content in &node.content {
+        match content {
+            NodeContent::Child(id) => {
+                let child = std::mem::replace(&mut opt_children[*id], None).unwrap();
+                let changed = instantiate_all_custom_tags(child, false, context)?; // Instantiate tags inside children
+                opt_children[*id] = Some(changed);
+            },
+            _ => {},
+        }
+    }
+
+    // Put the children back
+    node.children = opt_children.into_iter().map(|opt| opt.unwrap()).collect();
+    
+    // Now, if it's a custom tag, instantiate it properly
+    if !only_children && node.declaration_symbol == crate::parser::TagSymbol::EXCLAMATION_MARK  {
+        let custom_tag = match context.custom_tags.get(&node.name) {
+            Some(tag) => tag,
+            None => {
+                return Err(ParseError {
+                    message: format!("Unknown custom tag \"{}\" used.", node.name),
+                    position: node.start_position,
+                    length: node.name.len() + 1,
+                });
+            }
+        };
+
+        if custom_tag.is_math {
+            return Err(ParseError {
+                message: format!("You tried to use \"{}\" as a custom tag, but it has been declared as a math operator. Use it with the math operator syntax.", node.name),
+                position: node.start_position,
+                length: node.name.len() + 1,
+            });  
+        }
+
+        let mut arguments = Vec::with_capacity(node.attributes.len() + 1);
+        for (name, value) in node.attributes.iter() {
+            let mut chars = name.chars();
+            if chars.next().unwrap() == ':' {
+                arguments.push((chars.collect(), crate::parser::get_tag_from_raw_text(value.as_str(), &node.start_position)));
+            } 
+        }
+
+        let start_position = node.start_position.clone();
+
+        let has_inner = custom::has_inner_param(custom_tag);
+        if node.auto_closing {
+            if has_inner {
+                return Err(ParseError {
+                    message: format!("The custom tag \"{}\" should not be auto-closing. You should usee it like this: \"<!{}></{}>\".", node.name, node.name, node.name),
+                    position: node.start_position,
+                    length: node.name.len() + 1,
+                });  
+            }
+        }
+        else {
+            if !has_inner {
+                return Err(ParseError {
+                    message: format!("The custom tag \"{}\" should be auto-closing. You should usee it like this: \"<!{}/>\".", node.name, node.name),
+                    position: node.start_position.clone(),
+                    length: node.name.len() + 1,
+                });  
+            }
+
+            arguments.push((String::from("inner"), node)); // Push the inner content as an ":inner" argument
+        }
+
+        let actual_res = custom::instantiate_tag_with_named_parameters(custom_tag, arguments, &start_position)?;
+
+        return Ok(actual_res);
+    }
+    else {
+        return Ok(node);
+    }
 }
 
 

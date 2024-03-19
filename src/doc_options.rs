@@ -17,6 +17,7 @@ pub struct DocOptions {
     pub title: String,
     pub format: DocFormat,
     pub css_files: Vec<String>,
+    pub cowx_files: Vec<String>,
 }
 
 
@@ -34,6 +35,7 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
         title: String::from("You forgot to specify the title!"),
         format: DocFormat { width: 210.0, height: 297.0 }, // Default to A4
         css_files: Vec::new(), // No additional css files linked by default
+        cowx_files: Vec::new(),
     };
     
     for child in &head.children {
@@ -48,6 +50,9 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
             },
             "css" => {
                 res.css_files.push(inner_text);
+            },
+            "cowx" => {
+                res.cowx_files.push(inner_text);
             }
             tag_name => {
                 log::warning_position(

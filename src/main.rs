@@ -121,7 +121,7 @@ fn main() -> Result<(), ()> {
 
 
 fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tags_hash: TagHash, exe_path: PathBuf) -> Result<(), ()> {
-    let context = Context {
+    let mut context = Context {
         args,
         custom_tags: custom_tags_hash,
         ignore_aliases: false,
@@ -137,7 +137,7 @@ fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tag
     };
     
     log::log("Creating HTML...");
-    let (text, options) = match writer::get_file_text(&document, &context, exe_path) {
+    let (text, options) = match writer::get_file_text(document, &mut context, exe_path) {
         Ok(res) => res,
         Err(_) => {
             return Err(());

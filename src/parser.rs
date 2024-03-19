@@ -38,6 +38,7 @@ pub struct Node {
     pub children: Vec<Node>,
     pub content: Vec<NodeContent>,
     pub auto_closing: bool,
+    pub is_math: bool, // Is this tag a math tag? (If false, can still be a math tag if inside a math tag)
     pub declaration_symbol: TagSymbol,
     pub start_position: FilePosition, // Where it is located in the source file
     pub start_inner_position: FilePosition, // Where the inner content is located in the source file
@@ -80,22 +81,22 @@ bitflags::bitflags! {
 /// * the parsed node
 /// 
 pub fn parse_file(file_path: &PathBuf, chars: &Vec<char>, context: &Context) -> Result<Node, ParseError> {
-    return parse_tag(chars, &mut get_start_of_file_position(file_path.clone()), TagSymbol::NOTHING, false, false, context);
+    return parse_tag(chars, &mut get_start_of_file_position(file_path.clone()), TagSymbol::NOTHING, false, context);
 }
 
 
 /// Parses a part of the raw file. The beginning must be at the start of a node.
+/// Does not parse math.
 /// 
 /// # Arguments
 /// * `file`: the raw contents of the file
 /// * `pos`: the index of the character where the function should start parsing
 /// * `expect_symbol`: the expected thing after the first `<`. For nothing use `TagSymbol::Nothing` 
-/// * `is_not_custom_tag`: if true, will not interpret it as a custom tag, event if a `!` is present 
 /// 
 /// # Returns
 /// * the parsed node
 /// 
-pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, expect_symbol: TagSymbol, math: bool, is_not_custom_tag: bool, context: &Context) -> Result<Node, ParseError> {
+pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, expect_symbol: TagSymbol, math: bool, context: &Context) -> Result<Node, ParseError> {
     expect(chars, &mut pos, '<')?;
 
     let start_pos = pos.clone();
@@ -176,6 +177,8 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, expect_symbol: T
 
     let mut res;
 
+    let is_really_math = math || used_symbol == TagSymbol::QUESTION_MARK || tag_name == "mathnode";
+
     match exp {
         Ok(()) => { // Auto-closing
             // Return the node directly
@@ -186,6 +189,7 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, expect_symbol: T
                 children: vec![],
                 content: vec![],
                 auto_closing: true,
+                is_math: is_really_math,
                 declaration_symbol: used_symbol,
                 start_position: start_pos,
                 start_inner_position: inner_start_pos,
@@ -193,14 +197,13 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, expect_symbol: T
             };
         },
         Err(_) => { // Not auto-closing
-            let is_really_math = math || used_symbol == TagSymbol::QUESTION_MARK || tag_name == "mathnode";
-
             res = Node {
                 name: tag_name,
                 attributes,
                 children: vec![],
                 content: vec![],
                 auto_closing: false,
+                is_math: is_really_math,
                 declaration_symbol: used_symbol,
                 start_position: start_pos,
                 start_inner_position: inner_start_pos,
@@ -231,71 +234,12 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, expect_symbol: T
     }
 
     // Yay, the user gave a completely valid node!
-
-    // Now, if it's a custom tag, instantiate it properly
-    if !is_not_custom_tag && res.declaration_symbol == TagSymbol::EXCLAMATION_MARK  {
-        let custom_tag = match context.custom_tags.get(&res.name) {
-            Some(tag) => tag,
-            None => {
-                return Err(ParseError {
-                    message: format!("Unknown custom tag \"{}\" used", res.name),
-                    position: res.start_position,
-                    length: res.name.len() + 1,
-                });
-            }
-        };
-
-        if custom_tag.is_math {
-            return Err(ParseError {
-                message: format!("You tried to use \"{}\" as a custom tag, but it has been declared as a math operator. Use it with the math operator syntax.", res.name),
-                position: res.start_position,
-                length: res.name.len() + 1,
-            });  
-        }
-
-        let mut arguments = Vec::with_capacity(res.attributes.len() + 1);
-        for (name, value) in res.attributes.iter() {
-            let mut chars = name.chars();
-            if chars.next().unwrap() == ':' {
-                arguments.push((chars.collect(), get_tag_from_raw_text(value.as_str(), pos)));
-            } 
-        }
-
-        let start_position = res.start_position.clone();
-
-        let has_inner = custom::has_inner_param(custom_tag);
-        if res.auto_closing {
-            if has_inner {
-                return Err(ParseError {
-                    message: format!("The custom tag \"{}\" should not be auto-closing. You should usee it like this: \"<!{}></{}>\".", res.name, res.name, res.name),
-                    position: res.start_position,
-                    length: res.name.len() + 1,
-                });  
-            }
-        }
-        else {
-            if !has_inner {
-                return Err(ParseError {
-                    message: format!("The custom tag \"{}\" should be auto-closing. You should usee it like this: \"<!{}/>\".", res.name, res.name),
-                    position: res.start_position.clone(),
-                    length: res.name.len() + 1,
-                });  
-            }
-
-            arguments.push((String::from("inner"), res)); // Push the inner content as an ":inner" argument
-        }
-
-        let actual_res = custom::instantiate_tag_with_named_parameters(custom_tag, arguments, &start_position)?;
-
-        return Ok(actual_res);
-    }
-    else {
-        return Ok(res);
-    }
+    
+    return Ok(res);
 }
 
 
-/// Parses text inside a tag
+/// Parses text inside a tag. Helper for `parse_tag`
 fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosition, state: ParserState, context: &Context) -> Result<(), ParseError> {
     let mut children: Vec<Node> = Vec::with_capacity(10);
     let mut content: Vec<NodeContent> = Vec::with_capacity(100);
@@ -367,8 +311,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                         chars, 
                         &mut res_pos, 
                         TagSymbol::NOTHING | TagSymbol::EXCLAMATION_MARK, 
-                        state == ParserState::Math || state == ParserState::BigMath, 
-                        false, 
+                        state == ParserState::Math || state == ParserState::BigMath,
                         context
                     );
 
@@ -418,6 +361,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                     children: vec![],
                     content: vec![],
                     auto_closing: false,
+                    is_math: true,
                     declaration_symbol: TagSymbol::NOTHING,
                     start_position: pos.clone(),
                     start_inner_position,
@@ -479,6 +423,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                 children: vec![],
                 content: vec![],
                 auto_closing: false,
+                is_math: false,
                 declaration_symbol: TagSymbol::NOTHING,
                 start_position: pos.clone(),
                 start_inner_position,
@@ -526,11 +471,6 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
 
     node.children = children;
     node.content = content;
-
-    // Now that the tag is parsed, if it's math, parse math
-    if state == ParserState::Math || state == ParserState::BigMath {
-        math::parse_math(node, context)?;
-    }
 
     return Ok(());
 }
@@ -788,7 +728,7 @@ pub fn get_start_of_file_position(path: PathBuf) -> FilePosition {
 
 
 // Creates a simple span with text in it. Also specifies a file position
-fn get_tag_from_raw_text(text: &str, pos: &FilePosition) -> Node {
+pub fn get_tag_from_raw_text(text: &str, pos: &FilePosition) -> Node {
     let chars = text.chars();
     let mut content = Vec::with_capacity(chars.clone().count());
 
@@ -802,6 +742,7 @@ fn get_tag_from_raw_text(text: &str, pos: &FilePosition) -> Node {
         children: vec![],
         content,
         auto_closing: false,
+        is_math: false,
         declaration_symbol: TagSymbol::NOTHING,
         start_position: pos.clone(),
         start_inner_position: pos.clone(),

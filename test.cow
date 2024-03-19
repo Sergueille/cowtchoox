@@ -3,8 +3,7 @@
     <head>
         <title>Test document</title>
         <format>A4</format> // Information about document will be located here
-        // No need to link CSS here, as everything in the folder wil automatically included
-        // Comments are not yet implemented
+        <cowx>test.cowx</cowx> // Tell the compiler too look in this file
     </head>
     <header>
         // Contents of the header
@@ -12,9 +11,6 @@
     <footer>
         // Contents of the footer
     </footer>
-    <aux>
-        // Define custom tags and operators here. You can also use aux files
-    </aux>
     <body>
         // Contents of the rest of the document
 
@@ -32,8 +28,12 @@
         <!cowtchoox/>
 
         $$
-            {test}__{<strong>a</strong>}
+            ?my_op x = 1 / 2
         $$
+
+        <!my_tag :number="5">
+            Hello from inside!
+        </my_tag>
 
         <br/>
 

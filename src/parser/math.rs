@@ -188,6 +188,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                                     children: vec![], 
                                     content: vec![NodeContent::Character(c)], 
                                     auto_closing: false, 
+                                    is_math: true,
                                     declaration_symbol: TagSymbol::NOTHING, 
                                     start_position: file_pos.clone(),
                                     start_inner_position: file_pos, 
@@ -457,6 +458,29 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
             got_nothing: !got_one_thing,
         }
     ));
+}
+
+
+/// Parses the math on a whole document
+pub fn parse_all_math(node: &mut Node, root_is_math: bool, context: &Context) -> Result<(), ParseError> {
+    let this_tag_is_math = root_is_math || node.is_math;
+
+    // Parse math on children
+    for c in &node.content {
+        match c {
+            NodeContent::Child(c) => {
+                parse_all_math(&mut node.children[*c], this_tag_is_math, context)?;
+            },
+            _ => {}
+        }
+    }
+    
+    if this_tag_is_math {
+        // Parse math on root
+        crate::parser::math::parse_math(node, context)?;
+    }
+
+    return Ok(());
 }
 
 
@@ -785,6 +809,7 @@ fn parse_math_subgroup(node: &mut Node, children: &mut Vec<PotentialChild>, inde
         children: partial_child.children,
         content: partial_child.content,
         auto_closing: false,
+        is_math: true,
         declaration_symbol: TagSymbol::NOTHING, 
         start_position: start_position.clone(),
         start_inner_position: start_position,
