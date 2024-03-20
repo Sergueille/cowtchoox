@@ -14,13 +14,10 @@ const defaultNonbreaking = [
 let errors = [];
 
 
-try {
-    main();
-}
-catch (err) {
+main().then(() => {}).catch(err => {
     errors.push(err.message);
     createErrorElement();
-}
+});
 
 
 async function main() {
@@ -69,8 +66,8 @@ async function main() {
  * Inserts an element into parentElement, inside pageElement, and cuts it if necessary
  * @param {HTMLElement} pageElement 
  * @param {HTMLElement} parentElement 
- * @returns {[HTMLElement, bool]} The rest of the element that couldn't be inserted in the page. Returns null if everything were inserted. 
- *                                The boolean is true if at least a part of an element was inserted
+ * @returns {Promise<[HTMLElement, bool]>} The rest of the element that couldn't be inserted in the page. Returns null if everything were inserted. 
+ *                                         The boolean is true if at least a part of an element was inserted
  */
 async function fillUntilOverflow(pageElement, parentElement) {
     let children = Array.from(parentElement.children);
@@ -87,6 +84,23 @@ async function fillUntilOverflow(pageElement, parentElement) {
         // Handle page break
         if (top.tagName == "PAGEBREAK") {
             addedSomething = true;
+            break;
+        }
+        else if (top.querySelector("pagebreak") != null) {
+            if (isNonbreaking(top)) {
+                logError(`There is a pagebreak inside a nonbreaking element (${top.tagName})`);
+            }
+
+            parentElement.appendChild(top);
+            let [remaining, addedPartOfTop] = await fillUntilOverflow(pageElement, top);
+            addedSomething = addedSomething || addedPartOfTop;
+
+            if (remaining != null) {
+                top.classList.add("first-half");
+                remaining.classList.add("second-half");
+                children.push(remaining);
+            }
+
             break;
         }
 
