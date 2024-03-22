@@ -34,7 +34,7 @@ pub enum NodeContent {
 #[derive(Debug, Clone)]
 pub struct Node {
     pub name: String,
-    pub attributes: Vec<(String, String)>,
+    pub attributes: Vec<TagAttribute>,
     pub children: Vec<Node>,
     pub content: Vec<NodeContent>,
     pub auto_closing: bool,
@@ -43,6 +43,16 @@ pub struct Node {
     pub start_position: FilePosition, // Where it is located in the source file
     pub start_inner_position: FilePosition, // Where the inner content is located in the source file
     pub source_length: usize, // How long it is in th source file
+}
+
+
+/// Represent a tag's attribute
+#[derive(Debug, Clone)]
+pub struct TagAttribute {
+    pub name: String,
+    pub value: Option<String>,
+    pub position: Option<FilePosition>, // Is None if not defined by the suer but automatically added by cowtchoox 
+    pub value_position: Option<FilePosition>, // Same, but is none if no value
 }
 
 
@@ -58,7 +68,7 @@ pub struct ParseError {
 /// Used internally to determine if inside math node or code block
 #[derive(PartialEq, Eq, Debug)]
 enum ParserState {
-    Normal, Math, BigMath, Code, BigCode
+    Normal, Math, BigMath, Code, BigCode, InsideAttributeValue
 }
 
 
@@ -136,6 +146,8 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, expect_symbol: T
 
     // Read the attributes
     loop {
+        let attr_pos = pos.clone();
+
         let attr = read_word(chars, &mut pos)?;
 
         // No more attributes
@@ -149,20 +161,34 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, expect_symbol: T
             Ok(()) => { // There is a value: read it
                 advance_until_non_whitespace(chars, pos)?;
                 let use_quotes = chars[pos.absolute_position] == '"';
+                
+                let val_pos;
 
                 let value;
                 if use_quotes {
                     advance_position_with_comments(pos, chars)?;
+                    val_pos = pos.clone();
                     value = read_until_quote(chars, pos)?;
                 }
                 else {
+                    val_pos = pos.clone();
                     value = read_word(chars, pos)?;
                 }
 
-                attributes.push((attr, value));
+                attributes.push(TagAttribute {
+                    name: attr,
+                    value: Some(value),
+                    position: Some(attr_pos),
+                    value_position: Some(val_pos),
+                });
             },
             Err(_) => { // No value
-                attributes.push((attr, String::new()));
+                attributes.push(TagAttribute {
+                    name: attr,
+                    value: None,
+                    position: Some(attr_pos),
+                    value_position: None,
+                });
             },
         }
     }
@@ -301,7 +327,12 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
             advance_position(pos, chars)?;
         }
         else if next == '<' { // Opening a new tag?
-            match chars[(*pos).absolute_position + 1] {
+
+            let mut lookahead_pos = pos.clone();
+            advance_position(&mut lookahead_pos, chars)?;
+            let next_char = read_next_char(chars,&mut lookahead_pos)?;
+
+            match next_char {
                 '/' => { // Actually, it's finished!
                     break;
                 },
@@ -344,12 +375,19 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                 advance_position(pos, chars)?;
             }
 
-            if state == ParserState::Normal { // Inner math tag
+            if state == ParserState::Normal || state == ParserState::InsideAttributeValue { // Inner math tag
                 let mut start_inner_position = pos.clone();
                 advance_position(&mut start_inner_position, chars)?;
 
                 let attributes = if double {
-                    vec![(String::from("class"), String::from("center"))]
+                    vec![
+                        TagAttribute { 
+                            name: String::from("class"), 
+                            value: Some(String::from("center")), 
+                            position: None, 
+                            value_position: None,
+                        }
+                    ]
                 }
                 else {
                     vec![]
@@ -467,6 +505,16 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
             content.push(NodeContent::Character((next, pos.clone())));
             advance_position(pos, chars)?;
         }
+
+        // Is it the end of the file?
+        if pos.absolute_position >= chars.len() - 1 {
+            if state == ParserState::InsideAttributeValue { // It's normal, we're inside an attribute!
+                break;
+            }
+            else {
+                // Uuh, continue the loop, the next one who wants to get a character will throw en error
+            }
+        }
     }
 
     node.children = children;
@@ -492,10 +540,10 @@ pub fn get_node_content_as_str(node: &Node) -> String {
 
 
 /// Gets the valu of an attribute of a node. If doesn't exists, returns Err(). If it does exists but has no value, returns Ok(())
-pub fn get_attribute_value<'a>(node: &'a Node, attrib_name: &str) -> Result<&'a String, ()> {
-    for (name, val) in &node.attributes {
-        if attrib_name == name {
-            return Ok(&val);
+pub fn get_attribute_value<'a>(node: &'a Node, attrib_name: &str) -> Result<&'a Option<String>, ()> {
+    for attr in &node.attributes {
+        if attrib_name == attr.name {
+            return Ok(&attr.value);
         }
     }
 
@@ -530,7 +578,7 @@ fn expect(chars: &Vec<char>, pos: &mut FilePosition, char: char) -> Result<(), P
 
 
 
-/// Advances the cursor until non-whitespace is found (or end of file), then returns an error if the specified character isn't found
+/// Advances the cursor until non-whitespace is found (or end of file) (does nothing if already on non-whitespace), then returns an error if the specified character isn't found
 fn read_next_char(chars: &Vec<char>, pos: &mut FilePosition) -> Result<char, ParseError> {
     advance_until_non_whitespace(chars, pos)?;
 
@@ -580,7 +628,7 @@ fn read_word(chars: &Vec<char>, pos: &mut FilePosition) -> Result<String, ParseE
         advance_position(pos, chars)?;
     }
 
-    return Ok(res.into_iter().collect::<String>().to_lowercase());
+    return Ok(res.into_iter().collect::<String>());
 }
 
 
@@ -605,7 +653,7 @@ fn read_until_quote(chars: &Vec<char>, pos: &mut FilePosition) -> Result<String,
     
     advance_position(pos, chars)?;
 
-    return Ok(res.into_iter().collect::<String>().to_lowercase());
+    return Ok(res.into_iter().collect::<String>());
 }
 
 
@@ -727,28 +775,36 @@ pub fn get_start_of_file_position(path: PathBuf) -> FilePosition {
 }
 
 
-// Creates a simple span with text in it. Also specifies a file position
-pub fn get_tag_from_raw_text(text: &str, pos: &FilePosition) -> Node {
-    let chars = text.chars();
-    let mut content = Vec::with_capacity(chars.clone().count());
+// Creates a tag from the text file and a file position (will parse inner tags)
+pub fn get_tag_from_raw_text(text: &str, is_math: bool, pos: &FilePosition, context: &Context) -> Result<Node, ParseError> {
+    // TODO!: not finished
 
-    for char in chars {
-        content.push(NodeContent::Character((char, pos.clone())));
-    }
+    let chars = text.chars().collect();
     
-    let res = Node {
+    let mut res = Node {
         name: String::from("span"),
         attributes: vec![],
         children: vec![],
-        content,
+        content: vec![],
         auto_closing: false,
-        is_math: false,
+        is_math,
         declaration_symbol: TagSymbol::NOTHING,
         start_position: pos.clone(),
         start_inner_position: pos.clone(),
         source_length: 1,
     };
 
-    return res;
+    let mut fake_pos = pos.clone();
+    fake_pos.absolute_position -= pos.absolute_position; // Set a false position, so that 0 is the beginning of the string
+
+    // FIXME: the error position is incorrect
+    // FIXME: tell the function it's normal if it hits the end of file
+    match parse_inner_tag(&chars, &mut res, &mut fake_pos, ParserState::InsideAttributeValue, context) {
+        Ok(()) => Ok(res),
+        Err(mut err) => {
+            err.position.absolute_position += pos.absolute_position; // Put the right position again
+            return Err(err);
+        },
+    }
 }
 

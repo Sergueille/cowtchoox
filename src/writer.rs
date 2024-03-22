@@ -139,8 +139,6 @@ pub fn try_get_children_with_name<'a>(document: &'a Node, name: &str) -> Result<
 
 
 /// Generates HTML for a node
-/// TEST: the function is not actually implemented properly
-///       this is directly reconstructing the tag without processing anything
 ///
 /// # Arguments
 /// * `no_text_tags`: will not create <text> tags (for pre of svg)
@@ -150,9 +148,16 @@ pub fn get_node_html(node: &Node, no_text_tags: bool, context: &Context) -> Stri
     res.push_str(&escape_tag_name(&node.name));
 
     res.push(' ');
-    
-    for (attr, val) in &node.attributes {
-        res.push_str(&format!("{}=\"{}\" ", &attr, &val));
+
+    for attr in &node.attributes {
+        match &attr.value {
+            Some(val) => {
+                res.push_str(&format!("{}=\"{}\" ", &attr.name, val));
+            },
+            None => {
+                res.push_str(&format!("{} ", &attr.name));
+            },
+        };
     }    
 
     if node.auto_closing {
@@ -273,10 +278,27 @@ pub fn instantiate_all_custom_tags(mut node: Node, only_children: bool, context:
         }
 
         let mut arguments = Vec::with_capacity(node.attributes.len() + 1);
-        for (name, value) in node.attributes.iter() {
-            let mut chars = name.chars();
+        for attr in node.attributes.iter() {
+            let mut chars = attr.name.chars();
             if chars.next().unwrap() == ':' {
-                arguments.push((chars.collect(), crate::parser::get_tag_from_raw_text(value.as_str(), &node.start_position)));
+                match &attr.value {
+                    Some(val) => {
+                        let mut val_pos = attr.value_position.clone().expect("The tag argument does not come from source file!");
+
+                        // HACK: put a space after to prevent the parser from complaining it gets the end of the string
+                        let mut padded_val = val.clone();
+                        padded_val.push(' ');
+                        let node = crate::parser::get_tag_from_raw_text(&padded_val, custom_tag.is_math, &mut val_pos, context)?;
+                        arguments.push((chars.collect(), node));
+                    },
+                    None => {
+                        return Err(ParseError {
+                            message: format!("The argument {} has no value. You should add a value after: \"{}='value'\". If you meant to add a regular attribute, you should remove the colon.", attr.name, attr.name),
+                            position: attr.position.clone().expect("The tag argument does not come from source file!"),
+                            length: attr.name.len(),
+                        });
+                    }
+                }
             } 
         }
 

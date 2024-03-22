@@ -38,13 +38,17 @@ pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: TagHa
         super::math::parse_all_math(&mut node, is_math, &context)?;
 
         let mut arguments = Vec::with_capacity(node.attributes.len());
-        for (name, value) in &node.attributes {
+        for attr in &node.attributes {
 
-            let mut chars = name.chars();
+            let mut chars = attr.name.chars();
             if chars.next() == Some(':') { // It's an argument
-                if value != "" {
+                if attr.value.is_some() {
                     return Err(parser::ParseError {
-                        message: format!("In custom tag definition, the argument \"{}\" has value \"{}\". You should remove either the colon or the value.", name, value),
+                        message: format!(
+                            "In custom tag definition, the argument \"{}\" has value \"{}\", but it shouldn't have any. You should remove either the colon to make it a regular attribute, or the value.", 
+                            attr.name, 
+                            attr.value.clone().unwrap()
+                        ),
                         position: node.start_position.clone(),
                         length: node.start_inner_position.absolute_position - node.start_position.absolute_position
                     });

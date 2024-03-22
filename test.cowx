@@ -3,7 +3,7 @@
 
 
 // Fancy styling
-<!my_tag :inner :number style="background-color: #ff5088">
+<!my_tag :inner :number style="display: inline-block; background-color: #ff5088">
     <span style="color: blue;">This is inside a custom tag:</span>
     <em>
         <inner/>

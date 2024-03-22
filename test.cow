@@ -31,8 +31,11 @@
             ?my_op x = 1 / 2
         $$
 
-        <!my_tag :number="5">
+        <!my_tag :number="1">
             Hello from inside!
+            <!my_tag :number="2">
+                Custom tag inside custom tag. And math: $1 / 2$
+            </my_tag>
         </my_tag>
 
         <br/>
@@ -40,10 +43,6 @@
         $
             There is a\ space in math\!
         $
-
-        <br/>
-
-        Also escaping in math $\$ \< \{ \\ \} 123456789Δ$
 
         <br/>
 
