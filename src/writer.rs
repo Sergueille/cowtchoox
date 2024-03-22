@@ -301,6 +301,10 @@ pub fn instantiate_all_custom_tags(mut node: Node, only_children: bool, context:
                 });  
             }
 
+            // Remove attributes and change name
+            node.name = String::from("inner");
+            node.attributes = Vec::new();
+
             arguments.push((String::from("inner"), node)); // Push the inner content as an ":inner" argument
         }
 

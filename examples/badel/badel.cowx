@@ -1,0 +1,8 @@
+
+
+// A question. (Should support nesting)
+<!question :number :inner>
+    <span class="question-num"><number/></span>
+    <inner/>
+</question>
+

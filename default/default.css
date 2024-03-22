@@ -72,7 +72,7 @@ pre {
 
 
 /* Figures */
-figure {
+.figure {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -81,29 +81,29 @@ figure {
     margin: 7mm 0;
 }
 
-figure > * {
+.figure > * {
     margin: 0 3mm;
 }
 
-figure-caption, table-caption {
+.figure-caption, .table-caption {
     display: block;
     text-align: center;
     margin-bottom: 7mm;
 }
 
-figure-caption {
+.figure-caption {
     counter-increment: figure;
 }
 
-figure-caption::before {
+.figure-caption::before {
     content: "Figure " counter(figure) ": ";
 }
 
-table-caption {
+.table-caption {
     counter-increment: table;
 }
 
-table-caption::before {
+.table-caption::before {
     content: "Table " counter(table) ": ";
 }
 

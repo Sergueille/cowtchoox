@@ -13,6 +13,28 @@
 </pagebreak>
 
 
+// A figure with a caption
+<!figure :inner :caption nonbreaking>
+    <div class="figure">
+        <inner/>
+    </div>
+    <div class="figure-caption">
+        <caption/>
+    </div>
+</figure>
+
+
+// A table with a caption
+<!table :inner :caption>
+    <table>
+        <inner/>
+    </table>
+    <div class="table-caption">
+        <caption/>
+    </div>
+</table>
+
+
 // Square root. Alias v/
 // under: the thing in the square root
 <?sqrt :under nonbreaking>

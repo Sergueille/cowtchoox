@@ -1,6 +1,8 @@
 
 Additional things to do (other ars scattered in the source file):
 
+FIXME: path of cowx file are currently relative to the working dir or something, but should be relative to the FILE path   
+
 TODO: <%tags> in math
 
 TODO: pagebreak
