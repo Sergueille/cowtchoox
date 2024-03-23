@@ -133,7 +133,26 @@
             Hello again!
         </div>
 
-        <div style="height: 90%">
+        And now, the table:
+        <!cowtable :caption="This is a nice table">
+            1 & 2 & 3 & 4 &&
+            5 & 6 & 7 & 8 
+        </cowtable>
+
+        An another:
+        <!cowtable :caption="A table with math">
+            $
+                f     & G        & §f      &&
+                10    & 0.5      & -10     &&
+                20    & 0.7      & -12     &&
+                1 / 2 & ?sqrt{1} & 9999999 &&
+                      &          & 1
+            $
+        </cowtable>
+
+        <!pagebreak/>
+
+        <div style="height: 95%">
         </div>
         <span stickafter> Stickafter! <br/></span>
         <span stickafter> Stickafter! <br/></span>

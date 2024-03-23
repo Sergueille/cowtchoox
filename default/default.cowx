@@ -25,14 +25,12 @@
 
 
 // A table with a caption
-<!table :inner :caption>
-    <table>
-        <inner/>
-    </table>
+<!cowtable :inner :caption>
+    <inner/>
     <div class="table-caption" stickbefore>
         <caption/>
     </div>
-</table>
+</cowtable>
 
 
 // Square root. Alias v/

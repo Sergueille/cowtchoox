@@ -80,6 +80,13 @@ bitflags::bitflags! {
         const EXCLAMATION_MARK = 0x4;
     }
 }
+
+
+#[derive(Clone)]
+struct SplitPosition {
+    pub content_pos: usize,
+    pub file_pos: FilePosition,
+}
     
 
 /// Parses a raw file.
@@ -272,6 +279,9 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
     
     let mut backslashed_character = false; // Should the next character be ignored because of a backslash
 
+    let mut simple_splits: Vec<SplitPosition> = Vec::new();
+    let mut double_splits: Vec<SplitPosition> = Vec::new();
+
     loop {
         let next = chars[(*pos).absolute_position];
 
@@ -366,6 +376,19 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                 }
             }
         }
+        else if next == '&' {
+            let ampersand_after = chars.len() > pos.absolute_position + 1 && chars[pos.absolute_position + 1] == '&';
+            
+            if ampersand_after {
+                double_splits.push(SplitPosition { content_pos: content.len(), file_pos: pos.clone()});
+                advance_position(pos, chars)?;
+            }
+            else {
+                simple_splits.push(SplitPosition { content_pos: content.len(), file_pos: pos.clone()});
+            }
+
+            advance_position(pos, chars)?;
+        }
         else if next == '$' {
             let pos_before_dollar = pos.clone();
             advance_position(pos, chars)?;
@@ -394,7 +417,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                 };
 
                 let mut math_tag = Node {
-                    name: String::from("math"),
+                    name: String::from("mathnode"),
                     attributes,
                     children: vec![],
                     content: vec![],
@@ -517,10 +540,105 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
         }
     }
 
-    node.children = children;
-    node.content = content;
+    if double_splits.len() > 0 || simple_splits.len() > 0 {
+        double_splits.insert(0, SplitPosition { content_pos: 0, file_pos: node.start_inner_position.clone() });
+        double_splits.push(SplitPosition { content_pos: content.len(), file_pos: pos.clone() });
+
+        // Split &&
+        let (actual_content, mut actual_children) = split_ampersands(content, children, &double_splits, "double-amp-split");
+
+        let mut simple_splits_id = 0;
+
+        for (i, child) in actual_children.iter_mut().enumerate() {
+
+            // Check for simple splits that are inside the child
+            while simple_splits_id < simple_splits.len() && simple_splits[simple_splits_id].content_pos < double_splits[i].content_pos {
+                simple_splits_id += 1;
+            }
+
+            let mut child_splits = Vec::new();
+            while simple_splits_id < simple_splits.len() && simple_splits[simple_splits_id].content_pos < double_splits[i + 1].content_pos {
+                child_splits.push(SplitPosition {
+                    content_pos: simple_splits[simple_splits_id].content_pos - double_splits[i].content_pos,
+                    file_pos: double_splits[i].file_pos.clone(),
+                });
+                simple_splits_id += 1;
+            }
+
+            // If there are & inside, split again
+            if child_splits.len() > 0 {
+                child_splits.insert(0, SplitPosition { content_pos: 0, file_pos: double_splits[i].file_pos.clone() });
+                child_splits.push(SplitPosition { 
+                    content_pos: double_splits[i + 1].content_pos - double_splits[i].content_pos, 
+                    file_pos: double_splits[i + 1].file_pos.clone() 
+                });
+
+                let moved_content = std::mem::replace(&mut child.content, vec![]);
+                let moved_children = std::mem::replace(&mut child.children, vec![]);
+                
+                let (actual_child_content, actual_child_children) = split_ampersands(moved_content, moved_children, &child_splits, "amp-split");
+                
+                child.children = actual_child_children;
+                child.content = actual_child_content;
+            }
+        }
+
+        node.children = actual_children;
+        node.content = actual_content;
+    } 
+    else {
+        node.children = children;
+        node.content = content;
+    }
 
     return Ok(());
+}
+
+
+fn split_ampersands(content: Vec<NodeContent>, children: Vec<Node>, split_positions: &Vec<SplitPosition>, split_tag_name: &str) -> (Vec<NodeContent>, Vec<Node>) {
+    let mut actual_content = Vec::with_capacity(split_positions.len() - 1);
+    let mut actual_children = Vec::with_capacity(split_positions.len() - 1);
+
+    let mut content_option: Vec<_> = content.into_iter().map(|el| Some(el)).collect();
+    let mut children_option: Vec<_> = children.into_iter().map(|el| Some(el)).collect();
+
+    for i in 0..(split_positions.len() - 1) {
+        let pos = &split_positions[i].file_pos;
+
+        let mut splitted = Node {
+            name: String::from(split_tag_name),
+            attributes: vec![],
+            children: vec![],
+            content: vec![],
+            auto_closing: false,
+            is_math: false,
+            declaration_symbol: TagSymbol::NOTHING,
+            start_position: pos.clone(),
+            start_inner_position: pos.clone(),
+            source_length: split_positions[i + 1].file_pos.absolute_position - split_positions[i].file_pos.absolute_position,
+        };
+
+        for content_id in (split_positions[i].content_pos)..(split_positions[i + 1].content_pos) {
+            let content_item = std::mem::replace(&mut content_option[content_id], None).unwrap();
+
+            match content_item {
+                NodeContent::Child(c) => {
+                    splitted.content.push(NodeContent::Child(splitted.children.len()));
+
+                    let child = std::mem::replace(&mut children_option[c], None).unwrap();
+                    splitted.children.push(child);
+                },
+                _ => {
+                    splitted.content.push(content_item);
+                }
+            }
+        }
+
+        actual_content.push(NodeContent::Child(actual_children.len()));
+        actual_children.push(splitted);
+    }
+
+    return (actual_content, actual_children);
 }
 
 
@@ -578,7 +696,7 @@ fn expect(chars: &Vec<char>, pos: &mut FilePosition, char: char) -> Result<(), P
 
 
 
-/// Advances the cursor until non-whitespace is found (or end of file) (does nothing if already on non-whitespace), then returns an error if the specified character isn't found
+/// Advances the cursor until non-whitespace is found (or end of file) (does nothing if already on non-whitespace). Returns an error if cursor on EOF 
 fn read_next_char(chars: &Vec<char>, pos: &mut FilePosition) -> Result<char, ParseError> {
     advance_until_non_whitespace(chars, pos)?;
 

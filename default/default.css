@@ -108,13 +108,26 @@ pre {
 }
 
 body {
-    counter-reset: figure var(--counter-reset);
+    counter-reset: figure table var(--counter-reset);
 }
 
-table {
-    border: 0.02mm solid black;
+cowtable > inner {
+    margin: 1em auto;
+    display: table;
     border-spacing: 0;
-    border-collapse: collapse; 
+    border-collapse: collapse;
+}
+
+cowtable > inner double-amp-split {
+    border: 0.02mm solid black;
+    display: table-row;
+}
+
+cowtable > inner double-amp-split amp-split {
+    border: 0.02mm solid black;
+    display: table-cell;
+    padding: 0.2em 0.5em;
+    text-align: center;
 }
 
 th {

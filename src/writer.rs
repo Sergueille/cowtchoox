@@ -145,7 +145,7 @@ pub fn try_get_children_with_name<'a>(document: &'a Node, name: &str) -> Result<
 pub fn get_node_html(node: &Node, no_text_tags: bool, context: &Context) -> String {
     let mut res = String::from("<");
 
-    res.push_str(&escape_tag_name(&node.name));
+    res.push_str(&node.name);
 
     res.push(' ');
 
@@ -229,7 +229,7 @@ pub fn get_node_html(node: &Node, no_text_tags: bool, context: &Context) -> Stri
             inner_html = inner_html.trim().to_string();
         }
 
-        res.push_str(&format!("{}</{}>", inner_html, &escape_tag_name(&node.name)))
+        res.push_str(&format!("{}</{}>", inner_html, &node.name))
     }
 
     return res;
@@ -336,15 +336,5 @@ pub fn instantiate_all_custom_tags(mut node: Node, only_children: bool, context:
     }
     else {
         return Ok(node);
-    }
-}
-
-
-fn escape_tag_name(name: &str) -> String {
-    if name == "math" {
-        return String::from("mathnode");
-    }
-    else {
-        return String::from(name);
     }
 }
