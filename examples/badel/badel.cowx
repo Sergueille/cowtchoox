@@ -2,7 +2,7 @@
 
 // A question. (Should support nesting)
 <!question :number :inner>
-    <span class="question-num"><number/></span>
+    <span class="question-num" stickafter><number/></span>
     <inner/>
 </question>
 

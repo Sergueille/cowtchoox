@@ -16,6 +16,7 @@ let errors = [];
 
 main().then(() => {}).catch(err => {
     errors.push(err.message);
+    console.error(err);
     createErrorElement();
 });
 
@@ -73,7 +74,9 @@ async function fillUntilOverflow(pageElement, parentElement) {
     let children = Array.from(parentElement.children);
     children.reverse();
 
-    let addedSomething = false;
+    let addedPartOfElement = false;
+    let removeStickbefore = false;
+    let addedElements = [];
 
     parentElement.innerText = ""; // Remove children
 
@@ -83,7 +86,7 @@ async function fillUntilOverflow(pageElement, parentElement) {
 
         // Handle page break
         if (top.tagName == "PAGEBREAK") {
-            addedSomething = true;
+            addedPartOfElement = true;
             break;
         }
         else if (top.querySelector("pagebreak") != null) {
@@ -93,7 +96,7 @@ async function fillUntilOverflow(pageElement, parentElement) {
 
             parentElement.appendChild(top);
             let [remaining, addedPartOfTop] = await fillUntilOverflow(pageElement, top);
-            addedSomething = addedSomething || addedPartOfTop;
+            addedPartOfElement = addedPartOfElement || addedPartOfTop;
 
             if (remaining != null) {
                 top.classList.add("first-half");
@@ -110,7 +113,12 @@ async function fillUntilOverflow(pageElement, parentElement) {
         await new Promise(resolve => setTimeout(resolve, 0));
 
         if (isOverflowing(pageElement)) { // The page is full
-            if (isNonbreaking(top)) { // Finished!
+            if (isStickbefore(top)) {
+                removeStickbefore = true;
+                parentElement.removeChild(top);
+                children.push(top);
+            }
+            else if (isNonbreaking(top)) { // Finished!
                 parentElement.removeChild(top);
                 children.push(top);
             }
@@ -142,7 +150,7 @@ async function fillUntilOverflow(pageElement, parentElement) {
                         }
 
                         word += ch;
-                        addedSomething = true;
+                        addedPartOfElement = true;
                     }
 
                     let secondHalf = top.cloneNode(false);
@@ -170,12 +178,24 @@ async function fillUntilOverflow(pageElement, parentElement) {
                     parentElement.appendChild(top);
 
                     let [remaining, addedPartOfTop] = await fillUntilOverflow(pageElement, top);
-                    addedSomething = addedSomething || addedPartOfTop;
+                    addedPartOfElement = addedPartOfElement || addedPartOfTop;
 
                     if (remaining != null) {
-                        top.classList.add("first-half");
-                        remaining.classList.add("second-half");
-                        children.push(remaining);
+                        if (addedPartOfTop) {
+                            top.classList.add("first-half");
+                            remaining.classList.add("second-half");
+                            children.push(remaining);
+                        }
+                        else { // Nothing was added inside, revert the operation 
+                            parentElement.removeChild(top);
+                            
+                            // Put the children back
+                            while (remaining.children.length > 0) {
+                                top.appendChild(remaining.children[0]);
+                            }
+
+                            children.push(top);
+                        }
                     }
                 }
             }
@@ -183,12 +203,36 @@ async function fillUntilOverflow(pageElement, parentElement) {
             break;
         }
         else {
-            addedSomething = true;
+            addedElements.push(top);
+        }
+    }
+
+    if (!addedPartOfElement) {
+        // Also remove stickafter elements
+        while (addedElements.length > 0 && isStickafter(addedElements[addedElements.length - 1])) {
+            let last = addedElements.pop();
+            parentElement.removeChild(last);
+            children.push(last);
+        }
+    }
+
+    if (removeStickbefore) {
+        // Remove stickbefore elements, and the next element
+        while (addedElements.length > 0 && isStickbefore(addedElements[addedElements.length - 1])) {
+            let last = addedElements.pop();
+            parentElement.removeChild(last);
+            children.push(last);
+        }
+
+        if (addedElements.length > 0) {
+            let last = addedElements.pop();
+            parentElement.removeChild(last);
+            children.push(last);
         }
     }
 
     if (children.length == 0) {
-        return [null, addedSomething];
+        return [null, addedElements.length > 0 || addedPartOfElement];
     }
     else {
         let copy = parentElement.cloneNode(false);
@@ -199,7 +243,7 @@ async function fillUntilOverflow(pageElement, parentElement) {
             copy.appendChild(child);
         }
 
-        return [copy, addedSomething];
+        return [copy, addedElements.length > 0 || addedPartOfElement];
     }
 }
 
@@ -248,7 +292,27 @@ function isOverflowing(el) {
  * @returns {Boolean}
  */
 function isNonbreaking(tag) {
-    return tag.getAttribute("nonbreaking") != null || defaultNonbreaking.includes(tag.tagName);
+    return tag.getAttribute("nonbreaking") != null || defaultNonbreaking.includes(tag.tagName) || isStickafter(tag) || isStickbefore(tag);
+}
+
+
+/**
+ * Determines if the element is stickafter
+ * @param {HTMLElement} tag
+ * @returns {Boolean}
+ */
+function isStickafter(tag) {
+    return tag.getAttribute("stickafter") != null;
+}
+
+
+/**
+ * Determines if the element is stickbefore
+ * @param {HTMLElement} tag
+ * @returns {Boolean}
+ */
+function isStickbefore(tag) {
+    return tag.getAttribute("stickbefore") != null;
 }
 
 

@@ -29,7 +29,7 @@
     <table>
         <inner/>
     </table>
-    <div class="table-caption">
+    <div class="table-caption" stickbefore>
         <caption/>
     </div>
 </table>

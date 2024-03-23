@@ -132,5 +132,29 @@
 
             Hello again!
         </div>
+
+        <div style="height: 90%">
+        </div>
+        <span stickafter> Stickafter! <br/></span>
+        <span stickafter> Stickafter! <br/></span>
+        <span> No stickafter! <br/></span>
+        <span stickafter> Stickafter! <br/></span>
+        <span stickafter> Stickafter! <br/></span>
+        <span stickafter> Stickafter! <br/></span>
+        <span stickafter> Stickafter! <br/></span>
+        <span stickafter> Stickafter! <br/></span>
+        <span stickafter> Stickafter! <br/></span>
+        Hello world
+
+
+        <div style="height: 80%"></div>
+
+        Hello world
+        <span stickbefore> Stickbefore! <br/></span>
+        <span stickbefore> Stickbefore! <br/></span>
+        <span stickbefore> Stickbefore! <br/></span>
+        <span stickbefore> Stickbefore! <br/></span>
+        <span stickbefore> Stickbefore! <br/></span>
+
     </body>
 </document>
