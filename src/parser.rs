@@ -413,7 +413,14 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                     ]
                 }
                 else {
-                    vec![]
+                    vec![
+                        TagAttribute { 
+                            name: String::from("nonbreaking"), 
+                            value: None, 
+                            position: None, 
+                            value_position: None,
+                        }
+                    ]
                 };
 
                 let mut math_tag = Node {

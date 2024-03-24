@@ -13,6 +13,7 @@ page {
 
 mathnode {
     font-family: maths-font, latex-font;
+    text-align: center;
     --frac-shrink: 1em;
 }
 
@@ -21,6 +22,21 @@ mathnode.center {
     display: inline-block;
     text-align: center;
     margin: 1em 0;
+}
+
+mathnode.center:has(> double-amp-split) {
+    display: table;
+    width: fit-content;
+    margin: 1em auto;
+}
+
+mathnode double-amp-split {
+    display: table-row;
+}
+
+mathnode amp-split {
+    display: table-cell;
+    text-align: left;
 }
 
 a {

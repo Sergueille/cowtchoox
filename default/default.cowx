@@ -50,6 +50,12 @@
 </sqrt>
 
 
+// Product. (like `\times` in latex) (U+00D7)
+<?x>
+    ×
+</x>
+
+
 // Horizontal fraction. Infix alias /
 // up: the thing over the bar
 // down: the thing under the bar
