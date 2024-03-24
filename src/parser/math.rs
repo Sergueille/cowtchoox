@@ -312,7 +312,8 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                     MathToken::ClosingParenthesis(true) => "openingparenthesis",
                     MathToken::ClosingSquareBracket(false) => "closingsquarebracket",
                     MathToken::ClosingSquareBracket(true) => "openingsquarebracket",
-                    MathToken::ClosingVisibleBrace(_) => todo!("That's not implemented yet."), // TODO: do it
+                    MathToken::ClosingVisibleBrace(false) => "closingbrace",
+                    MathToken::ClosingVisibleBrace(true) => "openingbrace",
                     _ => unreachable!(),
                 };
 
@@ -343,7 +344,8 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                     MathToken::OpeningParenthesis(true) => "closingparenthesis",
                     MathToken::OpeningSquareBracket(false) => "openingsquarebracket",
                     MathToken::OpeningSquareBracket(true) => "closingsquarebracket",
-                    MathToken::OpeningVisibleBrace(_) => todo!("That's not implemented yet."), // TODO: do it
+                    MathToken::OpeningVisibleBrace(false) => "openingbrace", 
+                    MathToken::OpeningVisibleBrace(true) => "closingbrace", 
                     _ => unreachable!(),
                 };
 
@@ -361,6 +363,7 @@ fn parse_math_part(node: &mut Node, children: &mut Vec<PotentialChild>, index: &
                 let stop_type = match next_token {
                     MathToken::OpeningParenthesis(_) => MathStopType::Parenthesis,
                     MathToken::OpeningSquareBracket(_) => MathStopType::SquareBracket,
+                    MathToken::OpeningVisibleBrace(_) => MathStopType::Brace,
                     _ => unreachable!(),
                 };
 

@@ -307,6 +307,40 @@
 </closingsquarebracket>
 
 
+// Opening brace.
+/* hidden in docs */
+<?openingbrace>
+    <div class="brace-inner">
+        <div class="brace-top"></div>
+        <div class="brace-bar"></div>
+        <div class="brace-middle"></div>
+        <div class="brace-bar"></div>
+        <div class="brace-bottom"></div>
+    </div>
+</openingbrace>
+
+
+// Closing brace.
+/* hidden in docs */
+<?closingbrace>
+    <div class="brace-inner">
+        <div class="brace-top"></div>
+        <div class="brace-bar"></div>
+        <div class="brace-middle"></div>
+        <div class="brace-bar"></div>
+        <div class="brace-bottom"></div>
+    </div>
+</closingbrace>
+
+
+// A system, with a big opening brace. Make lines with && and align with &.
+<!system :inner>
+    %{
+        <inner/>
+    }
+</system>
+
+
 // Put an arrow over the argument, like a vector.
 <?v :inner>
     <div class="v-bar"></div>
