@@ -8,9 +8,9 @@
         <div style="font-size: 5em;">
             CO<sup>W</sup>TCH<sub style="font-size: 1em;">O</sub>OX
         </div>
-        <h1>Getting started with Cowtchoox</h1>
+        <h1>Getting started with <!cowtchoox/></h1>
         <p>
-            This document will provides basic information on Cowtchoox.
+            This document will provides basic information on <!cowtchoox/>.
         </p>
 
         <p>
@@ -183,6 +183,11 @@
         Note that some things may differ from the final pdf file.
 
         You will also be able to use the devtools to debug your CSS.
+
+        <br/>
+        <br/>
+
+        In the folder provided with Cowtchoox, you can look at the `example` folder, to see how Cowtchoox should be used.
 
     </body>
 </document>

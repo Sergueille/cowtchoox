@@ -33,7 +33,7 @@
 </cowtable>
 
 
-// Square root. Alias v/
+// Square root.
 // under: the thing in the square root
 <?sqrt :under nonbreaking>
     <svg viewBox="0,0,31.07407,97.52569" preserveAspectRatio="none">
@@ -79,28 +79,28 @@
 
 
 // Exponent. Infix alias ^
-<?exponent :before :inner>
+<?exponent :before :inner nonbreaking>
     <span class="exponent-before"><before/></span>
     <span class="exponent-inner"><inner/></span>
 </exponent>
 
 
 // Subscript. Infix alias _
-<?subscript :before :inner>
+<?subscript :before :inner nonbreaking>
     <span class="subscript-before"><before/></span>
     <span class="subscript-inner"><inner/></span>
 </subscript>
 
 
 // Put down under middle. Infix alias __
-<?underset :middle :down> 
+<?underset :middle :down nonbreaking> 
     <middle/>
     <div class="underset-under"><down/></div>
 </underset>
 
 
 // Put up over middle. Infix alias ^^
-<?overset :middle :up> 
+<?overset :middle :up nonbreaking> 
     <middle/>
     <div class="overset-over"><up/></div>
 </overset>

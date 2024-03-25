@@ -2,9 +2,12 @@
 // This file will create nice page elements, and fil them with the content of the document
 // This allows to place headers and to have specific rules for page layout
 
-// Tags that as nonbreaking by default
+// Tags that have default properties by default by default
 const defaultNonbreaking = [
     "H1", "H2", "H3", "H4", "H5", "H6", "SVG", "PRE"
+];
+const defaultStickafter = [
+    "H1", "H2", "H3", "H4", "H5", "H6",
 ];
 
 
@@ -302,7 +305,7 @@ function isNonbreaking(tag) {
  * @returns {Boolean}
  */
 function isStickafter(tag) {
-    return tag.getAttribute("stickafter") != null;
+    return tag.getAttribute("stickafter") != null || defaultStickafter.includes(tag.tagName);
 }
 
 
