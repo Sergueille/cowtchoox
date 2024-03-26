@@ -6,13 +6,13 @@
 <!my_tag :inner :number style="display: inline-block; background-color: #ff5088">
     <span style="color: blue;">This is inside a custom tag:</span>
     <em>
-        <inner/>
+        <:inner/>
     </em>
-    (<number/>)
+    (<:number/>)
 </my_tag>
 
 // A math symbol
 <?my_op :x>
-    ?a <x/> € A,
+    ?a <:x/> € A,
 </my_op>
 

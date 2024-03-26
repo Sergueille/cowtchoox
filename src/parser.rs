@@ -20,6 +20,12 @@ pub mod custom;
 const WORD_CHARS: &str = "_-:"; 
 
 
+// Allowed autoclosing tags
+const AUTOCLOSING_TAGS: [&str; 17] = [
+    "area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr", "path"
+];
+
+
 #[derive(Debug, Clone)]
 pub enum NodeContent {
     Character((char, FilePosition)), // Contains the char, then it's absolute position in the file
@@ -78,6 +84,7 @@ bitflags::bitflags! {
         const NOTHING = 0x1;
         const QUESTION_MARK = 0x2;
         const EXCLAMATION_MARK = 0x4;
+        const COLON = 0x8;
     }
 }
 
@@ -122,6 +129,7 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, expect_symbol: T
     let used_symbol = match next_char {
         '?' => TagSymbol::QUESTION_MARK,
         '!' => TagSymbol::EXCLAMATION_MARK,
+        ':' => TagSymbol::COLON,
         _ => {
             *pos = start_pos.clone(); // Get back to last position, because we advanced past the beginning of the tag names
             TagSymbol::NOTHING
@@ -139,7 +147,7 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, expect_symbol: T
         }
         else {
             return Err(ParseError {
-                message: format!("Unexpected \"{}\"", next_char),
+                message: format!("Unexpected \"{}\"", next_char), // TODO: say what it expected
                 position: start_pos,
                 length: 2,
             });
@@ -201,7 +209,7 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, expect_symbol: T
     }
 
     // Is auto-closing tag?
-    let exp = expect(chars, pos, '/');
+    let got_autoclosing_slash = expect(chars, pos, '/');
 
     // Are we closing the tag correctly?
     expect(chars, pos, '>')?;
@@ -212,8 +220,25 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, expect_symbol: T
 
     let is_really_math = math || used_symbol == TagSymbol::QUESTION_MARK || tag_name == "mathnode";
 
-    match exp {
+    match got_autoclosing_slash {
         Ok(()) => { // Auto-closing
+
+            // Check if it is allowed
+            if used_symbol != TagSymbol::EXCLAMATION_MARK 
+            && used_symbol != TagSymbol::COLON
+            && !AUTOCLOSING_TAGS.contains(&tag_name.as_str()) {
+                return Err(
+                    ParseError { 
+                        message: format!(
+                            "The tag \"{}\" should not be auto-closing. Consider using \"<{}></{}>\". The only allowed tags are custom tags, or br, img, link, and few others.", 
+                            tag_name, tag_name, tag_name
+                        ), 
+                        position: start_pos, 
+                        length: tag_name.len() + 1
+                    }
+                );
+            }
+
             // Return the node directly
             let length = get_positions_difference(pos, &start_pos);
             res = Node {
@@ -230,6 +255,20 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, expect_symbol: T
             };
         },
         Err(_) => { // Not auto-closing
+
+            // Throw error if colon used
+            if used_symbol == TagSymbol::COLON {
+                return Err(
+                    ParseError { 
+                        message: String::from(
+                            "A tag that starts with a colon should be autoclosing. If it's not meant to be an argument for a custom tag, the colon shouldn't be here"
+                        ), 
+                        position: start_pos, 
+                        length: tag_name.len() + 1
+                    }
+                );
+            }
+
             res = Node {
                 name: tag_name,
                 attributes,
@@ -351,7 +390,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                     let result = parse_tag(
                         chars, 
                         &mut res_pos, 
-                        TagSymbol::NOTHING | TagSymbol::EXCLAMATION_MARK, 
+                        TagSymbol::NOTHING | TagSymbol::EXCLAMATION_MARK | TagSymbol::COLON, 
                         state == ParserState::Math || state == ParserState::BigMath,
                         context
                     );

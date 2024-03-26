@@ -160,7 +160,7 @@ fn instantiate_tag_inner(tag: &CustomTag, node: &Node, arguments: &Vec<Node>) ->
                 let child = &node.children[*child_id];
 
                 let mut replaced_argument = false;
-                if child.auto_closing {
+                if child.auto_closing && child.declaration_symbol == TagSymbol::COLON {
                     // Should this tag be replaced by an argument?
                     for (i, arg) in tag.arguments.iter().enumerate() {
                         if arg == &child.name {

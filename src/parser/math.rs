@@ -479,7 +479,7 @@ pub fn parse_all_math(node: &mut Node, root_is_math: bool, context: &Context) ->
     
     if this_tag_is_math {
         // Parse math on root
-        crate::parser::math::parse_math(node, context)?;
+        parse_math(node, context)?;
     }
 
     return Ok(());

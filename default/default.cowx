@@ -16,19 +16,19 @@
 // A figure with a caption
 <!figure :inner :caption nonbreaking>
     <div class="figure">
-        <inner/>
+        <:inner/>
     </div>
     <div class="figure-caption">
-        <caption/>
+        <:caption/>
     </div>
 </figure>
 
 
 // A table with a caption
 <!cowtable :inner :caption>
-    <inner/>
+    <:inner/>
     <div class="table-caption" stickbefore>
-        <caption/>
+        <:caption/>
     </div>
 </cowtable>
 
@@ -45,7 +45,7 @@
     </svg>
     <div class="sqrt-bar"></div>
     <div class="sqrt-inner">
-        <under/>
+        <:under/>
     </div>
 </sqrt>
 
@@ -60,49 +60,49 @@
 // up: the thing over the bar
 // down: the thing under the bar
 <?frac :up :down nonbreaking>
-    <div class="frac-up"><up/></div>
+    <div class="frac-up"><:up/></div>
     <div class="frac-bar"></div>
-    <div class="frac-down"><down/></div>
+    <div class="frac-down"><:down/></div>
 </frac>
 
 
 // Makes inner not use math font. Alias |
 <?normalfont :inner> 
-    <inner/>
+    <:inner/>
 </normalfont>
 
 
 // Same as normalfont, but with additionnal margins.
 <?txt :inner>
-    <inner/>
+    <:inner/>
 </txt>
 
 
 // Exponent. Infix alias ^
 <?exponent :before :inner nonbreaking>
-    <span class="exponent-before"><before/></span>
-    <span class="exponent-inner"><inner/></span>
+    <span class="exponent-before"><:before/></span>
+    <span class="exponent-inner"><:inner/></span>
 </exponent>
 
 
 // Subscript. Infix alias _
 <?subscript :before :inner nonbreaking>
-    <span class="subscript-before"><before/></span>
-    <span class="subscript-inner"><inner/></span>
+    <span class="subscript-before"><:before/></span>
+    <span class="subscript-inner"><:inner/></span>
 </subscript>
 
 
 // Put down under middle. Infix alias __
 <?underset :middle :down nonbreaking> 
-    <middle/>
-    <div class="underset-under"><down/></div>
+    <:middle/>
+    <div class="underset-under"><:down/></div>
 </underset>
 
 
 // Put up over middle. Infix alias ^^
 <?overset :middle :up nonbreaking> 
-    <middle/>
-    <div class="overset-over"><up/></div>
+    <:middle/>
+    <div class="overset-over"><:up/></div>
 </overset>
 
 
@@ -227,7 +227,7 @@
 
 // Underlines argument.
 <?un :inner>
-    <inner/>
+    <:inner/>
 </un>
 
 
@@ -281,7 +281,7 @@
 
 // Absolute value
 <?abs :inner>
-    <inner/>
+    <:inner/>
 </abs>
 
 
@@ -342,7 +342,7 @@
 // A system, with a big opening brace. Make lines with && and align with &.
 <!system :inner>
     %{
-        <inner/>
+        <:inner/>
     }
 </system>
 
@@ -351,7 +351,7 @@
 <?v :inner>
     <div class="v-bar"></div>
     <div class="v-arrow-cap"></div>
-    <inner/>\ 
+    <:inner/>\ 
 </v>
 
 
@@ -369,7 +369,7 @@
 
 // Creates a vertical flex display. All contained HTML tags will be listed vertically, and horizontally centered
 <?vert-flex :inner>
-    <inner/>
+    <:inner/>
 </vert-flex>
 
 
@@ -378,7 +378,7 @@
     <span class="overdot-dots">
         <span class="overdot-dot"></span>
     </span>
-    <inner/>
+    <:inner/>
 </overdot>
 
 
@@ -388,7 +388,7 @@
         <span class="overdot-dot"></span>
         <span class="overdot-dot"></span>
     </span>
-    <inner/>
+    <:inner/>
 </overddot>
 
 
@@ -399,5 +399,5 @@
         <span class="overdot-dot"></span>
         <span class="overdot-dot"></span>
     </span>
-    <inner/>
+    <:inner/>
 </overdddot>
