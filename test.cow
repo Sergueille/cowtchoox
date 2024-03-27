@@ -62,6 +62,11 @@
         $(1, 2), (1 / 2, v/5), (|{lim}__{n -> +?inf} u_n), [a, b], [0, §p / 2], !]1 / 2; b![, [a; 1 / 2![, (a; 1 / 2!(, !)1 / 2; b!($
 
         <br/>
+        <!page-number/> <br/>
+        <!evaluate>new Date().getFullYear()</evaluate> <br/>
+        <!evaluate>new Date()</evaluate> <br/>
+
+        <br/>
         More math:
         $
             {
@@ -187,6 +192,7 @@
         <span stickbefore> Stickbefore! <br/></span>
         <span stickbefore> Stickbefore! <br/></span>
         <span stickbefore> Stickbefore! <br/></span>
+        <!page-number/> <br/>
 
     </body>
 </document>

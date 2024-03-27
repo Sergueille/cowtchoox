@@ -13,6 +13,17 @@
 </pagebreak>
 
 
+// Will be replaced by the page number
+<!page-number>
+</page-number>
+
+
+// Will be replaced by the result of the provided js expression (useful to display the current date)
+<!evaluate :inner>
+    <:inner/>
+</evaluate>
+
+
 // A figure with a caption
 <!figure :inner :caption nonbreaking>
     <div class="figure">

@@ -25,6 +25,8 @@ main().then(() => {}).catch(err => {
 
 
 async function main() {
+    replaceEvaluate();
+
     // Gather all document elements
     let children = Array.from(document.body.children);
 
@@ -39,6 +41,8 @@ async function main() {
         for (let child of children) {
             pageElement.appendChild(child);
         }
+
+        replacePageNumbers(pageElement, pageNumber);
 
         let [remaining, addedSomething] = await fillUntilOverflow(pageElement, pageElement);
         
@@ -65,6 +69,38 @@ async function main() {
     createErrorElement();
 }
 
+
+/**
+ * Will replace all values of evaluate tags
+ */
+function replaceEvaluate() {
+    // Search for get tags
+    for (let tag of document.querySelectorAll("evaluate > inner > text")) {
+        let expression = tag.innerHTML;
+
+        try {
+            let result = eval(expression);
+            tag.innerHTML = result;
+        }
+        catch(err) {
+            logError(`Failed to parse the evaluate tag that contains "${tag.innerHTML}". The error is: "${err.message}"`)
+            tag.innerHTML = "Evaluation failed.";
+        }
+    }
+}
+
+
+/**
+ * Will replace all values of page number tags in parent with provided value
+ * @param {HTMLElement} parent
+ * @param {number} page
+ */
+function replacePageNumbers(parent, page) {
+    // Search for get tags
+    for (let tag of parent.querySelectorAll("page-number")) {
+        tag.innerHTML = page.toString();
+    }
+}
 
 /**
  * Inserts an element into parentElement, inside pageElement, and cuts it if necessary
