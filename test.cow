@@ -4,13 +4,9 @@
         <title>Test document</title>
         <format>A4</format> // Information about document will be located here
         <cowx>test.cowx</cowx> // Tell the compiler too look in this file
+        <footer>examples/badel/foot.cowx</footer> // The cowx file that contains the footer
+        <css>examples/badel/badel.css</css> // TEST
     </head>
-    <header>
-        // Contents of the header
-    </header>
-    <footer>
-        // Contents of the footer
-    </footer>
     <body>
         // Contents of the rest of the document
 
@@ -28,7 +24,7 @@
         <!cowtchoox/>
 
         $$
-            ?my_op x = 1 / 2
+            ?my_op x x = 1 / 2
         $$
 
         <!my_tag :number="1">

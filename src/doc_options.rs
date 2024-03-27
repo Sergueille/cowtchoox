@@ -18,6 +18,7 @@ pub struct DocOptions {
     pub format: DocFormat,
     pub css_files: Vec<String>,
     pub cowx_files: Vec<String>,
+    pub footer_file: Option<String>
 }
 
 
@@ -36,6 +37,7 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
         format: DocFormat { width: 210.0, height: 297.0 }, // Default to A4
         css_files: Vec::new(), // No additional css files linked by default
         cowx_files: Vec::new(),
+        footer_file: None,
     };
     
     for child in &head.children {
@@ -53,6 +55,9 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
             },
             "cowx" => {
                 res.cowx_files.push(inner_text);
+            },
+            "footer" => {
+                res.footer_file = Some(inner_text);
             }
             tag_name => {
                 log::warning_position(

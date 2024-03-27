@@ -13,10 +13,10 @@ use crate::doc_options::{self, DocOptions};
 
 
 // Get the entire text of the document, ready for being displayed
-pub fn get_file_text(document: Node, context: &mut Context, exe_path: PathBuf) -> Result<(String, DocOptions), ()> {
+pub fn get_file_text(mut document: Node, context: &mut Context, exe_path: PathBuf) -> Result<(String, DocOptions), ()> {
     let mut res = String::new();
 
-    let head = match try_get_children_with_name(&document, "head") {
+    let head = match try_get_children_with_name(&mut document, "head") {
         Ok(head) => head,
         Err(()) => {
             log::error("The document has no head.");
@@ -52,8 +52,64 @@ pub fn get_file_text(document: Node, context: &mut Context, exe_path: PathBuf) -
         }
     } 
 
+    let mut finished_document = parse_math_and_replace_tags(document, &context)?;
+
+    // Get the body from the document
+    let body = match try_get_children_with_name(&mut finished_document, "body") {
+        Ok(res) => res,
+        Err(()) => {
+            log::error("The document has no body");
+            return Err(());
+        }
+    };
+
+    // Parse the header, if found add it as a child to the body
+    match &options.footer_file {
+        Some(file) => {
+            let file_res = std::fs::read_to_string(file.clone());
+            match file_res {
+                Ok(string) => {
+                    let parsed = crate::parser::parse_file(&PathBuf::from(file.clone()), &string.chars().collect(), context);
+                    match parsed {
+                        Ok(mut node) => {
+                            // Add the footer as a child
+                            node.name = String::from("doc_footer");
+                            let finished_footer = parse_math_and_replace_tags(node, context)?;
+
+                            body.content.push(crate::parser::NodeContent::Child(body.children.len()));
+                            body.children.push(finished_footer);
+                        },
+                        Err(err) => {
+                            log::error_position(&err.message, &err.position, err.length);
+                            return Err(());
+                        },
+                    }
+                },
+                Err(err) => {
+                    log::error(&format!("Failed to read the header file: {}", err));
+                    return  Err(());
+                },
+            }
+        },
+        None => {},
+    };    
+
+    res.push_str("<html>"); // Quirks is better!
+
+    res.push_str(&white_head(&options, exe_path));
+
+    // Write the body text
+    res.push_str(&get_node_html(&body, false, &context));
+
+    res.push_str("</html>");
+
+    return Ok((res, options));
+}
+
+
+fn parse_math_and_replace_tags(node: Node, context: &Context) -> Result<Node, ()> {
     // Instantiate the custom tags used in the document
-    let mut with_custom_tags = match instantiate_all_custom_tags(document, false, context) {
+    let mut with_custom_tags = match instantiate_all_custom_tags(node, false, context) {
         Ok(node) => node,
         Err(err) => {
             log::error_position(&err.message, &err.position, err.length);
@@ -68,26 +124,9 @@ pub fn get_file_text(document: Node, context: &mut Context, exe_path: PathBuf) -
             log::error_position(&err.message, &err.position, err.length);
             return Err(());
         },
-    }
-
-    res.push_str("<html>"); // Quirks is better!
-
-    res.push_str(&white_head(&options, exe_path));
-
-    let body = match try_get_children_with_name(&with_custom_tags, "body") {
-        Ok(res) => res,
-        Err(()) => {
-            log::error("The document has no body");
-            return Err(());
-        }
     };
 
-    // Write the body text
-    res.push_str(&get_node_html(&body, false, &context));
-
-    res.push_str("</html>");
-
-    return Ok((res, options));
+    return Ok(with_custom_tags);
 }
 
 
@@ -127,8 +166,8 @@ pub fn white_head(options: &doc_options::DocOptions, exe_path: PathBuf) -> Strin
 
 
 /// Looks for the head of a document, returns Err if not found
-pub fn try_get_children_with_name<'a>(document: &'a Node, name: &str) -> Result<&'a Node, ()> {
-    for child in &document.children {
+fn try_get_children_with_name<'a>(document: &'a mut Node, name: &str) -> Result<&'a mut Node, ()> {
+    for child in &mut document.children {
         if child.name == name {
             return Ok(child);
         }

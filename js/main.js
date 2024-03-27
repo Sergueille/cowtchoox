@@ -27,6 +27,8 @@ main().then(() => {}).catch(err => {
 async function main() {
     replaceEvaluate();
 
+    let footer = findFooter();
+
     // Gather all document elements
     let children = Array.from(document.body.children);
 
@@ -38,13 +40,22 @@ async function main() {
         let pageElement = getPage(pageNumber);
         document.body.appendChild(pageElement);
 
-        for (let child of children) {
-            pageElement.appendChild(child);
+        let insidePage = document.createElement("page-inside");
+        pageElement.appendChild(insidePage);
+
+        if (footer) {
+            let instance = footer.cloneNode(true);
+            replacePageNumbers(instance, pageNumber);
+            pageElement.appendChild(instance);
         }
 
-        replacePageNumbers(pageElement, pageNumber);
+        for (let child of children) {
+            insidePage.appendChild(child);
+        }
 
-        let [remaining, addedSomething] = await fillUntilOverflow(pageElement, pageElement);
+        replacePageNumbers(insidePage, pageNumber);
+
+        let [remaining, addedSomething] = await fillUntilOverflow(pageElement, insidePage);
         
         // Remove scrollbars that may have appeared and prevent bugs related to the page becoming slightly less wide
         pageElement.style.setProperty("overflow", "hidden"); 
@@ -375,4 +386,19 @@ function createErrorElement() {
     
     document.body.appendChild(el);
 }
+
+
+/**
+ * Find the footer element in the document and removes it
+ * @returns {HTMLelement} The footer
+ */
+function findFooter() {
+    let res = document.querySelector("doc_footer");
+
+    if (res) {
+        res.parentElement.removeChild(res);
+    }
+
+    return res;
+} 
 
