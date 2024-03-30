@@ -941,8 +941,6 @@ pub fn get_start_of_file_position(path: PathBuf) -> FilePosition {
 
 // Creates a tag from the text file and a file position (will parse inner tags)
 pub fn get_tag_from_raw_text(text: &str, is_math: bool, pos: &FilePosition, context: &Context) -> Result<Node, ParseError> {
-    // TODO!: not finished
-
     let chars = text.chars().collect();
     
     let mut res = Node {
@@ -961,8 +959,6 @@ pub fn get_tag_from_raw_text(text: &str, is_math: bool, pos: &FilePosition, cont
     let mut fake_pos = pos.clone();
     fake_pos.absolute_position -= pos.absolute_position; // Set a false position, so that 0 is the beginning of the string
 
-    // FIXME: the error position is incorrect
-    // FIXME: tell the function it's normal if it hits the end of file
     match parse_inner_tag(&chars, &mut res, &mut fake_pos, ParserState::InsideAttributeValue, context) {
         Ok(()) => Ok(res),
         Err(mut err) => {

@@ -13,3 +13,9 @@ pub struct FilePosition {
     pub line_character: usize
 }
 
+
+pub fn get_browser_path_string(path: PathBuf) -> String {
+    let mut path_str = path.display().to_string();
+    path_str = path_str.replace('\\', "/").replace("//?/", ""); // HACK: sometimes "//?/" appears, don't know why
+    return format!("file:///{}", path_str);
+}

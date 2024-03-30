@@ -412,3 +412,33 @@
     </span>
     <:inner/>
 </overdddot>
+
+
+// A small inline space
+<?space>
+</space>
+
+
+// Derivative (fraction notation)
+<?deriv :up :down>
+    ?frac{?normalfont d <:up/>}{?normalfont d <:down/>}
+</deriv>
+
+
+// Nth derivative (fraction notation)
+<?nderiv :up :down :pow>
+    ?frac{?normalfont ?exponent{d}{<:pow/>} <:up/>}{?normalfont ?exponent{d <:down/>}{<:pow/>}}
+</nderiv>
+
+
+// Cosine function
+<?cos>
+    ?space ?normalfont{cos}<:inner/>
+</cos>
+
+
+// Sine function
+<?sin :inner>
+    ?space ?normalfont{sin}<:inner/>
+</sin>
+

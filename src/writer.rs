@@ -13,7 +13,7 @@ use crate::doc_options::{self, DocOptions};
 
 
 // Get the entire text of the document, ready for being displayed
-pub fn get_file_text(mut document: Node, context: &mut Context, exe_path: PathBuf) -> Result<(String, DocOptions), ()> {
+pub fn get_file_text(mut document: Node, context: &mut Context) -> Result<(String, DocOptions), ()> {
     let mut res = String::new();
 
     let head = match try_get_children_with_name(&mut document, "head") {
@@ -27,11 +27,14 @@ pub fn get_file_text(mut document: Node, context: &mut Context, exe_path: PathBu
 
     // Look for additional cowx files listed in head
     for cowx_file in &options.cowx_files {
-        let content = match fs::read_to_string(cowx_file.clone()) {
+        let content = match fs::read_to_string(cowx_file.get_full_path(context)) {
             Ok(content) => content,
             Err(err) => {
                 log::error(
-                    &format!("Could not read cowx file \"{}\" specified in document head. ({}) Make sure the path is relative to the compiled file.", cowx_file, err)
+                    &format!(
+                        "Could not read cowx file \"{}\" specified in document head. ({}) Make sure the path is relative to the compiled file.", 
+                        cowx_file.get_full_path(context).display(), err
+                    )
                 );
                 return Err(());
             },
@@ -40,10 +43,11 @@ pub fn get_file_text(mut document: Node, context: &mut Context, exe_path: PathBu
         // Parse the file!
         match custom::parse_custom_tags(
             &content.chars().collect(), 
-            &mut crate::parser::get_start_of_file_position(PathBuf::from(cowx_file)), 
+            &mut crate::parser::get_start_of_file_position(PathBuf::from(cowx_file.get_full_path(context))), 
             std::mem::replace(&mut context.custom_tags, std::collections::HashMap::new()),
             &context.args, 
-            false
+            false,
+            context.default_dir
         ) {
             Ok(res) => context.custom_tags = res,
             Err(err) => {
@@ -66,14 +70,14 @@ pub fn get_file_text(mut document: Node, context: &mut Context, exe_path: PathBu
     // Parse the header, if found add it as a child to the body
     match &options.footer_file {
         Some(file) => {
-            let file_res = std::fs::read_to_string(file.clone());
+            let file_res = std::fs::read_to_string(file.get_full_path(context));
             match file_res {
                 Ok(string) => {
-                    let parsed = crate::parser::parse_file(&PathBuf::from(file.clone()), &string.chars().collect(), context);
+                    let parsed = crate::parser::parse_file(&PathBuf::from(file.get_full_path(context).clone()), &string.chars().collect(), context);
                     match parsed {
                         Ok(mut node) => {
                             // Add the footer as a child
-                            node.name = String::from("doc_footer");
+                            node.name = String::from("doc-footer");
                             let finished_footer = parse_math_and_replace_tags(node, context)?;
 
                             body.content.push(crate::parser::NodeContent::Child(body.children.len()));
@@ -96,7 +100,7 @@ pub fn get_file_text(mut document: Node, context: &mut Context, exe_path: PathBu
 
     res.push_str("<html>"); // Quirks is better!
 
-    res.push_str(&white_head(&options, exe_path));
+    res.push_str(&white_head(&options, &context));
 
     // Write the body text
     res.push_str(&get_node_html(&body, false, &context));
@@ -130,7 +134,7 @@ fn parse_math_and_replace_tags(node: Node, context: &Context) -> Result<Node, ()
 }
 
 
-pub fn white_head(options: &doc_options::DocOptions, exe_path: PathBuf) -> String {
+pub fn white_head(options: &doc_options::DocOptions, context: &Context) -> String {
     let mut res = String::with_capacity(200);
     res.push_str("<head>");
 
@@ -139,7 +143,7 @@ pub fn white_head(options: &doc_options::DocOptions, exe_path: PathBuf) -> Strin
 
     // FIXME: should be like ~"path_to_exe/" when built, and ~"" when running with cargo
     //        but too lazy to do that
-    let default_resources_path = exe_path.to_str().expect("Failed to get resources dir string").to_string().replace("\\", "/");
+    let default_resources_path = context.default_dir.to_str().expect("Failed to get resources dir string").to_string().replace("\\", "/");
 
     // Link JS script, so that it executes when the page loads
     res.push_str(&format!("<script defer=\"defer\" src=\"file:///{}/JS/main.js\"></script>", default_resources_path));
@@ -150,7 +154,8 @@ pub fn white_head(options: &doc_options::DocOptions, exe_path: PathBuf) -> Strin
 
     // Link additional CSS
     for file_path in &options.css_files {
-        res.push_str(&format!("<link rel=\"stylesheet\" href=\"{}\"/>", file_path));
+        let path_str = crate::util::get_browser_path_string(file_path.get_full_path(context));
+        res.push_str(&format!("<link rel=\"stylesheet\" href=\"{}\"/>", path_str));
     }
 
     // IMPORTANT NOTE: make sure this tag is the last CSS tag, to make sure users don't accidentally change critical CSS rules (such as pag elements) 

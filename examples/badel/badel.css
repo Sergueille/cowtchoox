@@ -105,14 +105,14 @@ question > inner {
     font-variant: small-caps;
 }
 
-doc_footer {
+doc-footer {
     border-top: 0.2mm solid black;
     position: relative;
     margin-top: 1rem;
     padding-top: 0.3rem;
 }
 
-doc_footer page-number {
+doc-footer page-number {
     position: absolute;
     right: 0;
 }

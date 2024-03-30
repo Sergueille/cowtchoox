@@ -393,7 +393,7 @@ function createErrorElement() {
  * @returns {HTMLelement} The footer
  */
 function findFooter() {
-    let res = document.querySelector("doc_footer");
+    let res = document.querySelector("doc-footer");
 
     if (res) {
         res.parentElement.removeChild(res);

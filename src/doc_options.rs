@@ -1,5 +1,7 @@
 
-use crate::{log, parser::Node};
+use std::{fs, path::PathBuf};
+
+use crate::{log, parser::Node, Context};
 
 
 // Handle document options
@@ -16,9 +18,23 @@ pub struct DocFormat {
 pub struct DocOptions {
     pub title: String,
     pub format: DocFormat,
-    pub css_files: Vec<String>,
-    pub cowx_files: Vec<String>,
-    pub footer_file: Option<String>
+    pub css_files: Vec<DocumentPath>,
+    pub cowx_files: Vec<DocumentPath>,
+    pub footer_file: Option<DocumentPath>
+}
+
+
+/// Represents a path specified in a .cow file
+pub struct DocumentPath {
+    pub path: String,
+    pub path_type: PathType,
+}
+
+
+pub enum PathType {
+    RelativeToFile,
+    Absolute,
+    RelativeToDefaultDir
 }
 
 
@@ -51,13 +67,13 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
                 res.format = get_format_from_name(inner_text);
             },
             "css" => {
-                res.css_files.push(inner_text);
+                res.css_files.push(get_doc_path_from_tag(child, inner_text));
             },
             "cowx" => {
-                res.cowx_files.push(inner_text);
+                res.cowx_files.push(get_doc_path_from_tag(child, inner_text));
             },
             "footer" => {
-                res.footer_file = Some(inner_text);
+                res.footer_file = Some(get_doc_path_from_tag(child, inner_text));
             }
             tag_name => {
                 log::warning_position(
@@ -82,6 +98,59 @@ fn get_format_from_name(text: String) -> DocFormat {
         other_format => {
             log::warning(&format!("Unknown paper format \"{}\". Using A4 by default.", other_format));
             return DocFormat { width: 210.0, height: 297.0 }; // Default
+        }
+    }
+}
+
+
+fn get_doc_path_from_tag(tag: &Node, inner_content: String) -> DocumentPath {
+    let mut path_type = PathType::RelativeToFile; // Default value
+
+    for attr in & tag.attributes {
+        if attr.name == "relative-to" {
+            match &attr.value {
+                Some(val) => {
+                    if val == "absolute" {
+                        path_type = PathType::Absolute;
+                    }
+                    else if val == "file" {
+                        path_type = PathType::RelativeToFile;
+                    }
+                    else if val == "default-dir" {
+                        path_type = PathType::RelativeToDefaultDir;
+                    }
+                    else {
+                        log::warning_position(&format!(
+                            "Unknown value \"{}\" of \"relative-to\" attribute. Use either \"absolute\", \"file\", or \"default-dir\"", val), 
+                            attr.position.as_ref().unwrap(), attr.name.len()
+                        );
+                    }
+                },
+                None => {
+                    log::warning_position("This attribute should have a value. You can remove it de keep default.", attr.position.as_ref().unwrap(), attr.name.len());
+                },
+            }
+        }
+    }
+
+    return DocumentPath { path: inner_content, path_type }
+}   
+
+
+impl DocumentPath {
+    pub fn get_full_path(&self, context: &Context) -> PathBuf {
+        match self.path_type {
+            PathType::RelativeToFile => {
+                return fs::canonicalize(PathBuf::from(self.path.clone())).unwrap(); // TODO: report error correctly
+            },
+            PathType::Absolute => {
+                return PathBuf::from(self.path.clone());
+            },
+            PathType::RelativeToDefaultDir => {
+                let mut path = context.default_dir.clone();
+                path.push(self.path.clone());
+                return path;
+            },
         }
     }
 }

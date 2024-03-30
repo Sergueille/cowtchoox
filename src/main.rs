@@ -27,6 +27,7 @@ pub struct Context<'a> {
     pub args: &'a crate::Args, // Command line arguments
     pub custom_tags: TagHash,
     pub ignore_aliases: bool,
+    pub default_dir: &'a PathBuf
 }
 
 
@@ -81,13 +82,13 @@ fn main() -> Result<(), ()> {
     default_dir_path.push("default.cowx");
 
     log::log("Parsing cowx files...");
-    custom_tags_hash = parse_cowx_file(default_dir_path.to_str().expect("Uuh?"), custom_tags_hash, &args, true)?;
+    custom_tags_hash = parse_cowx_file(default_dir_path.to_str().expect("Uuh?"), custom_tags_hash, &args, true, &exe_path)?;
 
     // Cowx file from command line
     let cowx_file = matches.get_one::<String>("cowx");
     match cowx_file {
         Some(file_name) => {
-            match parse_cowx_file(file_name, custom_tags_hash, &args, false) {
+            match parse_cowx_file(file_name, custom_tags_hash, &args, false, &exe_path) {
                 Ok(hash) => custom_tags_hash = hash,
                 Err(_) => { return Ok(()); },
             }
@@ -102,7 +103,14 @@ fn main() -> Result<(), ()> {
             let mut path = std::env::current_dir().expect("Failed to get working dir");
             path.push(&args.filepath);
 
-            let res = compile_file(path, content, &args, custom_tags_hash, exe_path);
+            let context = Context {
+                args: &args,
+                custom_tags: custom_tags_hash,
+                ignore_aliases: false,
+                default_dir: &exe_path,
+            };
+
+            let res = compile_file(path, content, context);
 
             match res {
                 Ok(_) => {},
@@ -120,13 +128,7 @@ fn main() -> Result<(), ()> {
 }
 
 
-fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tags_hash: TagHash, exe_path: PathBuf) -> Result<(), ()> {
-    let mut context = Context {
-        args,
-        custom_tags: custom_tags_hash,
-        ignore_aliases: false,
-    };
-
+fn compile_file(absolute_path: PathBuf, content: String, mut context: Context) -> Result<(), ()> {
     log::log("Parsing document...");
     let document = match parser::parse_file(&absolute_path, &content.chars().collect(), &context) {
         Ok(node) => node,
@@ -137,7 +139,7 @@ fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tag
     };
     
     log::log("Creating HTML...");
-    let (text, options) = match writer::get_file_text(document, &mut context, exe_path) {
+    let (text, options) = match writer::get_file_text(document, &mut context) {
         Ok(res) => res,
         Err(_) => {
             return Err(());
@@ -150,11 +152,11 @@ fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tag
     fs::write(out_path.clone(), text).unwrap();
 
     // Render to pdf!
-    if args.no_pdf {
+    if context.args.no_pdf {
         log::log("No PDF created because you used --no-pdf");
     }
     else {
-        let res = browser::render_to_pdf(out_path, args, &options);
+        let res = browser::render_to_pdf(out_path, context.args, &options);
         match res {
             Ok(()) => {},
             Err(()) => {
@@ -168,7 +170,7 @@ fn compile_file(absolute_path: PathBuf, content: String, args: &Args, custom_tag
 }
 
 
-pub fn parse_cowx_file(file_name: &str, custom_tags_hash: HashMap<String, CustomTag>, arguments: &Args, is_default: bool) -> Result<HashMap<String, CustomTag>, ()> {
+pub fn parse_cowx_file(file_name: &str, custom_tags_hash: HashMap<String, CustomTag>, arguments: &Args, is_default: bool, exe_path: &PathBuf) -> Result<HashMap<String, CustomTag>, ()> {
     match std::fs::read_to_string(file_name) { // Try to read the file
         Ok(content) => {
             // Parse the file
@@ -177,7 +179,8 @@ pub fn parse_cowx_file(file_name: &str, custom_tags_hash: HashMap<String, Custom
                 &mut parser::get_start_of_file_position(PathBuf::from(file_name)), 
                 custom_tags_hash, 
                 &arguments,
-                is_default
+                is_default,
+                exe_path
             );
 
             match res_hash {
