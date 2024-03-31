@@ -294,23 +294,29 @@ comma {
 
 
 /* ?equal, ?simeq, ?equiv, ?mless, ?mgreater */
-equal, simeq, equiv, less, greater, leq, geq, mless, mgreater {
+equal, simeq, equiv, less, greater, leq, geq, mless, mgreater, noteq {
     margin-left: 0.3em;
     margin-right: 0.3em;
 }
 
 
-/* ?minus */
-minus {
+/* ?plus, ?minus */
+plus, minus, x {
     margin-left: 0.18em;
     margin-right: 0.15em;
+    height: 0.8em;
+    vertical-align: -10%;
 }
 
+plus > svg, minus > svg, x > svg {
+    display: inline;
+    width: 0.7em;
+    height: 0.7em;
+    overflow: visible;
+}
 
-/* ?plus */
-plus {
-    margin-left: 0.18em;
-    margin-right: 0.15em;
+x {
+    transform: rotate(45deg);
 }
 
 /* ?inf */ 
@@ -420,8 +426,13 @@ openingsquarebracket > div, closingsquarebracket > div {
     height: 90%;
 }
 
+openingparenthesis > div, openingsquarebracket > div {
+    left: 0.2em;
+}
+
 closingparenthesis > div, closingsquarebracket > div {
     transform: scaleX(-1);
+    right: 0.15em;
 }
 
 openingparenthesis > div, closingparenthesis > div {
