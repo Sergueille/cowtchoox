@@ -118,7 +118,7 @@
 
 
 // Properly spaced comma. Alias ,
-<?comma>
+<?comma stickbefore>
     ,
 </comma>
 
@@ -130,19 +130,19 @@
 
 
 // A minus sign. (U+2013) Alias -
-<?minus>
+<?minus stickafter>
     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="127.1008" height="6.94833" viewBox="0,0,127.1008,6.94833"><g transform="translate(-176.44984,-176.52584)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M299.04658,183.47416h-118.33498c0,0 -4.22502,-0.14828 -4.26147,-3.38502c-0.04092,-3.63331 4.26147,-3.56321 4.26147,-3.56321h118.33498c0,0 4.50406,0.52356 4.50406,3.44783c0,3.10377 -4.50406,3.5004 -4.50406,3.5004z"/></g></g></svg>
 </minus>
 
 
 // A plus sign. Alias +
-<?plus>
+<?plus stickafter>
     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="127.10079" height="127.10079" viewBox="0,0,127.10079,127.10079"><g transform="translate(-176.44985,-116.4496)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M299.04658,183.47416h-118.33498c0,0 -4.22502,-0.14828 -4.26147,-3.38502c-0.04092,-3.63331 4.26147,-3.56321 4.26147,-3.56321h118.33498c0,0 4.50406,0.52356 4.50406,3.44783c0,3.10377 -4.50406,3.5004 -4.50406,3.5004z"/><path d="M243.47416,120.95366l0,118.33498c0,0 -0.14827,4.22501 -3.38502,4.26146c-3.63331,0.04092 -3.56321,-4.26146 -3.56321,-4.26146l0,-118.33497c0,0 0.52356,-4.50406 3.44783,-4.50406c3.10377,0 3.50039,4.50406 3.50039,4.50406z"/></g></g></svg>
 </plus>
 
 
 // For all. (U+2200)
-<?forall>
+<?forall stickafter>
     ∀
 </forall>
 <?a>
@@ -151,7 +151,7 @@
 
 
 // There exists. (U+2203)
-<?exists>
+<?exists stickafter>
     ∃
 </exists>
 <?e>
@@ -304,35 +304,35 @@
 
 // Opening parenthesis.
 /* hidden in docs */
-<?openingparenthesis>
+<?openingparenthesis stickafter>
     <div></div>
 </openingparenthesis>
 
 
 // Closing parenthesis.
 /* hidden in docs */
-<?closingparenthesis>
+<?closingparenthesis stickbefore>
     <div></div>
 </closingparenthesis>
 
 
 // Opening square bracket.
 /* hidden in docs */
-<?openingsquarebracket>
+<?openingsquarebracket stickafter>
     <div></div>
 </openingsquarebracket>
 
 
 // Closing square bracket.
 /* hidden in docs */
-<?closingsquarebracket>
+<?closingsquarebracket stickbefore>
     <div></div>
 </closingsquarebracket>
 
 
 // Opening brace.
 /* hidden in docs */
-<?openingbrace>
+<?openingbrace stickafter>
     <div class="brace-inner">
         <div class="brace-top"></div>
         <div class="brace-bar"></div>
@@ -345,7 +345,7 @@
 
 // Closing brace.
 /* hidden in docs */
-<?closingbrace>
+<?closingbrace stickbefore>
     <div class="brace-inner">
         <div class="brace-top"></div>
         <div class="brace-bar"></div>

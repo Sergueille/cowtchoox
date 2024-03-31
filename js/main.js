@@ -195,12 +195,12 @@ async function fillUntilOverflow(pageElement, parentElement) {
                                 break;
                             }
 
+                            addedPartOfElement = true;
                             word = "";
                             wordStartId = i;
                         }
 
                         word += ch;
-                        addedPartOfElement = true;
                     }
 
                     let secondHalf = top.cloneNode(false);
