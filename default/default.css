@@ -61,6 +61,14 @@ a {
 }
 
 
+/* Footer */
+doc-footer {
+    padding-top: 1rem;
+    height: 1.5rem;
+    text-align: center;
+}
+
+
 /* Code */
 code {
     display: inline-block;

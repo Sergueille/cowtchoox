@@ -90,7 +90,7 @@ pub fn get_file_text(mut document: Node, context: &mut Context) -> Result<(Strin
                     }
                 },
                 Err(err) => {
-                    log::error(&format!("Failed to read the header file: {}", err));
+                    log::error(&format!("Failed to read the footer file: {} The path is \"{}\"", err, file.get_full_path(context).display()));
                     return  Err(());
                 },
             }

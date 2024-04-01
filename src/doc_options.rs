@@ -138,10 +138,20 @@ fn get_doc_path_from_tag(tag: &Node, inner_content: String) -> DocumentPath {
 
 
 impl DocumentPath {
+    /// Get the full path. Can throw an error via the log module, in this case it can return the wrong path.
     pub fn get_full_path(&self, context: &Context) -> PathBuf {
         match self.path_type {
             PathType::RelativeToFile => {
-                return fs::canonicalize(PathBuf::from(self.path.clone())).unwrap(); // TODO: report error correctly
+                match fs::canonicalize(PathBuf::from(self.path.clone())) {
+                    Ok(path) => return path,
+                    Err(err) => {
+                        log::error(&format!(
+                            "The path \"{}\" doesn't exists or is invalid. Make sure it's relative to the file (add \"relative-to=absolute\" for an absolute path). ({})", 
+                            self.path.clone(), err
+                        ));
+                        return PathBuf::from(self.path.clone());
+                    },
+                }
             },
             PathType::Absolute => {
                 return PathBuf::from(self.path.clone());

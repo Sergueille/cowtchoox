@@ -4,8 +4,7 @@
         <title>Test document</title>
         <format>A4</format> // Information about document will be located here
         <cowx>test.cowx</cowx> // Tell the compiler too look in this file
-        <footer>examples/badel/foot.cowx</footer> // The cowx file that contains the footer
-        <css relative-to="default-dir">examples/badel/badel.css</css> // TEST
+        <footer relative-to=default-dir>default/footer.cowx</footer> // The cowx file that contains the footer
     </head>
     <body>
         // Contents of the rest of the document
