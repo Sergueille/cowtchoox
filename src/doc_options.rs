@@ -20,7 +20,8 @@ pub struct DocOptions {
     pub format: DocFormat,
     pub css_files: Vec<DocumentPath>,
     pub cowx_files: Vec<DocumentPath>,
-    pub footer_file: Option<DocumentPath>
+    pub footer_file: Option<DocumentPath>,
+    pub header_file: Option<DocumentPath>,
 }
 
 
@@ -54,6 +55,7 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
         css_files: Vec::new(), // No additional css files linked by default
         cowx_files: Vec::new(),
         footer_file: None,
+        header_file: None,
     };
     
     for child in &head.children {
@@ -74,7 +76,10 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
             },
             "footer" => {
                 res.footer_file = Some(get_doc_path_from_tag(child, inner_text));
-            }
+            },
+            "header" => {
+                res.header_file = Some(get_doc_path_from_tag(child, inner_text));
+            },
             tag_name => {
                 log::warning_position(
                     &format!("Unknown tag \"{}\" in head.", tag_name), 

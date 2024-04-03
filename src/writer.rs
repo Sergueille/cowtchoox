@@ -2,6 +2,7 @@
 use std::fs;
 use std::path::PathBuf;
 
+use crate::doc_options::DocumentPath;
 use crate::log;
 use crate::Context;
 use crate::parser::{Node, NodeContent, ParseError};
@@ -59,7 +60,7 @@ pub fn get_file_text(mut document: Node, context: &mut Context) -> Result<(Strin
     let mut finished_document = parse_math_and_replace_tags(document, &context)?;
 
     // Get the body from the document
-    let body = match try_get_children_with_name(&mut finished_document, "body") {
+    let mut body = match try_get_children_with_name(&mut finished_document, "body") {
         Ok(res) => res,
         Err(()) => {
             log::error("The document has no body");
@@ -67,33 +68,16 @@ pub fn get_file_text(mut document: Node, context: &mut Context) -> Result<(Strin
         }
     };
 
-    // Parse the header, if found add it as a child to the body
+    // Parse the header and footer, if found add it as a child to the body
     match &options.footer_file {
         Some(file) => {
-            let file_res = std::fs::read_to_string(file.get_full_path(context));
-            match file_res {
-                Ok(string) => {
-                    let parsed = crate::parser::parse_file(&PathBuf::from(file.get_full_path(context).clone()), &string.chars().collect(), context);
-                    match parsed {
-                        Ok(mut node) => {
-                            // Add the footer as a child
-                            node.name = String::from("doc-footer");
-                            let finished_footer = parse_math_and_replace_tags(node, context)?;
-
-                            body.content.push(crate::parser::NodeContent::Child(body.children.len()));
-                            body.children.push(finished_footer);
-                        },
-                        Err(err) => {
-                            log::error_position(&err.message, &err.position, err.length);
-                            return Err(());
-                        },
-                    }
-                },
-                Err(err) => {
-                    log::error(&format!("Failed to read the footer file: {} The path is \"{}\"", err, file.get_full_path(context).display()));
-                    return  Err(());
-                },
-            }
+            insert_footer_or_header(true, file, &mut body, context)?;
+        },
+        None => {},
+    };    
+    match &options.header_file {
+        Some(file) => {
+            insert_footer_or_header(false, file, &mut body, context)?;
         },
         None => {},
     };    
@@ -108,6 +92,38 @@ pub fn get_file_text(mut document: Node, context: &mut Context) -> Result<(Strin
     res.push_str("</html>");
 
     return Ok((res, options));
+}
+
+
+// Compiles and inserts the header or footer into the body. Helper for `get_file_text`
+fn insert_footer_or_header(is_footer: bool, path: &DocumentPath, body: &mut Node, context: &Context) -> Result<(), ()> {
+    let file_res = std::fs::read_to_string(path.get_full_path(context));
+    match file_res {
+        Ok(string) => {
+            let parsed = crate::parser::parse_file(&PathBuf::from(path.get_full_path(context).clone()), &string.chars().collect(), context);
+            match parsed {
+                Ok(mut node) => {
+                    // Add the footer or header as a child
+                    node.name = if is_footer { String::from("doc-footer") } else { String::from("doc-header") };
+                    let finished_node = parse_math_and_replace_tags(node, context)?;
+
+                    body.content.push(crate::parser::NodeContent::Child(body.children.len()));
+                    body.children.push(finished_node);
+                
+                    return Ok(());
+                },
+                Err(err) => {
+                    log::error_position(&err.message, &err.position, err.length);
+                    return Err(());
+                },
+            }
+        },
+        Err(err) => {
+            let thing_type = if is_footer { "footer" } else { "header" };
+            log::error(&format!("Failed to read the {} file: {} The path cowtchoox tries to reach is \"{}\"", thing_type, err, path.get_full_path(context).display()));
+            return Err(());
+        },
+    }
 }
 
 

@@ -107,6 +107,7 @@ question > inner {
 
 doc-footer {
     border-top: 0.2mm solid black;
+    text-align: left;
     position: relative;
     margin-top: 1rem;
     padding-top: 0.3rem;
@@ -115,6 +116,26 @@ doc-footer {
 doc-footer page-number {
     position: absolute;
     right: 0;
+}
+
+doc-header {
+    text-align: left;
+    border-bottom: 0.2mm solid black;
+    margin-bottom: 1rem;
+    padding-bottom: 0.1rem;
+}
+
+#page-1 doc-header {
+    display: none;
+}
+
+doc-header last-tag-value {
+    text-transform: uppercase;
+}
+
+doc-header last-tag-value::before {
+    content: counter(h2);
+    padding-right: 1em;
 }
 
 @font-face {

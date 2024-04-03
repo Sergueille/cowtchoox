@@ -28,6 +28,7 @@ async function main() {
     replaceEvaluate();
 
     let footer = findFooter();
+    let header = findHeader();
 
     // Gather all document elements
     let children = Array.from(document.body.children);
@@ -39,6 +40,12 @@ async function main() {
     while (true) {
         let pageElement = getPage(pageNumber);
         document.body.appendChild(pageElement);
+        
+        if (header) {
+            let instance = header.cloneNode(true);
+            replacePageNumbers(instance, pageNumber);
+            pageElement.appendChild(instance);
+        }
 
         let insidePage = document.createElement("page-inside");
         pageElement.appendChild(insidePage);
@@ -394,6 +401,21 @@ function createErrorElement() {
  */
 function findFooter() {
     let res = document.querySelector("doc-footer");
+
+    if (res) {
+        res.parentElement.removeChild(res);
+    }
+
+    return res;
+} 
+
+
+/**
+ * Find the header element in the document and removes it
+ * @returns {HTMLelement} The footer
+ */
+function findHeader() {
+    let res = document.querySelector("doc-header");
 
     if (res) {
         res.parentElement.removeChild(res);

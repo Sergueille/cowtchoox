@@ -5,6 +5,7 @@
         <format>A4</format> // Information about document will be located here
         <cowx>test.cowx</cowx> // Tell the compiler too look in this file
         <footer relative-to=default-dir>default/footer.cowx</footer> // The cowx file that contains the footer
+        <header>test_header.cowx</header> // The cowx file that contains the header
     </head>
     <body>
         // Contents of the rest of the document
@@ -107,9 +108,9 @@
         $$
         $$
             <!system>
-                 &a + &2b &= c &&
-                5&a - &3c &= 9c &&
-                &1 / 2 + & 3 / {4 / 2} &= 2 
+                 a &+ &2b &= c &&
+                5a &- &3c &= 9c &&
+                1 / 2 &+ & 3 / {4 / 2} &= 2 
             </system>
         $$
 
