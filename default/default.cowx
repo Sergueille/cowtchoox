@@ -44,6 +44,14 @@
 </cowtable>
 
 
+// Will be replaced by the inner content of the last encountered tag with hat name. 
+// If none is found before, will be empty
+// Useful for displaying titles in headers
+<!last-tag-value :name>
+    <:name/>
+</last-tag-value>
+
+
 // Square root.
 // under: the thing in the square root
 <?sqrt :under nonbreaking>
@@ -124,7 +132,7 @@
 
 
 // Properly spaced equal. Alias =
-<?equal>
+<?equal stickafter stickbefore>
     =
 </equal>
 

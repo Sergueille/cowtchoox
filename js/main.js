@@ -25,10 +25,11 @@ main().then(() => {}).catch(err => {
 
 
 async function main() {
-    replaceEvaluate();
-
     let footer = findFooter();
     let header = findHeader();
+
+    replaceEvaluate(document);
+    replaceLastValues(document);
 
     // Gather all document elements
     let children = Array.from(document.body.children);
@@ -44,6 +45,8 @@ async function main() {
         if (header) {
             let instance = header.cloneNode(true);
             replacePageNumbers(instance, pageNumber);
+            replaceEvaluate(instance);
+            replaceLastValues(instance);
             pageElement.appendChild(instance);
         }
 
@@ -53,6 +56,8 @@ async function main() {
         if (footer) {
             let instance = footer.cloneNode(true);
             replacePageNumbers(instance, pageNumber);
+            replaceEvaluate(instance);
+            replaceLastValues(instance);
             pageElement.appendChild(instance);
         }
 
@@ -90,10 +95,11 @@ async function main() {
 
 /**
  * Will replace all values of evaluate tags
+ @param {HTMLElement} parent
  */
-function replaceEvaluate() {
+function replaceEvaluate(parent) {
     // Search for get tags
-    for (let tag of document.querySelectorAll("evaluate > inner > text")) {
+    for (let tag of parent.querySelectorAll("evaluate > inner > text")) {
         let expression = tag.innerHTML;
 
         try {
@@ -104,6 +110,37 @@ function replaceEvaluate() {
             logError(`Failed to parse the evaluate tag that contains "${tag.innerHTML}". The error is: "${err.message}"`)
             tag.innerHTML = "Evaluation failed.";
         }
+    }
+}
+
+
+/**
+ * Will replace all values of last-tag-value tags
+ @param {HTMLElement} parent
+ */
+function replaceLastValues(parent) {
+    // Search for get tags
+    for (let tag of parent.querySelectorAll("last-tag-value > span > text")) {
+        let tagName = tag.innerHTML;
+
+        let lastId = tag.id;
+        tag.id = "replace-temp-id" // Creates a temporary id to match this tag later
+
+        let finalContent = "";
+
+        // Query all tag with this name, including this tag
+        let nodeList = document.querySelectorAll(tagName, "#replace-temp-id"); 
+        for (let node of nodeList) {
+            if (node == tag) {
+                break;
+            }
+            else {
+                finalContent = node.innerHTML;
+            }
+        }
+
+        tag.innerHTML = finalContent;
+        tag.id = lastId;
     }
 }
 

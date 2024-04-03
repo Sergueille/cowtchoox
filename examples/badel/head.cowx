@@ -1,5 +1,5 @@
 
 <header>
-    <last-tag-value>Imagine the last title here</last-tag-value> // Available soon
+    <!last-tag-value :name="h2"/>
 </header>
 
