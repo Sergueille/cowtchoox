@@ -301,7 +301,7 @@ async function fillUntilOverflow(pageElement, parentElement) {
         }
     }
 
-    if (!addedPartOfElement) {
+    if (!addedPartOfElement && children.length > 0) {
         // Also remove stickafter elements
         while (addedElements.length > 0 && isStickafter(addedElements[addedElements.length - 1])) {
             let last = addedElements.pop();

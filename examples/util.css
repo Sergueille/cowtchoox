@@ -1,0 +1,29 @@
+
+/* Some useful CSS, but nothing important */
+
+example, tip {
+    display: block;
+    border: 0.4mm solid #ccc;
+    border-radius: 2mm;
+    position: relative;
+    padding: 3mm;
+    margin-top: 5mm;
+    margin-bottom: 3mm;
+}
+
+example::before, tip::before {
+    position: absolute;
+    left: 1em;
+    top: -0.7em;
+    background-color: #fff;
+    content: "Example";
+    padding: 0 0.6em;
+}
+
+example::before {
+    content: "Example";
+}
+
+tip::before {
+    content: "Tip";
+}

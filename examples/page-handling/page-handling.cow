@@ -1,0 +1,128 @@
+
+<document>
+    <head>
+        <title></title>
+        <footer relative-to="default-dir">default/footer.cowx</footer>
+        <css>examples/util.css</css>
+    </head>
+    <body>
+        <h1><!cowtchoox/>'s page system</h1>
+
+        This document will provide examples on how to use <!cowtchoox/>'s page system.
+        Look a the source code (the `.cow` file) to better understand how it work. 
+
+        <h2>Basic usage</h2>
+
+        Automatically, Cowtchoox will create page elements, and fill them with the content of the document.
+        If an element is too big to fit in the page, it will cut it. Here you can see the paragraph element
+        with a red border is automatically cut across pages (the big blank space is there to make sure it overflows):
+
+        <div style="height: 40em;"> // A big blank space!
+        </div>
+
+        <example>
+            <p style="border: 0.4mm solid red;">
+                This paragraph is cut! This paragraph is cut! This paragraph is cut!
+                This paragraph is cut! This paragraph is cut! This paragraph is cut!
+                This paragraph is cut! This paragraph is cut! This paragraph is cut!
+                This paragraph is cut! This paragraph is cut! This paragraph is cut!
+                This paragraph is cut! This paragraph is cut! This paragraph is cut!
+                This paragraph is cut! This paragraph is cut! This paragraph is cut!
+                This paragraph is cut! This paragraph is cut! This paragraph is cut!
+                This paragraph is cut! This paragraph is cut! This paragraph is cut!
+                This paragraph is cut! This paragraph is cut! This paragraph is cut!
+                This paragraph is cut! This paragraph is cut! This paragraph is cut!
+                This paragraph is cut! This paragraph is cut! This paragraph is cut!
+                This paragraph is cut! This paragraph is cut! This paragraph is cut!
+                This paragraph is cut! This paragraph is cut! This paragraph is cut!
+            </p>
+        </example>
+
+        <h3>Nonbreaking</h3>
+
+        You may also want to prevent this behavior on a specific element, for instance a title shouldn't be cut across pages.
+        To do that, add the `nonbreaking` attribute to the element. The element will not be cut and will go entirely on the next page if it overflows.
+        ``
+<div nonbreaking>
+    This div can't be cut!
+</div>
+        ``
+        
+        <h3>Pagebreak</h3>
+
+        Finally, you can also use page breaks, with `<!pagebreak/>`. It will immediately start a new page.
+        It can be used inside other elements.
+
+        Look at this beautiful page break:
+
+        <!pagebreak/>
+
+        <h2>More things</h2>
+
+        You can also use the `stickafter` and `stickbefore` attributes.
+        <br/>
+        An element with `stickafter` will always be on the same page as the next element in the document. 
+        (Useful for titles, which you don't want to be alone at the end of a page)
+        <br/>
+        An element with `stickbefore` will always be on the same page as the previous element in the document. 
+        (Useful for captions of images, the caption must be on the same page than the image)
+
+
+        <h2>Headers and footers</h2>
+
+        You can insert a header and a footer on each page automatically. To do so, add the following tags in the document's head:
+
+        ``
+<head>
+    /* Other things */
+    
+    <footer>path/to/the/footer.cowx</footer>
+    <header>path/to/the/header.cowx</header>
+</head>
+        ``
+
+        The header and footer tags should contain one HTML element that represent the footer (or the header). Here is an example of a footer file:
+        ``
+<footer>
+    This is an example footer with a page number: <!page-number/>
+</footer>
+        ``
+
+        A default footer (the one used in this document) is available in the default folder, you can use it with:
+        ``
+<head>
+    /* Other things */
+    <footer relative-to="default-dir">default/footer.cowx</footer>
+</head>
+        ``
+
+        <tip>
+            To prevent the header from appearing on the first page, add this css rule somewhere:
+            ``
+#page-1 doc-header {
+    display: none !important;
+}
+            ``
+        </tip>
+
+        <h2>Thing you need to know for CSS</h2>
+
+        This paragraph describes what HTML elements Cowtchoox will create, so you can write accurate CSS selectors.
+        (You can open `out.html` with your browser and open the devtools to see how it is arranged)
+
+        <ul>
+            <li>
+                The body will contain `page` elements. Their id is `page-n` where `n` is the number of the page (Starting from 1).
+            </li>
+            <li>
+                Each `page` element contains:
+                <ul>
+                    <li>A `page-inside` element, that contains the page's content</li>
+                    <li>If present, a `doc-footer` element, that contains the footer</li>
+                    <li>If present, a `doc-header` element, that contains the header</li>
+                </ul>
+            </li>
+        </ul>
+
+    </body>
+</document>
