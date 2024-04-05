@@ -27,7 +27,8 @@ pub struct Context<'a> {
     pub args: &'a crate::Args, // Command line arguments
     pub custom_tags: TagHash,
     pub ignore_aliases: bool,
-    pub default_dir: &'a PathBuf
+    pub default_dir: &'a PathBuf,
+    pub main_file_path: &'a PathBuf,
 }
 
 
@@ -108,9 +109,10 @@ fn main() -> Result<(), ()> {
                 custom_tags: custom_tags_hash,
                 ignore_aliases: false,
                 default_dir: &exe_path,
+                main_file_path: &path,
             };
 
-            let res = compile_file(path, content, context);
+            let res = compile_file(content, context);
 
             match res {
                 Ok(_) => {},
@@ -128,9 +130,9 @@ fn main() -> Result<(), ()> {
 }
 
 
-fn compile_file(absolute_path: PathBuf, content: String, mut context: Context) -> Result<(), ()> {
+fn compile_file(content: String, mut context: Context) -> Result<(), ()> {
     log::log("Parsing document...");
-    let document = match parser::parse_file(&absolute_path, &content.chars().collect(), &context) {
+    let document = match parser::parse_file(context.main_file_path, &content.chars().collect(), &context) {
         Ok(node) => node,
         Err(err) => {
             log::error_position(&err.message, &err.position, err.length);
@@ -147,7 +149,7 @@ fn compile_file(absolute_path: PathBuf, content: String, mut context: Context) -
     };
 
     // Remove filename form path and add
-    let mut out_path = absolute_path.parent().unwrap().to_path_buf();
+    let mut out_path = context.main_file_path.parent().unwrap().to_path_buf();
     out_path.push("out.html");
     fs::write(out_path.clone(), text).unwrap();
 
@@ -180,7 +182,8 @@ pub fn parse_cowx_file(file_name: &str, custom_tags_hash: HashMap<String, Custom
                 custom_tags_hash, 
                 &arguments,
                 is_default,
-                exe_path
+                exe_path,
+                &PathBuf::from(file_name)
             );
 
             match res_hash {

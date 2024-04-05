@@ -28,13 +28,14 @@ pub fn get_file_text(mut document: Node, context: &mut Context) -> Result<(Strin
 
     // Look for additional cowx files listed in head
     for cowx_file in &options.cowx_files {
-        let content = match fs::read_to_string(cowx_file.get_full_path(context)) {
+        let path = cowx_file.get_full_path(context);
+        let content = match fs::read_to_string(path.clone()) {
             Ok(content) => content,
             Err(err) => {
                 log::error(
                     &format!(
                         "Could not read cowx file \"{}\" specified in document head. ({}) Make sure the path is relative to the compiled file.", 
-                        cowx_file.get_full_path(context).display(), err
+                        path.display(), err
                     )
                 );
                 return Err(());
@@ -48,7 +49,8 @@ pub fn get_file_text(mut document: Node, context: &mut Context) -> Result<(Strin
             std::mem::replace(&mut context.custom_tags, std::collections::HashMap::new()),
             &context.args, 
             false,
-            context.default_dir
+            context.default_dir,
+            &path
         ) {
             Ok(res) => context.custom_tags = res,
             Err(err) => {

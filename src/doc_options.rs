@@ -1,5 +1,5 @@
 
-use std::{fs, path::PathBuf};
+use std::path::PathBuf;
 
 use crate::{log, parser::Node, Context};
 
@@ -147,16 +147,9 @@ impl DocumentPath {
     pub fn get_full_path(&self, context: &Context) -> PathBuf {
         match self.path_type {
             PathType::RelativeToFile => {
-                match fs::canonicalize(PathBuf::from(self.path.clone())) {
-                    Ok(path) => return path,
-                    Err(err) => {
-                        log::error(&format!(
-                            "The path \"{}\" doesn't exists or is invalid. Make sure it's relative to the file (add \"relative-to=absolute\" for an absolute path). ({})", 
-                            self.path.clone(), err
-                        ));
-                        return PathBuf::from(self.path.clone());
-                    },
-                }
+                let mut res = context.main_file_path.parent().unwrap().to_path_buf();
+                res.push(PathBuf::from(self.path.clone()));
+                return res;
             },
             PathType::Absolute => {
                 return PathBuf::from(self.path.clone());

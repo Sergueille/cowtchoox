@@ -24,9 +24,11 @@ pub type TagHash = HashMap<String, CustomTag>;
 /// * `pos`: the positon in the file
 /// * `hash`: the hash into which the function will add tags
 /// * `is_default`: is it a default file (will ignore aliases etc.)
+/// * `file_path`: the path to the file name 
 ///
-pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: TagHash<>, args: &crate::Args, is_default: bool, default_dir: &std::path::PathBuf) -> Result<TagHash, parser::ParseError> {
-    let mut context = parser::Context { args, custom_tags: hash, ignore_aliases: is_default, default_dir };
+pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: TagHash<>, args: &crate::Args, is_default: bool, 
+    default_dir: &std::path::PathBuf, file_path: &std::path::PathBuf) -> Result<TagHash, parser::ParseError> {
+    let mut context = parser::Context { args, custom_tags: hash, ignore_aliases: is_default, default_dir, main_file_path: file_path };
 
     loop { // Repeat until end of the file
         let mut node = parser::parse_tag(file, pos, TagSymbol::QUESTION_MARK | TagSymbol::EXCLAMATION_MARK, false, &context)?;
