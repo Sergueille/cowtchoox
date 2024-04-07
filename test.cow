@@ -29,7 +29,7 @@
 
         <!my_tag :number="1">
             Hello from inside!
-            <!my_tag :number="2">
+            <!my_tag :number="2 & 3">
                 Custom tag inside custom tag. And math: $1 / 2$
             </my_tag>
         </my_tag>

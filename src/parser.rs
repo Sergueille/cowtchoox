@@ -89,7 +89,7 @@ bitflags::bitflags! {
 }
 
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 struct SplitPosition {
     pub content_pos: usize,
     pub file_pos: FilePosition,
@@ -299,7 +299,7 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, expect_symbol: T
             read_word(chars, pos)?; // Advance cursor to after the tag name 
 
             // Check for the very last character...
-            expect(chars, pos, '>')?;
+            expect_allow_eof(chars, pos, '>')?;
 
             res.source_length = get_positions_difference(pos, &res.start_position);
         },
@@ -320,6 +320,8 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
 
     let mut simple_splits: Vec<SplitPosition> = Vec::new();
     let mut double_splits: Vec<SplitPosition> = Vec::new();
+
+    let start_pos = pos.clone();
 
     loop {
         let next = chars[(*pos).absolute_position];
@@ -587,7 +589,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
     }
 
     if double_splits.len() > 0 || simple_splits.len() > 0 {
-        double_splits.insert(0, SplitPosition { content_pos: 0, file_pos: node.start_inner_position.clone() });
+        double_splits.insert(0, SplitPosition { content_pos: 0, file_pos: start_pos });
         double_splits.push(SplitPosition { content_pos: content.len(), file_pos: pos.clone() });
 
         // Split &&
@@ -740,6 +742,32 @@ fn expect(chars: &Vec<char>, pos: &mut FilePosition, char: char) -> Result<(), P
     return Ok(());
 }
 
+
+/// Same as `expect`, but does not throw if EOF is just after the character
+fn expect_allow_eof(chars: &Vec<char>, pos: &mut FilePosition, char: char) -> Result<(), ParseError> {
+    advance_until_non_whitespace(chars, pos)?;
+
+    if (*pos).absolute_position >= chars.len() {
+        return Err(ParseError { 
+            message: format!("Expected \"{}\", found end of file.", char), 
+            position: pos.clone(), 
+            length: 1 
+        });
+    }
+
+    if chars[(*pos).absolute_position] != char {
+        return Err(ParseError { 
+            message: format!("Expected \"{}\", found \"{}\".", char, chars[(*pos).absolute_position]), 
+            position: pos.clone(), 
+            length: 1 
+        });
+    }
+
+    // Ignore the EOF error
+    let _ = advance_position(pos, chars);
+
+    return Ok(());
+}
 
 
 /// Advances the cursor until non-whitespace is found (or end of file) (does nothing if already on non-whitespace). Returns an error if cursor on EOF 
