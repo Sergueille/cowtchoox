@@ -1,12 +1,7 @@
 
 Additional things to do (other ars scattered in the source file):
 
-FIXME: path of cowx file are currently relative to the working dir or something, but should be relative to the FILE path   
-
-TODO: <%tags> in math
-
-TODO: pagebreak
-TODO: headers and footers
+TODO: <%tags> in math??
 
 HACK: currently, when failing to parse a tag in maths, it represents it a regular text
     - because if in maths there is for example <=>, it shouldn't be a tag
@@ -35,3 +30,5 @@ TODO: make nested /* */ comments ?
 TODO: prevent circular dependencies of custom tags
 
 TODO: better docs script
+
+TODO: more page formats

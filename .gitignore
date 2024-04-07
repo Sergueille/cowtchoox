@@ -7,3 +7,5 @@
 build.zip
 !/docs/*.pdf
 /docs/out.pdf
+!/docs/*/*.pdf
+/docs/*/out.pdf

@@ -1,0 +1,68 @@
+
+<document>
+    <head>
+        <title>Cowtchoox documentation | Document head</title>
+        <footer relative-to="default-dir">default/footer.cowx</footer>
+        <css>../util.css</css>
+    </head>
+    <body>
+        <h1>Document head</h1>
+
+        This document will describe what to write in the document `<head>` tag.
+
+        <h2>Document info</h2>
+
+        Here is the list of the tags that provides general information on the document.
+        None of them is mandatory.
+
+        <!cowtable :caption="Document info tags">
+            Name & Description &&
+
+            `<title>` &
+            Must contain the title of the document. &&
+
+            `<format>` &
+            Provide here the size fo the pages of the document. (WIP: the only possible value is `a4` for now)  
+        </cowtable>
+
+        <h2>Link files</h2>
+
+        You can also link CSS, JS and COWX files from the head.
+        By default, all paths are <i>relative to the cow file</i>. You can change that by using the `relative-to` attribute with one of the following value:
+                
+        <!cowtable :caption="`relative-to` values">
+            Value & Description &&
+
+            `file` &
+            Relative to the file. Same as the default. &&
+
+            `default-dir` &
+            Relative to the folder where cowtchoox is installed (more precisely where the executable is located).
+            Useful to link default files or examples files provided with the build. && 
+
+            `absolute` &
+            Specify the full file path.
+        </cowtable>
+
+        The files that can be linked are the following: 
+      
+        <!cowtable :caption="All links">
+            Name & Description &&
+
+            `css` &
+            A CSS style file. &&
+            
+            `cowx` &
+            A COWX file that contains custom tags or math operators. &&
+
+            `header` &
+            A file that contains one HTML element, which will be placed at the top of every page. &&
+
+            `footer` &
+            A file that contains one HTML element, which will be placed at the bottom of every page. &&
+
+            `js` &
+            A JS file. (Support is WIP, you should use `<eval>` tags instead)
+        </cowtable>
+    </body>
+</document>

@@ -71,7 +71,7 @@ doc-footer {
 
 /* Code */
 code {
-    display: inline-block;
+    display: inline;
     font-family: cascadia-code;
     font-size: 0.85em;
 
@@ -434,13 +434,18 @@ openingsquarebracket > div, closingsquarebracket > div {
     height: 90%;
 }
 
-openingparenthesis > div, openingsquarebracket > div {
+openingparenthesis:first-child > div, openingsquarebracket:first-child > div
+closingsquarebracket:first-child > div, closingparenthesis:first-child > div {
     left: 0.2em;
 }
 
-closingparenthesis > div, closingsquarebracket > div {
-    transform: scaleX(-1);
+openingparenthesis:last-child > div, openingsquarebracket:last-child > div
+closingsquarebracket:last-child > div, closingparenthesis:last-child > div {
     right: 0.15em;
+}
+
+closingparenthesis > div, closingsquarebracket > div{
+    transform: scaleX(-1);
 }
 
 openingparenthesis > div, closingparenthesis > div {

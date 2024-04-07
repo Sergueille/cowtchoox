@@ -1,0 +1,94 @@
+
+<document>
+    <head>
+        <title>Cowtchoox documentation | Maths</title>
+        <footer relative-to="default-dir">default/footer.cowx</footer>
+        <css>../util.css</css>
+    </head>
+    <body>
+        <h1><!cowtchoox/> math system</h1>
+
+        This document will describe hwo the math system works.
+
+        <h2>Crate a math environnement</h2>
+
+        There are two ways to do that:
+        <ul>
+            <li>Use dollars for inline math: `$This is math$`</li>
+            <li>Use double dollars for a big, centered block of math: `$$This is math$$`</li>
+        </ul> 
+
+        These tag will be converted into `<mathnode>` tags, with double-dollar maths having the `center` class.
+
+        <h2>Basic usage</h2>
+
+        Inside math, comments, HTML tags and everything else is still supported.
+        All spaces in math are not displayed, you can add them manually by escaping them: `\ ` (yes there is a space after the backslash).
+
+        <br/>
+        <br/>
+
+        In math you can use <strong>math operators</strong>. The syntax is:
+        ``
+            ?operator_name {first argument} {second argument} ...
+        ``
+        For instance, `?frac{1}{2}` gives $?frac{1}{2}$.
+
+        If an argument is only one objet, you can omit the braces: `?frac 1 2`
+
+        <br/><br/>
+
+        Some operators have an <strong>alias</strong>. It allow them to be called in a shorted way.
+        For instance, to show $?belongsto$, you can use `?belongsto` or it's alias `€`.
+        Aliases takes arguments exactly in the same way.
+
+        <br/>
+
+        Some aliases are <strong>infix</strong>. That means they have two arguments, and that the first should be placed <em>before</em>
+        the alias. Here for a fraction: `1 / 2` or an exponent: `2 ^ n`.
+
+        <br/><br/>
+
+        You can add braces (`{}`) to group things. (It will create additional `<div>`s)
+
+        
+        <h2>Greek letters</h2>
+
+        You can use greek letters in math. To do that, use `§`, followed by the equivalent letter.
+        For uppercase, use an uppercase letter.
+        For example, `§d` gives $§d$, and `§D` gives $§D$.
+
+        <!cowtable :caption="List of greek letters">
+            `§a` & $§a$ & & `§b` & $§b$ && 
+            `§c` & $§c$ & & `§d` & $§d$ && 
+            `§e` & $§e$ & & `§f` & $§f$ && 
+            `§g` & $§g$ & & `§h` & $§h$ && 
+            `§i` & $§i$ & & `§j` & $§j$ && 
+            `§k` & $§k$ & & `§l` & $§l$ && 
+            `§m` & $§m$ & & `§n` & $§n$ && 
+            `§o` & $§o$ & & `§p` & $§p$ && 
+            `§r` & $§r$ & & `§s` & $§s$ && 
+            `§t` & $§t$ & & `§u` & $§u$ && 
+            `§v` & $§v$ & & `§x` & $§x$ && 
+            `§y` & $§y$ & & `§z` & $§z$ 
+        </cowtable>
+
+        <h2>Parentheses</h2>
+
+        Parentheses will match the height of the inner content.
+        
+        <!cowtable :caption="Parentheses">
+            Source & Result &&
+            `(1/2)` & $(1/2)$ &&
+            `[1/2]` & $[1/2]$ &&
+            `%{1/2%}` & $%{1/2%}$ &&
+        </cowtable>
+
+        Be carful, because sometimes you would have to write something like $!]1/2, 2/3]$. You will have
+        to tell the compiler that the first bracket should math with the one after (and not with a bracket before!).
+        You can do that by putting an exclamation mark before the bracket: `!]1/2, 2/3]`
+        <br/>
+        `%{` can match with `}`, this is useful to make systems.
+
+    </body>
+</document>

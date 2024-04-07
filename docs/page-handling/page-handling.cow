@@ -1,9 +1,9 @@
 
 <document>
     <head>
-        <title></title>
+        <title>Cowtchoox documentation | Page handling</title>
         <footer relative-to="default-dir">default/footer.cowx</footer>
-        <css>examples/util.css</css>
+        <css>../util.css</css>
     </head>
     <body>
         <h1><!cowtchoox/>'s page system</h1>
@@ -81,7 +81,7 @@
 </head>
         ``
 
-        The header and footer tags should contain one HTML element that represent the footer (or the header). Here is an example of a footer file:
+        Now you have to write the header and footer files. The header and footer files should contain one HTML element that represent the footer (or the header). Here is an example of a footer file:
         ``
 <footer>
     This is an example footer with a page number: <!page-number/>
