@@ -706,10 +706,10 @@ pub fn get_node_content_as_str(node: &Node) -> String {
 
 
 /// Gets the valu of an attribute of a node. If doesn't exists, returns Err(). If it does exists but has no value, returns Ok(())
-pub fn get_attribute_value<'a>(node: &'a Node, attrib_name: &str) -> Result<&'a Option<String>, ()> {
+pub fn get_attribute_value<'a>(node: &'a Node, attrib_name: &str) -> Result<Option<&'a str>, ()> {
     for attr in &node.attributes {
         if attrib_name == attr.name {
-            return Ok(&attr.value);
+            return Ok(attr.value.as_deref());
         }
     }
 

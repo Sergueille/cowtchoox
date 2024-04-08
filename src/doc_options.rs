@@ -66,7 +66,22 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
                 res.title = inner_text;
             },
             "format" => {
-                res.format = get_format_from_name(inner_text);
+                let format = get_format_from_name(inner_text);
+
+                match crate::parser::get_attribute_value(child, "orientation") {
+                    Ok(Some("portrait")) | Err(_) => {
+                        res.format = format;
+                    },
+                    Ok(Some("landscape")) => {
+                        res.format = DocFormat { width: format.height, height: format.width };
+                    },
+                    Ok(Some(str)) => {
+                        log::warning(&format!("Invalid value for orientation attribute: \"{}\"", str));
+                    },
+                    Ok(None) => {
+                        log::warning("Orientation attribute must have a value.");
+                    },
+                }
             },
             "css" => {
                 res.css_files.push(get_doc_path_from_tag(child, inner_text));
@@ -96,14 +111,50 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
 
 /// Converts the name found in the COW files to the right dimensions. Warns and returns A4 if not recognized
 fn get_format_from_name(text: String) -> DocFormat {
-    match text.to_lowercase().as_str() {
-        "a4" => {
-            return DocFormat { width: 210.0, height: 297.0 };
+    let default = DocFormat { width: 210.0, height: 297.0 };  // Default is A4
+
+    let format = text.to_lowercase();
+
+    if format.len() == 2 {
+        let (dim_a, dim_b): (f32, f32) = match format.chars().nth(0) {
+            Some('a') => (26.0, 37.0),
+            Some('b') => (31.0, 44.0),
+            Some('c') => (28.0, 40.0),
+            _ => {
+                log::warning(&format!("Unknown paper format \"{}\". Using A4 by default.", format));
+                return default;
+            },
+        };
+
+        let nb = match format[1..].parse::<u32>() {
+            Ok(n) => n,
+            Err(_) => {
+                log::warning(&format!("Unknown paper format \"{}\". Using A4 by default.", format));
+                return default;
+            },
+        };
+
+        if nb > 10 {
+            log::warning(&format!("You tried to use the format \"{}\". This is ridiculous.", format));
+            return default;
         }
-        other_format => {
-            log::warning(&format!("Unknown paper format \"{}\". Using A4 by default.", other_format));
-            return DocFormat { width: 210.0, height: 297.0 }; // Default
+
+        if nb % 2 == 0 {
+            return DocFormat {
+                width: dim_a * 2i32.pow((10 - nb) / 2) as f32,
+                height: dim_b * 2i32.pow((10 - nb) / 2) as f32,
+            };
         }
+        else {
+            return DocFormat {
+                width: dim_b * 2i32.pow((9 - nb) / 2) as f32,
+                height: dim_a * 2i32.pow((11 - nb) / 2) as f32,
+            };
+        }
+    }
+    else {
+        log::warning(&format!("Unknown paper format \"{}\". Using A4 by default.", format));
+        return default;
     }
 }
 

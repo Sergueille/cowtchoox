@@ -31,4 +31,4 @@ TODO: prevent circular dependencies of custom tags
 
 TODO: better docs script
 
-TODO: more page formats
+TODO: custom page formats
