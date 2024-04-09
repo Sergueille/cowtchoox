@@ -83,6 +83,36 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
                     },
                 }
             },
+            "paper-width" => {
+                match inner_text.parse::<f32>() {
+                    Ok(val) => {
+                        if val <= 0.0 {
+                            log::warning("Expected a positive value.")
+                        }
+                        else {
+                            res.format.width = val;
+                        }
+                    },
+                    Err(_) => {
+                        log::warning("The tag inner content should be a number.");
+                    },
+                }
+            },
+            "paper-height" => {
+                match inner_text.parse::<f32>() {
+                    Ok(val) => {
+                        if val <= 0.0 {
+                            log::warning("Expected a positive value.")
+                        }
+                        else {
+                            res.format.height = val;
+                        }
+                    },
+                    Err(_) => {
+                        log::warning("The tag inner content should be a number.");
+                    },
+                }
+            }
             "css" => {
                 res.css_files.push(get_doc_path_from_tag(child, inner_text));
             },

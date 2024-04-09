@@ -22,7 +22,15 @@
             Must contain the title of the document. &&
 
             `<format>` &
-            Provide here the size fo the pages of the document. (WIP: the only possible value is `a4` for now)  
+            Provide here the size of the pages of the document. You can use basic <a href="https://fr.wikipedia.org/wiki/ISO_216">ISO standard</a>:
+            the value can be `an`, `bn` or `cn`, where `n` is an integer between 0 and 9.
+            You can set the `orientation` attribute to either `portait` or `landscape` (if not specified, defaults to portrait) &&
+
+            `<paper-width>` &
+            Must contain the width of the paper, in mm. &&
+
+            `<paper-height>` &
+            Must contain the height of the paper, in mm.
         </cowtable>
 
         <h2>Link files</h2>
@@ -64,5 +72,14 @@
             `js` &
             A JS file. (Support is WIP, you should use `<eval>` tags instead)
         </cowtable>
+
+        <example>
+            This will link a CSS file with an absolute path:
+            ``
+<head>
+    <css relative-to="absolute">C:/test-folder/test-style.css</css>
+</head>
+            ``
+        </example>
     </body>
 </document>

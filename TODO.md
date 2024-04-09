@@ -32,3 +32,8 @@ TODO: prevent circular dependencies of custom tags
 TODO: better docs script
 
 TODO: custom page formats
+
+TODO: more warnings for head tags
+    -> only correct attribues
+    -> no duplicates
+    ...
