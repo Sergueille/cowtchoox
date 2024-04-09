@@ -87,14 +87,14 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
                 match inner_text.parse::<f32>() {
                     Ok(val) => {
                         if val <= 0.0 {
-                            log::warning("Expected a positive value.")
+                            log::warning_position("Expected a positive value.", &child.start_position, child.source_length);
                         }
                         else {
                             res.format.width = val;
                         }
                     },
                     Err(_) => {
-                        log::warning("The tag inner content should be a number.");
+                        log::warning_position("The tag inner content should be a number.", &child.start_position, child.source_length);
                     },
                 }
             },
@@ -102,14 +102,14 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
                 match inner_text.parse::<f32>() {
                     Ok(val) => {
                         if val <= 0.0 {
-                            log::warning("Expected a positive value.")
+                            log::warning_position("Expected a positive value.", &child.start_position, child.source_length);
                         }
                         else {
                             res.format.height = val;
                         }
                     },
                     Err(_) => {
-                        log::warning("The tag inner content should be a number.");
+                        log::warning_position("The tag inner content should be a number.", &child.start_position, child.source_length);
                     },
                 }
             }
