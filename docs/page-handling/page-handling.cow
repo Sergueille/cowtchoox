@@ -122,6 +122,9 @@
                     <li>If present, a `doc-header` element, that contains the header</li>
                 </ul>
             </li>
+            <li>
+                When an element is cut between pages, the first half will have the `first-half` class and the other will have the `second-half`
+            </li>
         </ul>
 
     </body>

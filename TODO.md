@@ -37,3 +37,7 @@ TODO: more warnings for head tags
     -> only correct attribues
     -> no duplicates
     ...
+
+FIXME: stickbefore produces incorrect behavior:
+    -> if the element before fits entirely, but not with the stickbefore element
+       it puts both on next page. It should instead cut the element before is possible.

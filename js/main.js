@@ -4,7 +4,7 @@
 
 // Tags that have default properties by default by default
 const defaultNonbreaking = [
-    "H1", "H2", "H3", "H4", "H5", "H6", "SVG", "PRE"
+    "H1", "H2", "H3", "H4", "H5", "H6", "SVG", "PRE", "AMP-SPLIT", "DOUBLE-AMP-SPLIT"
 ];
 const defaultStickafter = [
     "H1", "H2", "H3", "H4", "H5", "H6",
