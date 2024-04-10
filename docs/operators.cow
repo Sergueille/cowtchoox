@@ -1,23 +1,62 @@
 
 <document>
     <head>
-        <title>Cowtchoox's math operators</title>
-        <css>docs.css</css>
+    <title></title>
+    <css>docs.css</css>
+    <footer relative-to="default-dir">default/footer.cowx</footer>
     </head>
     <body>
-        <div style="font-size: 5em;">
-            CO<sup>W</sup>TCH<sub style="font-size: 1em;">O</sub>OX
-        </div>
-        <h1>Cowtchoox's math operators</h1>
+    <h1>Default operator list</h1>These are all the default tags and math operators you can use in <!cowtchoox/>, without linking anything.<h2>Tags</h2><h3>`<cowtchoox>` </h3>
+``<!cowtchoox />``
+The cowtchoox logo. <br/>
 
-        Here is the list of math operators:
 
-// This is generated with doc-generator.rs
-<h3>`sqrt` <div class="alias">Alias `v/`</div></h3>
+<h3>`<pagebreak>` </h3>
+``<!pagebreak />``
+A page break. The next thing on the document will be placed on the next page. <br/>
+
+
+<h3>`<page-number>` </h3>
+``<!page-number />``
+Will be replaced by the page number <br/>
+
+
+<h3>`<evaluate>` </h3>
+``<!evaluate > </evaluate>``
+Will be replaced by the result of the provided js expression (useful to display the current date) <br/>
+
+
+<h3>`<figure>` </h3>
+``<!figure :caption=""> </figure>``
+A figure with a caption <br/>
+
+
+<h3>`<cowtable>` </h3>
+``<!cowtable :caption=""> </cowtable>``
+A table with a caption <br/>
+
+
+<h3>`<last-tag-value>` </h3>
+``<!last-tag-value :name=""/>``
+Will be replaced by the inner content of the last encountered tag with hat name. <br/>
+
+
+<h3>`<system>` </h3>
+``<!system > </system>``
+A system, with a big opening brace. Make lines with \&\& and align with \&. <br/>
+
+
+<h2>Math operators</h2><h3>`sqrt` </h3>
 ``?sqrt{under}``
 <mathnode class="center">?sqrt{under}</mathnode>
 Square root. <br/>
 `under`: the thing in the square root <br/>
+
+
+<h3>`x` </h3>
+``?x``
+<mathnode class="center">?x</mathnode>
+Product. (like `\times` in latex) (U+00D7) <br/>
 
 
 <h3>`frac` <div class="alias">Infix alias `/`</div></h3>
@@ -37,7 +76,7 @@ Makes inner not use math font. <br/>
 <h3>`txt` </h3>
 ``?txt{inner}``
 <mathnode class="center">?txt{inner}</mathnode>
-Same as normalfont, but with additional margins. <br/>
+Same as normalfont, but with additionnal margins. <br/>
 
 
 <h3>`exponent` <div class="alias">Infix alias `^`</div></h3>
@@ -184,10 +223,16 @@ Long left right double arrow. <br/>
 Underlines argument. <br/>
 
 
-<h3>`simeq` </h3>
+<h3>`simeq` <div class="alias">Alias `~=`</div></h3>
 ``?simeq``
 <mathnode class="center">?simeq</mathnode>
 Almost equal. (U+2243) <br/>
+
+
+<h3>`noteq` <div class="alias">Alias `!=`</div></h3>
+``?noteq``
+<mathnode class="center">?noteq</mathnode>
+Not equal. (U+2260) <br/>
 
 
 <h3>`equiv` <div class="alias">Alias `~`</div></h3>
@@ -237,5 +282,77 @@ Much greater than. (U+226B) <br/>
 <mathnode class="center">?abs{inner}</mathnode>
 Absolute value <br/>
 
-    </body>
-</document>
+
+<h3>`v` </h3>
+``?v{inner}``
+<mathnode class="center">?v{inner}</mathnode>
+Put an arrow over the argument, like a vector. <br/>
+
+
+<h3>`and` </h3>
+``?and``
+<mathnode class="center">?and</mathnode>
+Logical and, or GCD, or cross product (U+2227) <br/>
+
+
+<h3>`or` </h3>
+``?or``
+<mathnode class="center">?or</mathnode>
+Logical or, or LCM (U+2228) <br/>
+
+
+<h3>`vert-flex` </h3>
+``?vert-flex{inner}``
+<mathnode class="center">?vert-flex{inner}</mathnode>
+Creates a vertical flex display. All contained HTML tags will be listed vertically, and horizontally centered <br/>
+
+
+<h3>`overdot` <div class="alias">Alias `^.`</div></h3>
+``?overdot{inner}``
+<mathnode class="center">?overdot{inner}</mathnode>
+Put a dot over argument. <br/>
+
+
+<h3>`overddot` <div class="alias">Alias `^..`</div></h3>
+``?overddot{inner}``
+<mathnode class="center">?overddot{inner}</mathnode>
+Put two dots over argument. <br/>
+
+
+<h3>`overdddot` <div class="alias">Alias `^...`</div></h3>
+``?overdddot{inner}``
+<mathnode class="center">?overdddot{inner}</mathnode>
+Put two dots over argument. <br/>
+
+
+<h3>`space` </h3>
+``?space``
+<mathnode class="center">?space</mathnode>
+A small inline space <br/>
+
+
+<h3>`deriv` </h3>
+``?deriv{up}{down}``
+<mathnode class="center">?deriv{up}{down}</mathnode>
+Derivative (fraction notation) <br/>
+
+
+<h3>`nderiv` </h3>
+``?nderiv{up}{down}{pow}``
+<mathnode class="center">?nderiv{up}{down}{pow}</mathnode>
+Nth derivative (fraction notation) <br/>
+
+
+<h3>`cos` </h3>
+``?cos``
+<mathnode class="center">?cos</mathnode>
+Cosine function <br/>
+
+
+<h3>`sin` </h3>
+``?sin{inner}``
+<mathnode class="center">?sin{inner}</mathnode>
+Sine function <br/>
+
+
+</body></document>

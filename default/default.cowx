@@ -1,5 +1,6 @@
 
-// Default tags and math operators
+// Title: Default operator list
+// Description: These are all the default tags and math operators you can use in <!cowtchoox/>, without linking anything.
 
 
 // The cowtchoox logo.
@@ -364,7 +365,7 @@
 </closingbrace>
 
 
-// A system, with a big opening brace. Make lines with && and align with &.
+// A system, with a big opening brace. Make lines with \&\& and align with \&.
 <!system :inner>
     %{
         <:inner/>
