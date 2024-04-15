@@ -29,8 +29,6 @@ TODO: make nested /* */ comments ?
 
 TODO: prevent circular dependencies of custom tags
 
-TODO: custom page formats
-
 TODO: more warnings for head tags
     -> only correct attribues
     -> no duplicates
@@ -38,4 +36,4 @@ TODO: more warnings for head tags
 
 FIXME: stickbefore produces incorrect behavior:
     -> if the element before fits entirely, but not with the stickbefore element
-       it puts both on next page. It should instead cut the element before is possible.
+       it puts both on next page. It should instead cut the element before if possible.

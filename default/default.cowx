@@ -457,3 +457,18 @@
     ?space ?normalfont{sin}<:inner/>
 </sin>
 
+
+// Show the name of an equation
+<?eqname :inner>
+    (<:inner/>)
+</eqname>
+
+
+// Displays a named equation (should be used inside math)
+// name: The name of the equation, will be put in the right
+<!eq :inner :name>
+    <div></div>
+    <:inner/>
+    $?eqname{<:name/>}$
+</eq>
+

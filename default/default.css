@@ -595,6 +595,23 @@ space {
 }
 
 
+/* !eq */
+eq {
+    display: flex;
+    flex-direction: flex-row;
+    align-items: center;
+    justify-content: center;
+}
+
+eq > div, eq > mathnode {
+    width: 2.5em
+}
+
+eq > mathnode {
+    text-align: right;
+}
+
+
 /* Additional styling for html viewing */
 @media screen {
     page {

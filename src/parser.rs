@@ -404,7 +404,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                             *pos = res_pos;
                         }
                         Err(e) => { // Didn't work! Maybe because in math some characters looks like tags but aren't
-                            if state == ParserState::Math { // If error, just interpret as regular text
+                            if state == ParserState::Math || state == ParserState::BigMath { // If error, just interpret as regular text
                                 content.push(NodeContent::Character(('<', pos.clone())));
                                 advance_position(pos, chars)?;
                             }
