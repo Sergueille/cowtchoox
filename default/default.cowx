@@ -472,3 +472,18 @@
     $?eqname{<:name/>}$
 </eq>
 
+
+// Integral
+// down: the thing at the bottom of the integral
+// up: the thing at the top of the integral
+// inner: the content inside the integral
+<?int :down :up :inner>
+    <int-symbol>
+        <svg version="1.1" viewBox="0,0,37.38467,100.57726"><g transform="translate(-221.30767,-129.71137)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="#000000" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><g><g><path d="M253.24151,130.46403c-7.44361,0.09554 -12.99122,98.86276 -26.28543,99.72543c-2.66543,0.17297 -5.34864,0.56167 -5.63201,-3.37879c-0.10918,-1.51821 0.30465,-2.48759 1.90939,-2.50962c1.09428,-0.01503 2.55317,0.47791 2.47908,2.56071c-0.08539,2.40052 -2.0554,1.9101 -2.0554,1.9101c0,0 0.04119,0.61877 1.51556,0.55493c10.81865,-0.46843 14.13597,-99.22098 28.28092,-99.47084c2.12866,-0.0376 1.50424,0.58606 -0.21211,0.60809z"/></g><g data-paper-data="{&quot;index&quot;:null}"><path d="M226.75849,229.53598c7.44361,-0.09554 12.99121,-98.86276 26.28543,-99.72543c2.66543,-0.17297 5.34864,-0.56167 5.63202,3.37879c0.10918,1.51821 -0.30465,2.48759 -1.90939,2.50962c-1.09428,0.01503 -2.55317,-0.47791 -2.47908,-2.5607c0.08539,-2.40052 2.0554,-1.9101 2.0554,-1.9101c0,0 -0.04119,-0.61877 -1.51556,-0.55493c-10.81865,0.46843 -14.13597,99.22099 -28.28092,99.47085c-2.12866,0.0376 -1.50424,-0.58606 0.21211,-0.60809z"/></g></g></g></g></svg>
+        <int-left>
+            <up><:up/></up>
+            <down><:down/></down>
+        </int-left>
+    </int-symbol>
+    <:inner/>
+</int>

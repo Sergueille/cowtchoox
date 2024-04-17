@@ -46,6 +46,12 @@ Will be replaced by the inner content of the last encountered tag with hat name.
 A system, with a big opening brace. Make lines with \&\& and align with \&. <br/>
 
 
+<h3>`<eq>` </h3>
+``<!eq :name=""> </eq>``
+Displays a named equation (should be used inside math) <br/>
+`name`: The name of the equation, will be put in the right <br/>
+
+
 <h2>Math operators</h2><h3>`sqrt` </h3>
 ``?sqrt{under}``
 <mathnode class="center">?sqrt{under}</mathnode>
@@ -353,6 +359,21 @@ Cosine function <br/>
 ``?sin{inner}``
 <mathnode class="center">?sin{inner}</mathnode>
 Sine function <br/>
+
+
+<h3>`eqname` </h3>
+``?eqname{inner}``
+<mathnode class="center">?eqname{inner}</mathnode>
+Show the name of an equation <br/>
+
+
+<h3>`int` </h3>
+``?int{down}{up}{inner}``
+<mathnode class="center">?int{down}{up}{inner}</mathnode>
+Integral <br/>
+`down`: the thing at the bottom of the integral <br/>
+`up`: the thing at the top of the integral <br/>
+`inner`: the content inside the integral <br/>
 
 
 </body></document>

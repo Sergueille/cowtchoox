@@ -611,6 +611,41 @@ eq > mathnode {
     text-align: right;
 }
 
+/* ?int */
+int {
+    display: inline-flex !important;
+    align-items: baseline;
+}
+
+int-symbol {
+    display: inline-flex !important;
+    flex-direction: row;
+    align-items: center;
+    transform: translateY(28%);
+}
+
+int-left > up, int-left > down {
+    font-size: 0.75em;
+}
+
+int-left > down {
+    transform: translateX(-0.5em);
+}
+
+int-left {
+    padding-right: 0.25em;
+    height: 4em;
+    display: inline-flex !important;
+    flex-direction: column;
+    align-items: start;
+    justify-content: space-between;
+}
+
+int > int-symbol > svg {
+    height: 3em;
+    overflow: visible;
+}
+
 
 /* Additional styling for html viewing */
 @media screen {
