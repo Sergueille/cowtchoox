@@ -52,6 +52,16 @@
         You can add braces (`{}`) to group things. (It will create additional `<div>`s)
 
         
+        <h2>Tags</h2>
+
+        Tags inside math works exactly in the same way, except for regular tags, that need an additional percentage sign as shown here:
+        ``
+<%div>This is inside a div</div>
+<%br/>
+        ``
+
+        It prevent any ambiguities with some math symbols. Custom tags (with `!`), and arguments tags (with `:`) are not affected.
+        
         <h2>Greek letters</h2>
 
         You can use greek letters in math. To do that, use `§`, followed by the equivalent letter.
