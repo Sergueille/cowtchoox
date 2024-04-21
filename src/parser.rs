@@ -85,6 +85,7 @@ bitflags::bitflags! {
         const QUESTION_MARK = 0x2;
         const EXCLAMATION_MARK = 0x4;
         const COLON = 0x8;
+        const PERCENTAGE = 0x10;
     }
 }
 
@@ -94,7 +95,7 @@ struct SplitPosition {
     pub content_pos: usize,
     pub file_pos: FilePosition,
 }
-    
+
 
 /// Parses a raw file.
 /// 
@@ -130,6 +131,7 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, expect_symbol: T
         '?' => TagSymbol::QUESTION_MARK,
         '!' => TagSymbol::EXCLAMATION_MARK,
         ':' => TagSymbol::COLON,
+        '%' => TagSymbol::PERCENTAGE,
         _ => {
             *pos = start_pos.clone(); // Get back to last position, because we advanced past the beginning of the tag names
             TagSymbol::NOTHING
@@ -149,7 +151,7 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, expect_symbol: T
             return Err(ParseError {
                 message: format!("Unexpected \"{}\"", next_char), // TODO: say what it expected
                 position: start_pos,
-                length: 2,
+                length: 1,
             });
         }
     }
@@ -282,16 +284,23 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, expect_symbol: T
                 source_length: 0,
             };
 
-            parse_inner_tag(chars, &mut res, pos, if is_really_math { ParserState::Math } else { ParserState::Normal }, context)?;
-            advance_position(pos, chars)?;
-            advance_position(pos, chars)?;
+            parse_inner_tag(chars, &mut res, pos, if is_really_math { ParserState::Math } else { ParserState::Normal }, true, context)?;
+            expect(chars, &mut pos, '<')?;
+            expect(chars, &mut pos, '/')?;
             
             // Parse the node's contents
             // Got out of the contents, now cursor is in closing tag
             let closing_tag_name = lookahead_word(chars, pos)?;
             if closing_tag_name != res.name {
+                // Show a hint in math
+                let math_hint = if is_really_math { 
+                    get_math_close_tag_hint(&closing_tag_name)
+                } else { 
+                    String::new()
+                };
+
                 return Err(ParseError { 
-                    message: format!("Unmatched tag. Expected to close tag \"{}\", but found tag \"{}\"", res.name, closing_tag_name), 
+                    message: format!("Unmatched tag. Expected to close tag \"{}\", but found tag \"{}\".{}", res.name, closing_tag_name, math_hint), 
                     position: pos.clone(), 
                     length: closing_tag_name.len() 
                 });
@@ -312,7 +321,7 @@ pub fn parse_tag(chars: &Vec<char>, mut pos: &mut FilePosition, expect_symbol: T
 
 
 /// Parses text inside a tag. Helper for `parse_tag`
-fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosition, state: ParserState, context: &Context) -> Result<(), ParseError> {
+fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosition, state: ParserState, allow_closing_tag: bool, context: &Context) -> Result<(), ParseError> {
     let mut children: Vec<Node> = Vec::with_capacity(10);
     let mut content: Vec<NodeContent> = Vec::with_capacity(100);
     
@@ -384,36 +393,60 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
             let next_char = read_next_char(chars,&mut lookahead_pos)?;
 
             match next_char {
-                '/' => { // Actually, it's finished!
-                    break;
-                },
-                _ => { // It's a child
-                    let mut res_pos = pos.clone();
-                    let result = parse_tag(
-                        chars, 
-                        &mut res_pos, 
-                        TagSymbol::NOTHING | TagSymbol::EXCLAMATION_MARK | TagSymbol::COLON, 
-                        state == ParserState::Math || state == ParserState::BigMath,
-                        context
-                    );
+                '/' => { // Reached closing tag
+                    if !allow_closing_tag {
+                        let close_tag_name = read_word(chars, &mut lookahead_pos)?;
 
-                    match result {
-                        Ok(child) => {
-                            children.push(child);
-                            content.push(NodeContent::Child(children.len() - 1));
-                            *pos = res_pos;
+                        // Show an additional hint in math
+                        let math_hint = if state == ParserState::Math || state == ParserState::BigMath {
+                            get_math_close_tag_hint(&close_tag_name)
                         }
-                        Err(e) => { // Didn't work! Maybe because in math some characters looks like tags but aren't
-                            if state == ParserState::Math || state == ParserState::BigMath { // If error, just interpret as regular text
-                                content.push(NodeContent::Character(('<', pos.clone())));
-                                advance_position(pos, chars)?;
-                            }
-                            else {
-                                return Err(e);
-                            }
-                        },
+                        else {
+                            String::new()
+                        };
+
+                        return Err(ParseError {
+                            message: format!("Unexpected closing tag \"</{}>\".{}", close_tag_name, math_hint),
+                            position: pos.clone(),
+                            length: 3 + close_tag_name.chars().count(),
+                        });
                     }
 
+                    break;
+                },
+                _ => { 
+                    let in_math = state == ParserState::Math || state == ParserState::BigMath;
+                    let real_math_tag = next_char == '%' || next_char == '!'  || next_char == ':';
+                    if (in_math && real_math_tag) || !in_math {
+                         // Opening tag
+                        let mut res_pos = pos.clone();
+                        let allowed_symbols = if in_math { TagSymbol::PERCENTAGE | TagSymbol::EXCLAMATION_MARK | TagSymbol::COLON }
+                                              else       { TagSymbol::NOTHING    | TagSymbol::EXCLAMATION_MARK | TagSymbol::COLON };
+
+                        let result = parse_tag(
+                            chars, 
+                            &mut res_pos, 
+                            allowed_symbols, 
+                            in_math,
+                            context
+                        );
+
+                        match result {
+                            Ok(child) => {
+                                children.push(child);
+                                content.push(NodeContent::Child(children.len() - 1));
+                                *pos = res_pos;
+                            }
+                            Err(e) => {
+                                return Err(e);
+                            },
+                        }
+                    }
+                    else {
+                        // Regular math text
+                        content.push(NodeContent::Character((next, pos.clone())));
+                        advance_position(pos, chars)?;
+                    }
                 }
             }
         }
@@ -439,76 +472,77 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                 advance_position(pos, chars)?;
             }
 
-            if state == ParserState::Normal || state == ParserState::InsideAttributeValue { // Inner math tag
-                let mut start_inner_position = pos.clone();
-                advance_position(&mut start_inner_position, chars)?;
+            match state {
+                ParserState::BigMath => {
+                    if !double {
+                        return Err(ParseError {
+                            message: String::from("Found one dollar, but expected two (\"$$\")."),
+                            position: pos_before_dollar,
+                            length: 1,
+                        });
+                    }
 
-                let attributes = if double {
-                    vec![
-                        TagAttribute { 
-                            name: String::from("class"), 
-                            value: Some(String::from("center")), 
-                            position: None, 
-                            value_position: None,
-                        }
-                    ]
+                    break;
+                },
+                ParserState::Math => {
+                    if double {
+                        return Err(ParseError {
+                            message: String::from("Found two dollars, but expected one (\"$\")."),
+                            position: pos_before_dollar,
+                            length: 1,
+                        });
+                    }
+
+                    break;
+                },
+                _ => {
+                    let mut start_inner_position = pos.clone();
+                    advance_position(&mut start_inner_position, chars)?;
+    
+                    let attributes = if double {
+                        vec![
+                            TagAttribute { 
+                                name: String::from("class"), 
+                                value: Some(String::from("center")), 
+                                position: None, 
+                                value_position: None,
+                            }
+                        ]
+                    }
+                    else {
+                        vec![
+                            TagAttribute { 
+                                name: String::from("nonbreaking"), 
+                                value: None, 
+                                position: None, 
+                                value_position: None,
+                            }
+                        ]
+                    };
+    
+                    let mut math_tag = Node {
+                        name: String::from("mathnode"),
+                        attributes,
+                        children: vec![],
+                        content: vec![],
+                        auto_closing: false,
+                        is_math: true,
+                        declaration_symbol: TagSymbol::NOTHING,
+                        start_position: pos.clone(),
+                        start_inner_position,
+                        source_length: 0
+                    };
+    
+                    let math_type = if double { ParserState::BigMath } else { ParserState::Math }; 
+    
+                    parse_inner_tag(chars, &mut math_tag, pos, math_type, false, context)?;
+    
+                    math_tag.source_length = get_positions_difference(&pos, &math_tag.start_position);
+    
+                    children.push(math_tag);
+                    content.push(NodeContent::Child(children.len() - 1));
                 }
-                else {
-                    vec![
-                        TagAttribute { 
-                            name: String::from("nonbreaking"), 
-                            value: None, 
-                            position: None, 
-                            value_position: None,
-                        }
-                    ]
-                };
-
-                let mut math_tag = Node {
-                    name: String::from("mathnode"),
-                    attributes,
-                    children: vec![],
-                    content: vec![],
-                    auto_closing: false,
-                    is_math: true,
-                    declaration_symbol: TagSymbol::NOTHING,
-                    start_position: pos.clone(),
-                    start_inner_position,
-                    source_length: 0
-                };
-
-                let math_type = if double { ParserState::BigMath } else { ParserState::Math }; 
-
-                parse_inner_tag(chars, &mut math_tag, pos, math_type, context)?;
-
-                math_tag.source_length = get_positions_difference(&pos, &math_tag.start_position);
-
-                children.push(math_tag);
-                content.push(NodeContent::Child(children.len() - 1));
             }
-            else if state == ParserState::Math { // Finished math
-                if double {
-                    return Err(ParseError {
-                        message: String::from("Closing inline math with \"$$\" but it started with\"$\". Consider removing one dollar, or putting a space between them."),
-                        position: pos_before_dollar,
-                        length: 2,
-                    });
-                }
-
-                break;
-            }
-            else if state == ParserState::BigMath { // Finished big math
-                if !double {
-                    return Err(ParseError {
-                        message: String::from("Closing math with \"$\", but it started with \"$$\". Consider adding one extra dollar."),
-                        position: pos_before_dollar,
-                        length: 1,
-                    });
-                }
-
-                break;
-            }
-            else { unreachable!() }
         }
         else if next == '`' && state != ParserState::Math && state != ParserState::BigMath { // Code block
             advance_position_with_comments(pos, chars)?;
@@ -543,8 +577,7 @@ fn parse_inner_tag<'a>(chars: &Vec<char>, node: &'a mut Node, pos: &mut FilePosi
                 advance_position_with_comments(pos, chars)?;
             } 
 
-            parse_inner_tag(chars, &mut math_tag, pos, if double { ParserState::BigCode } else { ParserState::Code }, context)?;
-
+            parse_inner_tag(chars, &mut math_tag, pos, if double { ParserState::BigCode } else { ParserState::Code }, false, context)?;
 
             math_tag.source_length = get_positions_difference(&pos, &math_tag.start_position);
 
@@ -987,12 +1020,20 @@ pub fn get_tag_from_raw_text(text: &str, is_math: bool, pos: &FilePosition, cont
     let mut fake_pos = pos.clone();
     fake_pos.absolute_position -= pos.absolute_position; // Set a false position, so that 0 is the beginning of the string
 
-    match parse_inner_tag(&chars, &mut res, &mut fake_pos, ParserState::InsideAttributeValue, context) {
+    match parse_inner_tag(&chars, &mut res, &mut fake_pos, ParserState::InsideAttributeValue, false, context) {
         Ok(()) => Ok(res),
         Err(mut err) => {
             err.position.absolute_position += pos.absolute_position; // Put the right position again
             return Err(err);
         },
     }
+}
+
+fn get_math_close_tag_hint(tag_name: &str) -> String {
+    return format!(
+        " Hint: It happens in a math environnement, so you maybe you forgot the percentage sign on the corresponding opening tag, as it is required in math: \"<%{}></{}>\"",
+        tag_name,
+        tag_name
+    )
 }
 

@@ -56,15 +56,15 @@
 // Square root.
 // under: the thing in the square root
 <?sqrt :under nonbreaking>
-    <svg viewBox="0,0,31.07407,97.52569" preserveAspectRatio="none">
-        <g transform="translate(-225.40004,-131.23716)">
-            <g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="currentcolor" fill-rule="nonzero" stroke-linecap="butt" style="mix-blend-mode: normal">
-                <path d="M238.74291,228.70521l-2.26807,0.05763l-6.98937,-14.48177l-4.08543,0.54519l1.51998,-5.57694l5.91132,-2.07427l4.38544,9.49452l13.86241,-85.43241l5.39492,0.06533l-1.87415,2.02456z" />
+    <%svg viewBox="0,0,31.07407,97.52569" preserveAspectRatio="none">
+        <%g transform="translate(-225.40004,-131.23716)">
+            <%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="currentcolor" fill-rule="nonzero" stroke-linecap="butt" style="mix-blend-mode: normal">
+                <%path d="M238.74291,228.70521l-2.26807,0.05763l-6.98937,-14.48177l-4.08543,0.54519l1.51998,-5.57694l5.91132,-2.07427l4.38544,9.49452l13.86241,-85.43241l5.39492,0.06533l-1.87415,2.02456z" />
             </g>
         </g>
     </svg>
-    <div class="sqrt-bar"></div>
-    <div class="sqrt-inner">
+    <%div class="sqrt-bar"></div>
+    <%div class="sqrt-inner">
         <:under/>
     </div>
 </sqrt>
@@ -72,7 +72,13 @@
 
 // Product. (like `\times` in latex) (U+00D7)
 <?x>
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="127.10079" height="127.10079" viewBox="0,0,127.10079,127.10079"><g transform="translate(-176.44985,-116.4496)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M299.04658,183.47416h-118.33498c0,0 -4.22502,-0.14828 -4.26147,-3.38502c-0.04092,-3.63331 4.26147,-3.56321 4.26147,-3.56321h118.33498c0,0 4.50406,0.52356 4.50406,3.44783c0,3.10377 -4.50406,3.5004 -4.50406,3.5004z"/><path d="M243.47416,120.95366l0,118.33498c0,0 -0.14827,4.22501 -3.38502,4.26146c-3.63331,0.04092 -3.56321,-4.26146 -3.56321,-4.26146l0,-118.33497c0,0 0.52356,-4.50406 3.44783,-4.50406c3.10377,0 3.50039,4.50406 3.50039,4.50406z"/></g></g></svg>
+    <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="127.10079" height="127.10079" viewBox="0,0,127.10079,127.10079">
+        <%g transform="translate(-176.44985,-116.4496)">
+            <%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal">
+                <%path d="M299.04658,183.47416h-118.33498c0,0 -4.22502,-0.14828 -4.26147,-3.38502c-0.04092,-3.63331 4.26147,-3.56321 4.26147,-3.56321h118.33498c0,0 4.50406,0.52356 4.50406,3.44783c0,3.10377 -4.50406,3.5004 -4.50406,3.5004z"/><%path d="M243.47416,120.95366l0,118.33498c0,0 -0.14827,4.22501 -3.38502,4.26146c-3.63331,0.04092 -3.56321,-4.26146 -3.56321,-4.26146l0,-118.33497c0,0 0.52356,-4.50406 3.44783,-4.50406c3.10377,0 3.50039,4.50406 3.50039,4.50406z"/>
+            </g>
+        </g>
+    </svg>
 </x>
 
 
@@ -80,9 +86,9 @@
 // up: the thing over the bar
 // down: the thing under the bar
 <?frac :up :down nonbreaking>
-    <div class="frac-up"><:up/></div>
-    <div class="frac-bar"></div>
-    <div class="frac-down"><:down/></div>
+    <%div class="frac-up"><:up/></div>
+    <%div class="frac-bar"></div>
+    <%div class="frac-down"><:down/></div>
 </frac>
 
 
@@ -100,29 +106,29 @@
 
 // Exponent. Infix alias ^
 <?exponent :before :inner nonbreaking>
-    <span class="exponent-before"><:before/></span>
-    <span class="exponent-inner"><:inner/></span>
+    <%span class="exponent-before"><:before/></span>
+    <%span class="exponent-inner"><:inner/></span>
 </exponent>
 
 
 // Subscript. Infix alias _
 <?subscript :before :inner nonbreaking>
-    <span class="subscript-before"><:before/></span>
-    <span class="subscript-inner"><:inner/></span>
+    <%span class="subscript-before"><:before/></span>
+    <%span class="subscript-inner"><:inner/></span>
 </subscript>
 
 
 // Put down under middle. Infix alias __
 <?underset :middle :down nonbreaking> 
     <:middle/>
-    <div class="underset-under"><:down/></div>
+    <%div class="underset-under"><:down/></div>
 </underset>
 
 
 // Put up over middle. Infix alias ^^
 <?overset :middle :up nonbreaking> 
     <:middle/>
-    <div class="overset-over"><:up/></div>
+    <%div class="overset-over"><:up/></div>
 </overset>
 
 
@@ -140,13 +146,13 @@
 
 // A minus sign. (U+2013) Alias -
 <?minus stickafter>
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="127.1008" height="6.94833" viewBox="0,0,127.1008,6.94833"><g transform="translate(-176.44984,-176.52584)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M299.04658,183.47416h-118.33498c0,0 -4.22502,-0.14828 -4.26147,-3.38502c-0.04092,-3.63331 4.26147,-3.56321 4.26147,-3.56321h118.33498c0,0 4.50406,0.52356 4.50406,3.44783c0,3.10377 -4.50406,3.5004 -4.50406,3.5004z"/></g></g></svg>
+    <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="127.1008" height="6.94833" viewBox="0,0,127.1008,6.94833"><%g transform="translate(-176.44984,-176.52584)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M299.04658,183.47416h-118.33498c0,0 -4.22502,-0.14828 -4.26147,-3.38502c-0.04092,-3.63331 4.26147,-3.56321 4.26147,-3.56321h118.33498c0,0 4.50406,0.52356 4.50406,3.44783c0,3.10377 -4.50406,3.5004 -4.50406,3.5004z"/></g></g></svg>
 </minus>
 
 
 // A plus sign. Alias +
 <?plus stickafter>
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="127.10079" height="127.10079" viewBox="0,0,127.10079,127.10079"><g transform="translate(-176.44985,-116.4496)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M299.04658,183.47416h-118.33498c0,0 -4.22502,-0.14828 -4.26147,-3.38502c-0.04092,-3.63331 4.26147,-3.56321 4.26147,-3.56321h118.33498c0,0 4.50406,0.52356 4.50406,3.44783c0,3.10377 -4.50406,3.5004 -4.50406,3.5004z"/><path d="M243.47416,120.95366l0,118.33498c0,0 -0.14827,4.22501 -3.38502,4.26146c-3.63331,0.04092 -3.56321,-4.26146 -3.56321,-4.26146l0,-118.33497c0,0 0.52356,-4.50406 3.44783,-4.50406c3.10377,0 3.50039,4.50406 3.50039,4.50406z"/></g></g></svg>
+    <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="127.10079" height="127.10079" viewBox="0,0,127.10079,127.10079"><%g transform="translate(-176.44985,-116.4496)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M299.04658,183.47416h-118.33498c0,0 -4.22502,-0.14828 -4.26147,-3.38502c-0.04092,-3.63331 4.26147,-3.56321 4.26147,-3.56321h118.33498c0,0 4.50406,0.52356 4.50406,3.44783c0,3.10377 -4.50406,3.5004 -4.50406,3.5004z"/><%path d="M243.47416,120.95366l0,118.33498c0,0 -0.14827,4.22501 -3.38502,4.26146c-3.63331,0.04092 -3.56321,-4.26146 -3.56321,-4.26146l0,-118.33497c0,0 0.52356,-4.50406 3.44783,-4.50406c3.10377,0 3.50039,4.50406 3.50039,4.50406z"/></g></g></svg>
 </plus>
 
 
@@ -176,72 +182,72 @@
 
 // Infinity. (U+221E)
 <?inf>
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="263.6382" height="128.60673" viewBox="0,0,263.6382,128.60673"><g transform="translate(-108.1809,-115.69664)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="#000000" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M303.95694,120.39632v-4.44968h2.60761c0,0 22.0824,0.84989 39.08837,13.04146c15.45932,11.08277 25.69383,32.60203 25.91356,50.99339c0.19355,16.20023 -10.25338,61.84286 -67.07217,64.06459c-0.44365,0.01734 -21.91447,-0.28071 -46.3076,-19.38714c-24.26703,-19.00766 -36.20068,-99.08583 -82.36379,-101.03483c-10.58553,-0.34184 -58.53631,3.24913 -63.25706,56.15459c-0.20443,2.12295 2.04441,54.22767 61.20652,58.86391c1.47388,0.1155 32.68897,2.33689 52.56247,-30.30066c11.08922,-18.21144 7.04467,-42.13468 22.80811,-63.75421c2.561,-3.51239 19.65549,-28.26158 55.77392,-28.53191c1.55111,3.30479 1.23698,3.84425 -0.76894,4.21138c-28.80499,1.83974 -37.41993,16.85251 -47.98062,30.90902c-11.43411,15.21904 -8.91396,53.8378 -30.22993,71.89151c-28.40105,24.05446 -46.59399,20.65381 -51.32159,20.57849c-46.48987,-0.74073 -59.95104,-37.01553 -62.05991,-42.46379c-15.5418,-40.15212 17.64004,-68.88152 20.43116,-70.86352c33.91211,-22.77512 67.1948,-11.90428 82.16428,-1.35618c45.62064,32.14615 36.04155,87.21099 72.51725,101.20445c48.9608,16.88507 71.96091,-22.03278 74.35605,-27.63014c14.32091,-33.46758 -6.69532,-57.24532 -14.9909,-66.03782c-13.51289,-14.32235 -40.46919,-16.10292 -40.46919,-16.10292z"/><path d="M176.04306,239.60368l0,4.44968l-2.60761,0c0,0 -22.0824,-0.84989 -39.08837,-13.04146c-15.45932,-11.08277 -25.69383,-32.60203 -25.91356,-50.99339c-0.19355,-16.20023 10.25338,-61.84286 67.07217,-64.06459c0.44365,-0.01734 21.91447,0.28071 46.3076,19.38714c24.26703,19.00766 36.20068,99.08584 82.36379,101.03483c10.58553,0.34184 58.53631,-3.24913 63.25706,-56.15459c0.20443,-2.12295 -2.04441,-54.22767 -61.20652,-58.86391c-1.47388,-0.1155 -32.68898,-2.33689 -52.56248,30.30066c-11.08922,18.21144 -7.04467,42.13468 -22.80811,63.75421c-2.561,3.51239 -19.65549,28.26158 -55.77392,28.53191c-1.55111,-3.30479 -1.23698,-3.84425 0.76894,-4.21138c28.80499,-1.83974 37.41993,-16.85251 47.98062,-30.90902c11.43411,-15.21904 8.91396,-53.8378 30.22993,-71.89151c28.40105,-24.05446 46.59399,-20.65381 51.32159,-20.57849c46.48987,0.74073 59.95104,37.01553 62.05991,42.46379c15.5418,40.15212 -17.64004,68.88152 -20.43116,70.86352c-33.91211,22.77512 -67.1948,11.90428 -82.16428,1.35618c-45.62064,-32.14615 -36.04155,-87.21099 -72.51725,-101.20445c-48.9608,-16.88507 -71.96091,22.03278 -74.35605,27.63014c-14.32091,33.46758 6.69532,57.24532 14.9909,66.03782c13.51289,14.32235 40.46919,16.10292 40.46919,16.10292z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
+    <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="263.6382" height="128.60673" viewBox="0,0,263.6382,128.60673"><%g transform="translate(-108.1809,-115.69664)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="#000000" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M303.95694,120.39632v-4.44968h2.60761c0,0 22.0824,0.84989 39.08837,13.04146c15.45932,11.08277 25.69383,32.60203 25.91356,50.99339c0.19355,16.20023 -10.25338,61.84286 -67.07217,64.06459c-0.44365,0.01734 -21.91447,-0.28071 -46.3076,-19.38714c-24.26703,-19.00766 -36.20068,-99.08583 -82.36379,-101.03483c-10.58553,-0.34184 -58.53631,3.24913 -63.25706,56.15459c-0.20443,2.12295 2.04441,54.22767 61.20652,58.86391c1.47388,0.1155 32.68897,2.33689 52.56247,-30.30066c11.08922,-18.21144 7.04467,-42.13468 22.80811,-63.75421c2.561,-3.51239 19.65549,-28.26158 55.77392,-28.53191c1.55111,3.30479 1.23698,3.84425 -0.76894,4.21138c-28.80499,1.83974 -37.41993,16.85251 -47.98062,30.90902c-11.43411,15.21904 -8.91396,53.8378 -30.22993,71.89151c-28.40105,24.05446 -46.59399,20.65381 -51.32159,20.57849c-46.48987,-0.74073 -59.95104,-37.01553 -62.05991,-42.46379c-15.5418,-40.15212 17.64004,-68.88152 20.43116,-70.86352c33.91211,-22.77512 67.1948,-11.90428 82.16428,-1.35618c45.62064,32.14615 36.04155,87.21099 72.51725,101.20445c48.9608,16.88507 71.96091,-22.03278 74.35605,-27.63014c14.32091,-33.46758 -6.69532,-57.24532 -14.9909,-66.03782c-13.51289,-14.32235 -40.46919,-16.10292 -40.46919,-16.10292z"/><%path d="M176.04306,239.60368l0,4.44968l-2.60761,0c0,0 -22.0824,-0.84989 -39.08837,-13.04146c-15.45932,-11.08277 -25.69383,-32.60203 -25.91356,-50.99339c-0.19355,-16.20023 10.25338,-61.84286 67.07217,-64.06459c0.44365,-0.01734 21.91447,0.28071 46.3076,19.38714c24.26703,19.00766 36.20068,99.08584 82.36379,101.03483c10.58553,0.34184 58.53631,-3.24913 63.25706,-56.15459c0.20443,-2.12295 -2.04441,-54.22767 -61.20652,-58.86391c-1.47388,-0.1155 -32.68898,-2.33689 -52.56248,30.30066c-11.08922,18.21144 -7.04467,42.13468 -22.80811,63.75421c-2.561,3.51239 -19.65549,28.26158 -55.77392,28.53191c-1.55111,-3.30479 -1.23698,-3.84425 0.76894,-4.21138c28.80499,-1.83974 37.41993,-16.85251 47.98062,-30.90902c11.43411,-15.21904 8.91396,-53.8378 30.22993,-71.89151c28.40105,-24.05446 46.59399,-20.65381 51.32159,-20.57849c46.48987,0.74073 59.95104,37.01553 62.05991,42.46379c15.5418,40.15212 -17.64004,68.88152 -20.43116,70.86352c-33.91211,22.77512 -67.1948,11.90428 -82.16428,1.35618c-45.62064,-32.14615 -36.04155,-87.21099 -72.51725,-101.20445c-48.9608,-16.88507 -71.96091,22.03278 -74.35605,27.63014c-14.32091,33.46758 6.69532,57.24532 14.9909,66.03782c13.51289,14.32235 40.46919,16.10292 40.46919,16.10292z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
 </inf>
 
 
 // Right arrow. Alias ->
 <?rightarrow>
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="149.02564" height="81.10927" viewBox="0,0,149.02564,81.10927"><g transform="translate(-165.48718,-139.44536)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M165.48718,184.25553v-8.51106h139.2207v8.51106z"/><path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -10.8284,1.14073 -15.12599,-1.11341c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><path d="M299.38683,181.0816c4.29759,-2.25414 15.12599,-1.1134 15.12599,-1.1134c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
+    <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="149.02564" height="81.10927" viewBox="0,0,149.02564,81.10927"><%g transform="translate(-165.48718,-139.44536)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M165.48718,184.25553v-8.51106h139.2207v8.51106z"/><%path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -10.8284,1.14073 -15.12599,-1.11341c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M299.38683,181.0816c4.29759,-2.25414 15.12599,-1.1134 15.12599,-1.1134c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
 </rightarrow>
 
 
 // Left arrow. (U+2190) Alias <-
 <?leftarrow>
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="149.02564" height="81.10927" viewBox="0,0,149.02564,81.10927"><g transform="translate(-165.48718,-139.44536)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M165.48718,184.25553v-8.51106h139.2207v8.51106z"/><path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -10.8284,1.14073 -15.12599,-1.11341c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><path d="M299.38683,181.0816c4.29759,-2.25414 15.12599,-1.1134 15.12599,-1.1134c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
+    <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="149.02564" height="81.10927" viewBox="0,0,149.02564,81.10927"><%g transform="translate(-165.48718,-139.44536)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M165.48718,184.25553v-8.51106h139.2207v8.51106z"/><%path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -10.8284,1.14073 -15.12599,-1.11341c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M299.38683,181.0816c4.29759,-2.25414 15.12599,-1.1134 15.12599,-1.1134c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
 </leftarrow>
 
 
 // Long right arrow. Alias -->
 <?longrightarrow>
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="216.52304" height="81.10929" viewBox="0,0,216.52304,81.10929"><g transform="translate(-97.98978,-139.44536)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M97.98978,184.25553v-8.51106h206.7181v8.51106z"/><path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -10.8284,1.14073 -15.12599,-1.11341c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><path d="M299.38683,181.0816c4.29759,-2.25414 15.12599,-1.1134 15.12599,-1.1134c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
+    <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="216.52304" height="81.10929" viewBox="0,0,216.52304,81.10929"><%g transform="translate(-97.98978,-139.44536)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M97.98978,184.25553v-8.51106h206.7181v8.51106z"/><%path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -10.8284,1.14073 -15.12599,-1.11341c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M299.38683,181.0816c4.29759,-2.25414 15.12599,-1.1134 15.12599,-1.1134c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
 </longrightarrow>
 
 
 // Long left arrow. Alias <--
 <?longleftarrow>
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="216.52304" height="81.10929" viewBox="0,0,216.52304,81.10929"><g transform="translate(-97.98978,-139.44536)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M97.98978,184.25553v-8.51106h206.7181v8.51106z"/><path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -10.8284,1.14073 -15.12599,-1.11341c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><path d="M299.38683,181.0816c4.29759,-2.25414 15.12599,-1.1134 15.12599,-1.1134c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
+    <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="216.52304" height="81.10929" viewBox="0,0,216.52304,81.10929"><%g transform="translate(-97.98978,-139.44536)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M97.98978,184.25553v-8.51106h206.7181v8.51106z"/><%path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -10.8284,1.14073 -15.12599,-1.11341c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M299.38683,181.0816c4.29759,-2.25414 15.12599,-1.1134 15.12599,-1.1134c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
 </longleftarrow>
 
 
 // Right double arrow. Alias =>
 <?rightdoublearrow>
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="148.4565" height="81.10929" viewBox="0,0,148.4565,81.10929"><g transform="translate(-166.05632,-139.44536)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -4.18181,2.56226 -9.0059,1.97458c-1.69695,-0.20673 -5.00174,-2.50141 -6.12009,-3.08799c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><path d="M299.38683,181.0816c1.45789,-0.76468 4.05495,-3.07667 6.33829,-3.23705c4.4475,-0.31239 8.7877,2.12365 8.7877,2.12365c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><path d="M166.05632,176.58886v-8.51106h131.2207v8.51106z"/><path d="M166.05632,191.9222v-8.51106h131.2207v8.51106z"/></g></g></svg>
+    <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="148.4565" height="81.10929" viewBox="0,0,148.4565,81.10929"><%g transform="translate(-166.05632,-139.44536)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -4.18181,2.56226 -9.0059,1.97458c-1.69695,-0.20673 -5.00174,-2.50141 -6.12009,-3.08799c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M299.38683,181.0816c1.45789,-0.76468 4.05495,-3.07667 6.33829,-3.23705c4.4475,-0.31239 8.7877,2.12365 8.7877,2.12365c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><%path d="M166.05632,176.58886v-8.51106h131.2207v8.51106z"/><%path d="M166.05632,191.9222v-8.51106h131.2207v8.51106z"/></g></g></svg>
 </rightdoublearrow>
 
 
 // Left double arrow. Alias <=
 <?leftdoublearrow>
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="148.4565" height="81.10929" viewBox="0,0,148.4565,81.10929"><g transform="translate(-166.05632,-139.44536)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -4.18181,2.56226 -9.0059,1.97458c-1.69695,-0.20673 -5.00174,-2.50141 -6.12009,-3.08799c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><path d="M299.38683,181.0816c1.45789,-0.76468 4.05495,-3.07667 6.33829,-3.23705c4.4475,-0.31239 8.7877,2.12365 8.7877,2.12365c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><path d="M166.05632,176.58886v-8.51106h131.2207v8.51106z"/><path d="M166.05632,191.9222v-8.51106h131.2207v8.51106z"/></g></g></svg>
+    <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="148.4565" height="81.10929" viewBox="0,0,148.4565,81.10929"><%g transform="translate(-166.05632,-139.44536)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -4.18181,2.56226 -9.0059,1.97458c-1.69695,-0.20673 -5.00174,-2.50141 -6.12009,-3.08799c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M299.38683,181.0816c1.45789,-0.76468 4.05495,-3.07667 6.33829,-3.23705c4.4475,-0.31239 8.7877,2.12365 8.7877,2.12365c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><%path d="M166.05632,176.58886v-8.51106h131.2207v8.51106z"/><%path d="M166.05632,191.9222v-8.51106h131.2207v8.51106z"/></g></g></svg>
 </leftdoublearrow>
 
 
 // Long right double arrow. Alias ==>
 <?longrightdoublearrow>
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="216.47311" height="81.10929" viewBox="0,0,216.47311,81.10929"><g transform="translate(-98.0397,-139.44536)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -4.18181,2.56226 -9.0059,1.97458c-1.69695,-0.20673 -5.00174,-2.50141 -6.12009,-3.08799c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><path d="M299.38683,181.0816c1.45789,-0.76468 4.05495,-3.07667 6.33829,-3.23705c4.4475,-0.31239 8.7877,2.12365 8.7877,2.12365c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><path d="M98.0397,176.58886v-8.51106h199.23731v8.51106z"/><path d="M98.0397,191.9222v-8.51106h199.23731v8.51106z"/></g></g></svg>
+    <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="216.47311" height="81.10929" viewBox="0,0,216.47311,81.10929"><%g transform="translate(-98.0397,-139.44536)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -4.18181,2.56226 -9.0059,1.97458c-1.69695,-0.20673 -5.00174,-2.50141 -6.12009,-3.08799c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M299.38683,181.0816c1.45789,-0.76468 4.05495,-3.07667 6.33829,-3.23705c4.4475,-0.31239 8.7877,2.12365 8.7877,2.12365c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><%path d="M98.0397,176.58886v-8.51106h199.23731v8.51106z"/><%path d="M98.0397,191.9222v-8.51106h199.23731v8.51106z"/></g></g></svg>
 </longrightdoublearrow>
 
 
 // Long left double arrow. Alias <==
 <?longleftdoublearrow>
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="216.47311" height="81.10929" viewBox="0,0,216.47311,81.10929"><g transform="translate(-98.0397,-139.44536)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -4.18181,2.56226 -9.0059,1.97458c-1.69695,-0.20673 -5.00174,-2.50141 -6.12009,-3.08799c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><path d="M299.38683,181.0816c1.45789,-0.76468 4.05495,-3.07667 6.33829,-3.23705c4.4475,-0.31239 8.7877,2.12365 8.7877,2.12365c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><path d="M98.0397,176.58886v-8.51106h199.23731v8.51106z"/><path d="M98.0397,191.9222v-8.51106h199.23731v8.51106z"/></g></g></svg>
+    <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="216.47311" height="81.10929" viewBox="0,0,216.47311,81.10929"><%g transform="translate(-98.0397,-139.44536)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -4.18181,2.56226 -9.0059,1.97458c-1.69695,-0.20673 -5.00174,-2.50141 -6.12009,-3.08799c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M299.38683,181.0816c1.45789,-0.76468 4.05495,-3.07667 6.33829,-3.23705c4.4475,-0.31239 8.7877,2.12365 8.7877,2.12365c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><%path d="M98.0397,176.58886v-8.51106h199.23731v8.51106z"/><%path d="M98.0397,191.9222v-8.51106h199.23731v8.51106z"/></g></g></svg>
 </longleftdoublearrow>
 
 
 // Long left right arrow. Alias <-->
 <?longleftrightarrow>
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="226.20039" height="81.10929" viewBox="0,0,226.20039,81.10929"><g transform="translate(-126.8998,-139.44535)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M136.64095,184.25553v-8.51106h206.7181v8.51106z"/><path d="M305.17676,144.00897l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -10.8284,1.14073 -15.12599,-1.11341c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><path d="M337.97421,181.0816c4.29759,-2.25414 15.12599,-1.1134 15.12599,-1.1134c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><path d="M174.82324,215.99103l-6.58856,4.56362c0,0 -9.33105,-14.48283 -16.66811,-21.47729c-10.67149,-10.17319 -24.66677,-19.10916 -24.66677,-19.10916c0,0 10.8284,-1.14073 15.12599,1.11341c17.64742,9.25631 32.79745,34.90942 32.79745,34.90942z"/><path d="M142.02579,178.91841c-4.29759,2.25414 -15.12599,1.1134 -15.12599,1.1134c0,0 13.99528,-8.93596 24.66677,-19.10916c7.33706,-6.99446 16.66811,-21.47729 16.66811,-21.47729l6.58856,4.56362c0,0 -15.15003,25.65311 -32.79745,34.90942z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
+    <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="226.20039" height="81.10929" viewBox="0,0,226.20039,81.10929"><%g transform="translate(-126.8998,-139.44535)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M136.64095,184.25553v-8.51106h206.7181v8.51106z"/><%path d="M305.17676,144.00897l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -10.8284,1.14073 -15.12599,-1.11341c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M337.97421,181.0816c4.29759,-2.25414 15.12599,-1.1134 15.12599,-1.1134c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><%path d="M174.82324,215.99103l-6.58856,4.56362c0,0 -9.33105,-14.48283 -16.66811,-21.47729c-10.67149,-10.17319 -24.66677,-19.10916 -24.66677,-19.10916c0,0 10.8284,-1.14073 15.12599,1.11341c17.64742,9.25631 32.79745,34.90942 32.79745,34.90942z"/><%path d="M142.02579,178.91841c-4.29759,2.25414 -15.12599,1.1134 -15.12599,1.1134c0,0 13.99528,-8.93596 24.66677,-19.10916c7.33706,-6.99446 16.66811,-21.47729 16.66811,-21.47729l6.58856,4.56362c0,0 -15.15003,25.65311 -32.79745,34.90942z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
 </longleftrightarrow>
 
 
 // Left right double arrow. Alias <=>
 <?leftrightdoublearrow>
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="167.17683" height="81.1093" viewBox="0,0,167.17683,81.1093"><g transform="translate(-156.41159,-139.44535)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M275.66497,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -4.18181,2.56226 -9.0059,1.97458c-1.69695,-0.20673 -5.00174,-2.50141 -6.12009,-3.08799c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><path d="M308.46242,181.0816c1.45789,-0.76468 4.05495,-3.07667 6.33829,-3.23705c4.4475,-0.31239 8.7877,2.12365 8.7877,2.12365c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><path d="M174.38965,176.58886v-8.51106h131.2207v8.51106z"/><path d="M174.38965,191.9222v-8.51106h131.2207v8.51106z"/><path d="M204.33503,215.99102l-6.58856,4.56362c0,0 -9.33105,-14.48283 -16.66811,-21.47729c-10.67149,-10.17319 -24.66677,-19.10916 -24.66677,-19.10916c0,0 4.18181,-2.56226 9.0059,-1.97458c1.69695,0.20673 5.00174,2.50141 6.12009,3.08799c17.64742,9.25631 32.79745,34.90942 32.79745,34.90942z"/><path d="M171.53758,178.9184c-1.45789,0.76468 -4.05495,3.07667 -6.33829,3.23705c-4.4475,0.31239 -8.7877,-2.12365 -8.7877,-2.12365c0,0 13.99528,-8.93596 24.66677,-19.10916c7.33706,-6.99446 16.66811,-21.47729 16.66811,-21.47729l6.58856,4.56362c0,0 -15.15003,25.65311 -32.79745,34.90942z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
+    <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="167.17683" height="81.1093" viewBox="0,0,167.17683,81.1093"><%g transform="translate(-156.41159,-139.44535)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M275.66497,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -4.18181,2.56226 -9.0059,1.97458c-1.69695,-0.20673 -5.00174,-2.50141 -6.12009,-3.08799c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M308.46242,181.0816c1.45789,-0.76468 4.05495,-3.07667 6.33829,-3.23705c4.4475,-0.31239 8.7877,2.12365 8.7877,2.12365c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><%path d="M174.38965,176.58886v-8.51106h131.2207v8.51106z"/><%path d="M174.38965,191.9222v-8.51106h131.2207v8.51106z"/><%path d="M204.33503,215.99102l-6.58856,4.56362c0,0 -9.33105,-14.48283 -16.66811,-21.47729c-10.67149,-10.17319 -24.66677,-19.10916 -24.66677,-19.10916c0,0 4.18181,-2.56226 9.0059,-1.97458c1.69695,0.20673 5.00174,2.50141 6.12009,3.08799c17.64742,9.25631 32.79745,34.90942 32.79745,34.90942z"/><%path d="M171.53758,178.9184c-1.45789,0.76468 -4.05495,3.07667 -6.33829,3.23705c-4.4475,0.31239 -8.7877,-2.12365 -8.7877,-2.12365c0,0 13.99528,-8.93596 24.66677,-19.10916c7.33706,-6.99446 16.66811,-21.47729 16.66811,-21.47729l6.58856,4.56362c0,0 -15.15003,25.65311 -32.79745,34.90942z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
 </leftrightdoublearrow>
 
 // Long left right double arrow. Alias <==>
 <?longleftrightdoublearrow>
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="226.2004" height="81.1093" viewBox="0,0,226.2004,81.1093"><g transform="translate(-126.8998,-139.44535)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><path d="M305.17676,144.00897l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -6.28754,1.77082 -11.27851,0.80124c-1.09168,-0.21208 -3.07617,-1.51009 -3.84748,-1.91465c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><path d="M337.97421,181.0816c1.11455,-0.58459 2.66835,-2.14422 4.35861,-2.35126c4.82721,-0.59129 10.76738,1.23786 10.76738,1.23786c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><path d="M174.82324,215.99103l-6.58856,4.56362c0,0 -9.33105,-14.48283 -16.66811,-21.47729c-10.67149,-10.17319 -24.66677,-19.10916 -24.66677,-19.10916c0,0 3.93018,-1.63853 8.10164,-1.44021c2.58247,0.12278 5.3811,1.69171 7.02435,2.55362c17.64742,9.25631 32.79745,34.90942 32.79745,34.90942z"/><path d="M142.02579,178.91841c-1.68413,0.88335 -3.76951,3.0504 -6.41481,3.16401c-4.10502,0.1763 -8.71118,-2.05061 -8.71118,-2.05061c0,0 13.99528,-8.93596 24.66677,-19.10916c7.33706,-6.99446 16.66811,-21.47729 16.66811,-21.47729l6.58856,4.56362c0,0 -15.15003,25.65311 -32.79745,34.90942z" data-paper-data="{&quot;index&quot;:null}"/><path d="M145.83306,176.58886v-8.51106h188.33388v8.51106z"/><path d="M145.83306,191.9222v-8.51106h188.33388v8.51106z"/></g></g></svg>
+    <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="226.2004" height="81.1093" viewBox="0,0,226.2004,81.1093"><%g transform="translate(-126.8998,-139.44535)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M305.17676,144.00897l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -6.28754,1.77082 -11.27851,0.80124c-1.09168,-0.21208 -3.07617,-1.51009 -3.84748,-1.91465c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M337.97421,181.0816c1.11455,-0.58459 2.66835,-2.14422 4.35861,-2.35126c4.82721,-0.59129 10.76738,1.23786 10.76738,1.23786c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><%path d="M174.82324,215.99103l-6.58856,4.56362c0,0 -9.33105,-14.48283 -16.66811,-21.47729c-10.67149,-10.17319 -24.66677,-19.10916 -24.66677,-19.10916c0,0 3.93018,-1.63853 8.10164,-1.44021c2.58247,0.12278 5.3811,1.69171 7.02435,2.55362c17.64742,9.25631 32.79745,34.90942 32.79745,34.90942z"/><%path d="M142.02579,178.91841c-1.68413,0.88335 -3.76951,3.0504 -6.41481,3.16401c-4.10502,0.1763 -8.71118,-2.05061 -8.71118,-2.05061c0,0 13.99528,-8.93596 24.66677,-19.10916c7.33706,-6.99446 16.66811,-21.47729 16.66811,-21.47729l6.58856,4.56362c0,0 -15.15003,25.65311 -32.79745,34.90942z" data-paper-data="{&quot;index&quot;:null}"/><%path d="M145.83306,176.58886v-8.51106h188.33388v8.51106z"/><%path d="M145.83306,191.9222v-8.51106h188.33388v8.51106z"/></g></g></svg>
 </longleftrightdoublearrow>
 
 
@@ -314,40 +320,40 @@
 // Opening parenthesis.
 /* hidden in docs */
 <?openingparenthesis stickafter>
-    <div></div>
+    <%div></div>
 </openingparenthesis>
 
 
 // Closing parenthesis.
 /* hidden in docs */
 <?closingparenthesis stickbefore>
-    <div></div>
+    <%div></div>
 </closingparenthesis>
 
 
 // Opening square bracket.
 /* hidden in docs */
 <?openingsquarebracket stickafter>
-    <div></div>
+    <%div></div>
 </openingsquarebracket>
 
 
 // Closing square bracket.
 /* hidden in docs */
 <?closingsquarebracket stickbefore>
-    <div></div>
+    <%div></div>
 </closingsquarebracket>
 
 
 // Opening brace.
 /* hidden in docs */
 <?openingbrace stickafter>
-    <div class="brace-inner">
-        <div class="brace-top"></div>
-        <div class="brace-bar"></div>
-        <div class="brace-middle"></div>
-        <div class="brace-bar"></div>
-        <div class="brace-bottom"></div>
+    <%div class="brace-inner">
+        <%div class="brace-top"></div>
+        <%div class="brace-bar"></div>
+        <%div class="brace-middle"></div>
+        <%div class="brace-bar"></div>
+        <%div class="brace-bottom"></div>
     </div>
 </openingbrace>
 
@@ -355,12 +361,12 @@
 // Closing brace.
 /* hidden in docs */
 <?closingbrace stickbefore>
-    <div class="brace-inner">
-        <div class="brace-top"></div>
-        <div class="brace-bar"></div>
-        <div class="brace-middle"></div>
-        <div class="brace-bar"></div>
-        <div class="brace-bottom"></div>
+    <%div class="brace-inner">
+        <%div class="brace-top"></div>
+        <%div class="brace-bar"></div>
+        <%div class="brace-middle"></div>
+        <%div class="brace-bar"></div>
+        <%div class="brace-bottom"></div>
     </div>
 </closingbrace>
 
@@ -375,8 +381,8 @@
 
 // Put an arrow over the argument, like a vector.
 <?v :inner>
-    <div class="v-bar"></div>
-    <div class="v-arrow-cap"></div>
+    <%div class="v-bar"></div>
+    <%div class="v-arrow-cap"></div>
     <:inner/>\ 
 </v>
 
@@ -401,8 +407,8 @@
 
 // Put a dot over argument. Alias ^.
 <?overdot :inner>
-    <span class="overdot-dots">
-        <span class="overdot-dot"></span>
+    <%span class="overdot-dots">
+        <%span class="overdot-dot"></span>
     </span>
     <:inner/>
 </overdot>
@@ -410,9 +416,9 @@
 
 // Put two dots over argument. Alias ^..
 <?overddot :inner>
-    <span class="overdot-dots">
-        <span class="overdot-dot"></span>
-        <span class="overdot-dot"></span>
+    <%span class="overdot-dots">
+        <%span class="overdot-dot"></span>
+        <%span class="overdot-dot"></span>
     </span>
     <:inner/>
 </overddot>
@@ -420,10 +426,10 @@
 
 // Put two dots over argument. Alias ^...
 <?overdddot :inner>
-    <span class="overdot-dots">
-        <span class="overdot-dot"></span>
-        <span class="overdot-dot"></span>
-        <span class="overdot-dot"></span>
+    <%span class="overdot-dots">
+        <%span class="overdot-dot"></span>
+        <%span class="overdot-dot"></span>
+        <%span class="overdot-dot"></span>
     </span>
     <:inner/>
 </overdddot>
@@ -478,11 +484,11 @@
 // up: the thing at the top of the integral
 // inner: the content inside the integral
 <?int :down :up :inner>
-    <int-symbol>
-        <svg version="1.1" viewBox="0,0,37.38467,100.57726"><g transform="translate(-221.30767,-129.71137)"><g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="#000000" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><g><g><path d="M253.24151,130.46403c-7.44361,0.09554 -12.99122,98.86276 -26.28543,99.72543c-2.66543,0.17297 -5.34864,0.56167 -5.63201,-3.37879c-0.10918,-1.51821 0.30465,-2.48759 1.90939,-2.50962c1.09428,-0.01503 2.55317,0.47791 2.47908,2.56071c-0.08539,2.40052 -2.0554,1.9101 -2.0554,1.9101c0,0 0.04119,0.61877 1.51556,0.55493c10.81865,-0.46843 14.13597,-99.22098 28.28092,-99.47084c2.12866,-0.0376 1.50424,0.58606 -0.21211,0.60809z"/></g><g data-paper-data="{&quot;index&quot;:null}"><path d="M226.75849,229.53598c7.44361,-0.09554 12.99121,-98.86276 26.28543,-99.72543c2.66543,-0.17297 5.34864,-0.56167 5.63202,3.37879c0.10918,1.51821 -0.30465,2.48759 -1.90939,2.50962c-1.09428,0.01503 -2.55317,-0.47791 -2.47908,-2.5607c0.08539,-2.40052 2.0554,-1.9101 2.0554,-1.9101c0,0 -0.04119,-0.61877 -1.51556,-0.55493c-10.81865,0.46843 -14.13597,99.22099 -28.28092,99.47085c-2.12866,0.0376 -1.50424,-0.58606 0.21211,-0.60809z"/></g></g></g></g></svg>
-        <int-left>
-            <up><:up/></up>
-            <down><:down/></down>
+    <%int-symbol>
+        <%svg version="1.1" viewBox="0,0,37.38467,100.57726"><%g transform="translate(-221.30767,-129.71137)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="#000000" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%g><%g><%path d="M253.24151,130.46403c-7.44361,0.09554 -12.99122,98.86276 -26.28543,99.72543c-2.66543,0.17297 -5.34864,0.56167 -5.63201,-3.37879c-0.10918,-1.51821 0.30465,-2.48759 1.90939,-2.50962c1.09428,-0.01503 2.55317,0.47791 2.47908,2.56071c-0.08539,2.40052 -2.0554,1.9101 -2.0554,1.9101c0,0 0.04119,0.61877 1.51556,0.55493c10.81865,-0.46843 14.13597,-99.22098 28.28092,-99.47084c2.12866,-0.0376 1.50424,0.58606 -0.21211,0.60809z"/></g><%g data-paper-data="{&quot;index&quot;:null}"><%path d="M226.75849,229.53598c7.44361,-0.09554 12.99121,-98.86276 26.28543,-99.72543c2.66543,-0.17297 5.34864,-0.56167 5.63202,3.37879c0.10918,1.51821 -0.30465,2.48759 -1.90939,2.50962c-1.09428,0.01503 -2.55317,-0.47791 -2.47908,-2.5607c0.08539,-2.40052 2.0554,-1.9101 2.0554,-1.9101c0,0 -0.04119,-0.61877 -1.51556,-0.55493c-10.81865,0.46843 -14.13597,99.22099 -28.28092,99.47085c-2.12866,0.0376 -1.50424,-0.58606 0.21211,-0.60809z"/></g></g></g></g></svg>
+        <%int-left>
+            <%up><:up/></up>
+            <%down><:down/></down>
         </int-left>
     </int-symbol>
     <:inner/>

@@ -37,10 +37,12 @@
         <br/>
 
         $
-            There is a\ space in math\!
+            <%test> There is a\ space in math\! </test>
         $
 
         <br/>
+
+        <test></test>
 
         Also escaping in math $\$ \< \{ \\ \} 123456789Δ$
 
