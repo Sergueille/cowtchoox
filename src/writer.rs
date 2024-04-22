@@ -86,7 +86,7 @@ pub fn get_file_text(mut document: Node, context: &mut Context) -> Result<(Strin
 
     res.push_str("<html>"); // Quirks is better!
 
-    res.push_str(&white_head(&options, &context));
+    res.push_str(&write_head(&options, &context));
 
     // Write the body text
     res.push_str(&get_node_html(&body, false, &context));
@@ -152,7 +152,7 @@ fn parse_math_and_replace_tags(node: Node, context: &Context) -> Result<Node, ()
 }
 
 
-pub fn white_head(options: &doc_options::DocOptions, context: &Context) -> String {
+pub fn write_head(options: &doc_options::DocOptions, context: &Context) -> String {
     let mut res = String::with_capacity(200);
     res.push_str("<head>");
 
@@ -164,7 +164,7 @@ pub fn white_head(options: &doc_options::DocOptions, context: &Context) -> Strin
     let default_resources_path = context.default_dir.to_str().expect("Failed to get resources dir string").to_string().replace("\\", "/");
 
     // Link JS script, so that it executes when the page loads
-    res.push_str(&format!("<script defer=\"defer\" src=\"file:///{}/JS/main.js\"></script>", default_resources_path));
+    res.push_str(&format!("<script defer=\"defer\" src=\"file:///{}/js/main.js\"></script>", default_resources_path));
 
     // Link default CSS
     res.push_str(&format!("<link rel=\"stylesheet\" href=\"file:///{}/default/util.css\"/>", default_resources_path));
