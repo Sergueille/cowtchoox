@@ -23,7 +23,7 @@ pub fn render_to_pdf(path: PathBuf, args: &Args, options: &DocOptions) -> Result
 
     // Navigate to the page
     let res = tab.navigate_to(&format!("file:///{}", &path.clone().into_os_string().into_string().expect("")));
-    log::log_if_err(res, "Failed to navigate to document (1).")?;
+    log::log_if_err(res, "Failed to navigate to document (1). Make sure chomium is allowed to read the file.")?;
     log::log_if_err(tab.wait_until_navigated(), "Failed to navigate to document (2).")?;
 
     const SCALE_CONSTANT: f64 = 1.21; // A random constant to make things work

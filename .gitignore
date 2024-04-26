@@ -9,3 +9,4 @@ build.zip
 /docs/out.pdf
 !/docs/*/*.pdf
 /docs/*/out.pdf
+!/examples/*/*.pdf
