@@ -26,11 +26,11 @@
 
 
 // A figure with a caption
-<!figure :inner :caption nonbreaking>
+<!figure :inner :caption>
     <div class="figure">
         <:inner/>
     </div>
-    <div class="figure-caption">
+    <div class="figure-caption" stickbefore>
         <:caption/>
     </div>
 </figure>

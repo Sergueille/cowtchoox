@@ -1,4 +1,3 @@
-
 // This file will create nice page elements, and fil them with the content of the document
 // This allows to place headers and to have specific rules for page layout
 
@@ -41,7 +40,7 @@ async function main() {
     while (true) {
         let pageElement = getPage(pageNumber);
         document.body.appendChild(pageElement);
-        
+
         if (header) {
             let instance = header.cloneNode(true);
             replacePageNumbers(instance, pageNumber);
@@ -68,12 +67,12 @@ async function main() {
         replacePageNumbers(insidePage, pageNumber);
 
         let [remaining, addedSomething] = await fillUntilOverflow(pageElement, insidePage);
-        
+
         // Remove scrollbars that may have appeared and prevent bugs related to the page becoming slightly less wide
-        pageElement.style.setProperty("overflow", "hidden"); 
+        pageElement.style.setProperty("overflow", "hidden");
 
         if (remaining == null) break; // No more elements
-        
+
         // Nothing was added, because the next nonbreaking element is too large...
         // To prevent endless loops, force-add the next element and report a warning 
         if (!addedSomething) {
@@ -88,7 +87,7 @@ async function main() {
 
         pageNumber++;
     }
-    
+
     createErrorElement();
 }
 
@@ -99,15 +98,14 @@ async function main() {
  */
 function replaceEvaluate(parent) {
     // Search for get tags
-    for (let tag of parent.querySelectorAll("evaluate > inner > text")) {
-        let expression = tag.innerHTML;
+    for (let tag of parent.querySelectorAll("evaluate > inner")) {
+        let expression = tag.textContent;
 
         try {
             let result = eval(expression);
             tag.innerHTML = result;
-        }
-        catch(err) {
-            logError(`Failed to parse the evaluate tag that contains "${tag.innerHTML}". The error is: "${err.message}"`)
+        } catch (err) {
+            logError(`Failed to parse the evaluate tag that contains "${tag.textContent}". The error is: "${err.message}"`)
             tag.innerHTML = "Evaluation failed.";
         }
     }
@@ -129,12 +127,11 @@ function replaceLastValues(parent) {
         let finalContent = "";
 
         // Query all tag with this name, including this tag
-        let nodeList = document.querySelectorAll(tagName, "#replace-temp-id"); 
+        let nodeList = document.querySelectorAll(tagName, "#replace-temp-id");
         for (let node of nodeList) {
             if (node == tag) {
                 break;
-            }
-            else {
+            } else {
                 finalContent = node.innerHTML;
             }
         }
@@ -182,8 +179,7 @@ async function fillUntilOverflow(pageElement, parentElement) {
         if (top.tagName == "PAGEBREAK") {
             addedPartOfElement = true;
             break;
-        }
-        else if (top.querySelector("pagebreak") != null) {
+        } else if (top.querySelector("pagebreak") != null) {
             if (isNonbreaking(top)) {
                 logError(`There is a pagebreak inside a nonbreaking element (${top.tagName})`);
             }
@@ -202,7 +198,7 @@ async function fillUntilOverflow(pageElement, parentElement) {
         }
 
         parentElement.appendChild(top);
-        
+
         // Wait to make sure the browser have updated the layout
         await new Promise(resolve => setTimeout(resolve, 0));
 
@@ -211,12 +207,10 @@ async function fillUntilOverflow(pageElement, parentElement) {
                 removeStickbefore = true;
                 parentElement.removeChild(top);
                 children.push(top);
-            }
-            else if (isNonbreaking(top)) { // Finished!
+            } else if (isNonbreaking(top)) { // Finished!
                 parentElement.removeChild(top);
                 children.push(top);
-            }
-            else if (top.tagName == "TEXT") { // Split text
+            } else if (top.tagName == "TEXT") { // Split text
                 let text = top.textContent;
                 top.textContent = "";
 
@@ -225,8 +219,7 @@ async function fillUntilOverflow(pageElement, parentElement) {
                     parentElement.removeChild(top);
                     top.textContent = text;
                     children.push(top);
-                }
-                else {
+                } else {
                     let word = "";
                     let wordStartId = 0;
                     for (let i = 0; i < text.length; i++) {
@@ -254,8 +247,7 @@ async function fillUntilOverflow(pageElement, parentElement) {
                     top.classList.add("first-half");
                     secondHalf.classList.add("second-half");
                 }
-            }
-            else { // Split element
+            } else { // Split element
                 parentElement.removeChild(top);
 
                 let cloned = top.cloneNode(false);
@@ -266,8 +258,7 @@ async function fillUntilOverflow(pageElement, parentElement) {
                 if (isOverflowing(pageElement)) {
                     parentElement.removeChild(cloned);
                     children.push(top);
-                }
-                else {
+                } else {
                     parentElement.removeChild(cloned);
                     parentElement.appendChild(top);
 
@@ -279,10 +270,9 @@ async function fillUntilOverflow(pageElement, parentElement) {
                             top.classList.add("first-half");
                             remaining.classList.add("second-half");
                             children.push(remaining);
-                        }
-                        else { // Nothing was added inside, revert the operation 
+                        } else { // Nothing was added inside, revert the operation 
                             parentElement.removeChild(top);
-                            
+
                             // Put the children back
                             while (remaining.children.length > 0) {
                                 top.appendChild(remaining.children[0]);
@@ -295,8 +285,7 @@ async function fillUntilOverflow(pageElement, parentElement) {
             }
 
             break;
-        }
-        else {
+        } else {
             addedElements.push(top);
         }
     }
@@ -327,11 +316,10 @@ async function fillUntilOverflow(pageElement, parentElement) {
 
     if (children.length == 0) {
         return [null, addedElements.length > 0 || addedPartOfElement];
-    }
-    else {
+    } else {
         let copy = parentElement.cloneNode(false);
         copy.innerText = "";
-        
+
         children.reverse();
         for (let child of children) {
             copy.appendChild(child);
@@ -427,7 +415,7 @@ function createErrorElement() {
     el.id = "cowtchoox-error-reporter"
     el.style.display = "none";
     el.textContent = errors.join("\0");
-    
+
     document.body.appendChild(el);
 }
 
@@ -444,7 +432,7 @@ function findFooter() {
     }
 
     return res;
-} 
+}
 
 
 /**
@@ -459,5 +447,4 @@ function findHeader() {
     }
 
     return res;
-} 
-
+}

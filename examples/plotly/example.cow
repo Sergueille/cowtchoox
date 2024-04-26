@@ -1,0 +1,44 @@
+<document>
+    <head>
+        <title>Plotly example</title>
+        <js relative-to="default-dir">js/libs/plotly.min.js</js>
+        <cowx>convert.cowx</cowx>
+    </head>
+    <body>
+        <h1>`plotly.js` example</h1>
+
+        This document will show how to use `plotly.js` to automatically make charts from your tables.
+        Here is a table:
+
+        <!cowtable :caption="Random numbers" id="test-table">
+            n & a & b &&
+            1 & 5.6 & 7.8 &&
+            2 & 9.4 & 5.9 &&
+            3 & 11.6 & 5.2 &&
+            4 & 13.7 & 4.5 &&
+            5 & 18.1 & 2.8 &&
+            6 & 22.0 & 2.4 &&
+        </cowtable>
+
+        And here is the corresponding chart:
+        <!figure :caption="The chart">
+            <!auto-chart :table-id="test-table"/>
+        </figure>
+
+        To do this, you yould inclue this in the head:
+        ``
+// The js library, included with the build
+<js relative-to="default-dir">js/libs/plotly.min.js</js>
+// An example cowx file
+<cowx relative-to="default-dir">examples/plotly/convert.cowx</cowx> 
+        ``
+
+        In the document, just use:
+        ``
+<!auto-chart :table-id="the-id-of-your-table"/>
+        ``
+
+        The provided tag `auto-chart`, is just an example. To change things, you can modify the JS script inside.
+
+    </body>
+</document>

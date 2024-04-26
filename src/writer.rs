@@ -163,9 +163,15 @@ pub fn write_head(options: &doc_options::DocOptions, context: &Context) -> Strin
     //        but too lazy to do that
     let default_resources_path = context.default_dir.to_str().expect("Failed to get resources dir string").to_string().replace("\\", "/");
 
+    // Link additional JS scripts
+    for file_path in &options.js_files {
+        let path_str = crate::util::get_browser_path_string(file_path.get_full_path(context));
+        res.push_str(&format!("<script defer=\"defer\" src=\"{}\"></script>", path_str));
+    }
+    
     // Link JS script, so that it executes when the page loads
     res.push_str(&format!("<script defer=\"defer\" src=\"file:///{}/js/main.js\"></script>", default_resources_path));
-
+    
     // Link default CSS
     res.push_str(&format!("<link rel=\"stylesheet\" href=\"file:///{}/default/util.css\"/>", default_resources_path));
     res.push_str(&format!("<link rel=\"stylesheet\" href=\"file:///{}/default/default.css\"/>", default_resources_path));
@@ -242,13 +248,13 @@ pub fn get_node_html(node: &Node, no_text_tags: bool, context: &Context) -> Stri
 
                     // Escape characters
                     if *c == '<' {
-                        current_text_tag.push_str("&lt");
+                        current_text_tag.push_str("&lt;");
                     }
                     else if *c == '>' {
-                        current_text_tag.push_str("&gt");
+                        current_text_tag.push_str("&gt;");
                     }
                     else if *c == '&' {
-                        current_text_tag.push_str("&amp");
+                        current_text_tag.push_str("&amp;");
                     }
                     else {
                         current_text_tag.push(*c);
@@ -340,7 +346,8 @@ pub fn instantiate_all_custom_tags(mut node: Node, only_children: bool, context:
         }
 
         let mut arguments = Vec::with_capacity(node.attributes.len() + 1);
-        for attr in node.attributes.iter() {
+        let mut other_attributes = Vec::with_capacity(node.attributes.len() + 1);
+        for attr in node.attributes.into_iter() {
             let mut chars = attr.name.chars();
             if chars.next().unwrap() == ':' {
                 match &attr.value {
@@ -361,7 +368,10 @@ pub fn instantiate_all_custom_tags(mut node: Node, only_children: bool, context:
                         });
                     }
                 }
-            } 
+            }
+            else { // Regular attribute
+                other_attributes.push(attr);
+            }
         }
 
         let start_position = node.start_position.clone();
@@ -392,7 +402,13 @@ pub fn instantiate_all_custom_tags(mut node: Node, only_children: bool, context:
             arguments.push((String::from("inner"), node)); // Push the inner content as an ":inner" argument
         }
 
-        let actual_res = custom::instantiate_tag_with_named_parameters(custom_tag, arguments, &start_position)?;
+        // OPTI: this may be very slow, and can even crash if there is a loop in custom tags dependencies 
+        // Insantiate custom tags inside the custom tags
+        let mut tag_to_instantiate = (*custom_tag).clone();
+        tag_to_instantiate.content = instantiate_all_custom_tags(tag_to_instantiate.content, true, context)?;
+
+        let mut actual_res = custom::instantiate_tag_with_named_parameters(&tag_to_instantiate, arguments, &start_position)?;
+        actual_res.attributes.append(&mut other_attributes);
 
         return Ok(actual_res);
     }

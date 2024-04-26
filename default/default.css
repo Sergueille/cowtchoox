@@ -1,4 +1,3 @@
-
 /* Default look of cowtchoox */
 /* Also contains style for default.cowx */
 /* Changing some rules can cause unexpected behavior. */
@@ -79,7 +78,7 @@ code {
     border-radius: 0.2em;
     padding: 0.1em 0.3em;
     margin: 0;
-    
+
     font-variant-ligatures: no-contextual;
 }
 
@@ -94,7 +93,7 @@ pre {
 
     border-radius: 0.4em;
     border: 0.5mm solid #ccc;
-    
+
     font-variant-ligatures: no-contextual;
 }
 
@@ -109,11 +108,12 @@ pre {
     margin: 7mm 0;
 }
 
-.figure > * {
+.figure>* {
     margin: 0 3mm;
 }
 
-.figure-caption, .table-caption {
+.figure-caption,
+.table-caption {
     display: block;
     text-align: center;
     margin-bottom: 7mm;
@@ -124,7 +124,7 @@ pre {
 }
 
 .figure-caption::before {
-    content: "Figure " counter(figure) ": ";
+    content: "Figure "counter(figure) ": ";
 }
 
 .table-caption {
@@ -132,26 +132,26 @@ pre {
 }
 
 .table-caption::before {
-    content: "Table " counter(table) ": ";
+    content: "Table "counter(table) ": ";
 }
 
 body {
     counter-reset: figure table var(--counter-reset);
 }
 
-cowtable > inner {
+cowtable>inner {
     margin: 1em auto;
     display: table;
     border-spacing: 0;
     border-collapse: collapse;
 }
 
-cowtable > inner double-amp-split {
+cowtable>inner double-amp-split {
     border: 0.02mm solid black;
     display: table-row;
 }
 
-cowtable > inner double-amp-split amp-split {
+cowtable>inner double-amp-split amp-split {
     border: 0.02mm solid black;
     display: table-cell;
     padding: 0.2em 0.5em;
@@ -173,7 +173,7 @@ sqrt {
     margin-top: 0.1em;
 }
 
-sqrt > svg {
+sqrt>svg {
     display: block;
     position: absolute;
     width: 0.5em;
@@ -200,7 +200,8 @@ sqrt > svg {
 frac {
     display: inline-block;
     text-align: center;
-    vertical-align: 7%; /* https://xymaths.fr/Informatique-Programmation/html-css/ecrire-maths-fractions.php#frac */
+    vertical-align: 7%;
+    /* https://xymaths.fr/Informatique-Programmation/html-css/ecrire-maths-fractions.php#frac */
     margin: 0 0.1em;
     font-size: var(--frac-shrink);
     --temp: max(calc(var(--frac-shrink) * 0.75), 0.4rem);
@@ -210,12 +211,13 @@ frac {
     display: block;
     width: 100%;
     height: 0.04em;
-    background-color: currentcolor; 
+    background-color: currentcolor;
     margin-top: 0;
     margin-bottom: 0.1em;
 }
 
-.frac-up, .frac-down {
+.frac-up,
+.frac-down {
     display: inline-block;
     --frac-shrink: var(--temp);
 }
@@ -258,7 +260,7 @@ exponent {
 
 /* ?subscript */
 subscript {
-    display: inline-flex  !important;
+    display: inline-flex !important;
     flex-direction: row;
     align-items: end;
 }
@@ -306,21 +308,34 @@ comma {
 
 
 /* ?equal, ?simeq, ?equiv, ?mless, ?mgreater */
-equal, simeq, equiv, less, greater, leq, geq, mless, mgreater, noteq {
+equal,
+simeq,
+equiv,
+less,
+greater,
+leq,
+geq,
+mless,
+mgreater,
+noteq {
     margin-left: 0.3em;
     margin-right: 0.3em;
 }
 
 
 /* ?plus, ?minus */
-plus, minus, x {
+plus,
+minus,
+x {
     margin-left: 0.18em;
     margin-right: 0.15em;
     height: 0.8em;
     vertical-align: -10%;
 }
 
-plus > svg, minus > svg, x > svg {
+plus>svg,
+minus>svg,
+x>svg {
     display: inline;
     width: 0.7em;
     height: 0.7em;
@@ -331,13 +346,13 @@ x {
     transform: rotate(45deg);
 }
 
-/* ?inf */ 
+/* ?inf */
 inf {
     height: 1em;
     vertical-align: 0%;
 }
 
-inf > svg{
+inf>svg {
     display: inline;
     width: 1em;
     height: 0.5em;
@@ -369,17 +384,30 @@ un::after {
 
 
 /* Arrows */
-leftarrow > svg, longleftarrow > svg, rightarrow > svg, longrightarrow > svg,
-leftrightdoublearrow > svg, rightdoublearrow > svg, leftdoublearrow > svg,
-longleftrightdoublearrow > svg, longrightdoublearrow > svg, longleftdoublearrow > svg, longleftrightarrow > svg {
+leftarrow>svg,
+longleftarrow>svg,
+rightarrow>svg,
+longrightarrow>svg,
+leftrightdoublearrow>svg,
+rightdoublearrow>svg,
+leftdoublearrow>svg,
+longleftrightdoublearrow>svg,
+longrightdoublearrow>svg,
+longleftdoublearrow>svg,
+longleftrightarrow>svg {
     height: 0.5em;
     width: fit-content;
     overflow: visible;
     margin-bottom: 0.3em;
 }
 
-leftrightdoublearrow, rightdoublearrow, leftdoublearrow,
-longleftrightdoublearrow, longrightdoublearrow, longleftdoublearrow, longleftrightarrow {
+leftrightdoublearrow,
+rightdoublearrow,
+leftdoublearrow,
+longleftrightdoublearrow,
+longrightdoublearrow,
+longleftdoublearrow,
+longleftrightarrow {
     display: inline-flex !important;
     flex-direction: column;
     justify-content: flex-end;
@@ -388,7 +416,10 @@ longleftrightdoublearrow, longrightdoublearrow, longleftdoublearrow, longleftrig
     margin-right: 0.5em;
 }
 
-leftarrow, longleftarrow, rightarrow, longrightarrow {
+leftarrow,
+longleftarrow,
+rightarrow,
+longrightarrow {
     display: inline-flex !important;
     flex-direction: column;
     justify-content: flex-end;
@@ -397,7 +428,10 @@ leftarrow, longleftarrow, rightarrow, longrightarrow {
     margin-right: 0.2em;
 }
 
-leftarrow, leftdoublearrow, longleftarrow, longleftdoublearrow {
+leftarrow,
+leftdoublearrow,
+longleftarrow,
+longleftdoublearrow {
     transform: rotate(180deg);
 }
 
@@ -415,55 +449,67 @@ div:has(> openingparenthesis, > closingparenthesis, > openingsquarebracket, > cl
     position: relative;
 }
 
-openingparenthesis, openingsquarebracket {
+openingparenthesis,
+openingsquarebracket {
     margin-left: 0.2em;
 }
 
-closingparenthesis, closingsquarebracket {
+closingparenthesis,
+closingsquarebracket {
     margin-right: 0.15em;
 }
 
-openingparenthesis, closingparenthesis,
-openingsquarebracket, closingsquarebracket {
+openingparenthesis,
+closingparenthesis,
+openingsquarebracket,
+closingsquarebracket {
     height: 0;
     width: 0.25em;
     overflow: visible;
 }
 
-openingparenthesis > div, closingparenthesis > div,
-openingsquarebracket > div, closingsquarebracket > div {
+openingparenthesis>div,
+closingparenthesis>div,
+openingsquarebracket>div,
+closingsquarebracket>div {
     position: absolute;
     top: 0.05em;
     width: 0.25em;
     height: 90%;
 }
 
-openingparenthesis:first-child > div, openingsquarebracket:first-child > div
-closingsquarebracket:first-child > div, closingparenthesis:first-child > div {
+openingparenthesis:first-child>div,
+openingsquarebracket:first-child>div closingsquarebracket:first-child>div,
+closingparenthesis:first-child>div {
     left: 0.2em;
 }
 
-openingparenthesis:last-child > div, openingsquarebracket:last-child > div
-closingsquarebracket:last-child > div, closingparenthesis:last-child > div {
+openingparenthesis:last-child>div,
+openingsquarebracket:last-child>div closingsquarebracket:last-child>div,
+closingparenthesis:last-child>div {
     right: 0.15em;
 }
 
-closingparenthesis > div, closingsquarebracket > div{
+closingparenthesis>div,
+closingsquarebracket>div {
     transform: scaleX(-1);
 }
 
-openingparenthesis > div, closingparenthesis > div {
+openingparenthesis>div,
+closingparenthesis>div {
     background: url(parenthesis.svg);
     background-size: 100% 100%;
 }
 
-openingsquarebracket > div, closingsquarebracket > div {
+openingsquarebracket>div,
+closingsquarebracket>div {
     border-top: 0.02em solid currentColor;
     border-bottom: 0.02em solid currentColor;
     border-left: 0.02em solid currentColor;
 }
 
-openingbrace, closingbrace {
+openingbrace,
+closingbrace {
     width: 0.3em;
 }
 
@@ -475,7 +521,7 @@ closingbrace {
     padding-right: 0.2em;
 }
 
-closingbrace > .brace-inner {
+closingbrace>.brace-inner {
     transform: rotate(180deg);
 }
 
@@ -488,7 +534,8 @@ closingbrace > .brace-inner {
     height: 100%;
 }
 
-.brace-top, .brace-bottom {
+.brace-top,
+.brace-bottom {
     background: url(brace_top.svg);
     background-size: 100% 100%;
     height: 0.4em;
@@ -523,7 +570,7 @@ system double-amp-split {
     display: table-row;
 }
 
-system double-amp-split > amp-split {
+system double-amp-split>amp-split {
     display: table-cell;
     text-align: left;
 }
@@ -557,7 +604,9 @@ v {
 
 
 /* ?overdot, ?overddot, ?overdddot */
-overdot, overddot, overdddot {
+overdot,
+overddot,
+overdddot {
     position: relative;
     padding-top: 0.1em;
 }
@@ -581,10 +630,10 @@ overdot, overddot, overdddot {
 
 
 /* ?vert-flex */
-vert-flex > div > div {
-    display: inline-flex !important; 
+vert-flex>div>div {
+    display: inline-flex !important;
     flex-direction: column;
-    align-items: center; 
+    align-items: center;
     vertical-align: middle;
 }
 
@@ -603,11 +652,12 @@ eq {
     justify-content: center;
 }
 
-eq > div, eq > mathnode {
+eq>div,
+eq>mathnode {
     width: 2.5em
 }
 
-eq > mathnode {
+eq>mathnode {
     text-align: right;
 }
 
@@ -624,11 +674,12 @@ int-symbol {
     transform: translateY(28%);
 }
 
-int-left > up, int-left > down {
+int-left>up,
+int-left>down {
     font-size: 0.75em;
 }
 
-int-left > down {
+int-left>down {
     transform: translateX(-0.5em);
 }
 
@@ -641,7 +692,7 @@ int-left {
     justify-content: space-between;
 }
 
-int > int-symbol > svg {
+int>int-symbol>svg {
     height: 3em;
     overflow: visible;
 }
@@ -652,6 +703,14 @@ int > int-symbol > svg {
     page {
         box-shadow: black 0 0 20px -10px;
         margin: 20px auto;
+    }
+
+    #cowtchoox-error-reporter {
+        position: absolute;
+        top: 0;
+        background-color: #f55c;
+        display: block !important;
+        margin: 5px 20% 5px 20%;
     }
 }
 

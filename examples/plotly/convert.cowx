@@ -1,0 +1,47 @@
+
+<!auto-chart :table-id>
+    <!evaluate id="<:table-id/>-chart">
+        let table = document.querySelector("#<:table-id/> \> inner");
+        let charts = document.querySelectorAll("auto-chart");
+        let chart = null;
+
+        for (let c of charts) {
+            if (c.getAttribute(":table-id") === "<:table-id/>") {
+                chart = c;
+                break;
+            }
+        }
+
+        let lines = [];
+        
+        for (let line_element of table.children) {
+            let line = [];
+            for (let element of line_element.children) {
+                line.push(element.textContent);
+            }
+            lines.push(line);
+        }
+
+        let data = [];
+        for (let i = 1; i \< lines[0].length; i++) {
+            let x = [];
+            let y = [];
+
+            for (let j = 1; j \< lines.length; j++) {
+                x.push(lines[j][0]);
+                y.push(lines[j][i]);
+            }
+
+            data.push({
+                x: x,
+                y: y,
+                type: 'scatter',
+                name: lines[0][i],
+            });
+        }
+        
+        Plotly.newPlot(chart, data, {displayModeBar: false, scrollZoom: false, editable: false});
+
+        "";
+    </evaluate>
+</auto-chart>

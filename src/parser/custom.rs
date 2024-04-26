@@ -3,9 +3,10 @@ use std::collections::HashMap;
 use crate::parser;
 use crate::parser::{Node, FilePosition, TagSymbol};
 
-use super::ParseError;
+use super::{ParseError, TagAttribute};
 
 /// Represents a tag created by the user. Also used for math operators
+#[derive(Clone)]
 pub struct CustomTag {
     pub arguments: Vec<String>,
     pub is_math: bool,
@@ -132,14 +133,33 @@ pub fn instantiate_tag_with_named_parameters(tag: &CustomTag, arguments: Vec<(St
         }
     }
 
-    return Ok(instantiate_tag_inner(tag, &tag.content, &final_arguments));
+    let res = instantiate_tag_inner(tag, &tag.content, &final_arguments);
+    return Ok(res);
 }
 
 
 fn instantiate_tag_inner(tag: &CustomTag, node: &Node, arguments: &Vec<Node>) -> Node {
+    // Copy argument values in attributes
+    let mut res_attibutes = Vec::new();
+    for i in 0..node.attributes.len() {
+        let attr = &node.attributes[i];
+
+        if attr.name.chars().next() == Some(':') {
+            res_attibutes.push(TagAttribute {
+                name: attr.name.clone(),
+                value: Some(crate::parser::get_node_content_as_str(&arguments[i])), // TEST!
+                position: attr.position.clone(),
+                value_position: attr.value_position.clone(),
+            });
+        }
+        else {
+            res_attibutes.push(attr.clone());
+        }
+    }
+
     let mut res = Node {
         name: node.name.clone(),
-        attributes: node.attributes.clone(),
+        attributes: res_attibutes,
         children: node.children.clone(),
         content: Vec::with_capacity(node.content.len()),
         auto_closing: node.auto_closing,
