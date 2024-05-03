@@ -106,7 +106,12 @@ struct SplitPosition {
 /// * the parsed node
 /// 
 pub fn parse_file(file_path: &PathBuf, chars: &Vec<char>, context: &Context) -> Result<Node, ParseError> {
-    return parse_tag(chars, &mut get_start_of_file_position(file_path.clone()), TagSymbol::NOTHING, false, context);
+    let res = parse_tag(chars, &mut get_start_of_file_position(file_path.clone()), TagSymbol::NOTHING, false, context)?;
+
+    // Make sure it contains no colon tag
+    custom::check_colon_tags(&res, &Vec::new())?;
+
+    return Ok(res);
 }
 
 

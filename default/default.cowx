@@ -453,7 +453,7 @@
 
 
 // Cosine function
-<?cos>
+<?cos :inner>
     ?space ?normalfont{cos}<:inner/>
 </cos>
 

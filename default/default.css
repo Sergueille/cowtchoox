@@ -684,7 +684,7 @@ int-left>down {
 }
 
 int-left {
-    padding-right: 0.25em;
+    margin-right: -0.25em;
     height: 4em;
     display: inline-flex !important;
     flex-direction: column;

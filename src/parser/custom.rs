@@ -65,6 +65,9 @@ pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: TagHa
             }
         }
         
+        // Check for incorrect or missing colon tags inside
+        check_colon_tags(&node, &arguments)?;
+
         context.custom_tags.insert(node.name.clone(), CustomTag {
             arguments,
             is_math,
@@ -219,6 +222,30 @@ pub fn has_inner_param(tag: &CustomTag) -> bool {
     return false;
 }
 
+// Returns error if finds colon tags which name is NOT in the list 
+pub fn check_colon_tags(node: &Node, allowed_arguments: &Vec<String>) -> Result<(), ParseError> {
+    for child in &node.children {
+        if child.declaration_symbol == super::TagSymbol::COLON {
+            if allowed_arguments.contains(&child.name) {
+                // Ok, the argument exists!
+            }
+            else {
+                return Err(ParseError {
+                    message: format!("\
+Unknown parameter \"{}\" used. You may have forgotten to add it in the custom tag declaration. \
+If you meant to use a regular tag, remove the colon.", child.name),
+                    position: child.start_position.clone(),
+                    length: child.name.chars().count() + 2,
+                });
+            }
+        }
+        else if !child.auto_closing {
+            check_colon_tags(child, allowed_arguments)?;
+        }
+    }
+
+    return Ok(());
+}
 
 
 
