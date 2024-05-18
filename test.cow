@@ -24,7 +24,7 @@
         <!cowtchoox/>
 
         $$
-            ?my_op x x = 1 / 2
+            ¤y x = 1 / 2 // Tests custom aliases
         $$
 
         <!my_tag :number="1">

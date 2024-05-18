@@ -26,7 +26,7 @@ enum MathStopType {
 /// A helper struct for `parse_math_part`. Represent the same hing as NodeContent, but with extended meaning.
 /// For parenthesizes, `true` means that it should be displayed left instead of right or vice versa 
 enum MathToken<'a> {
-    Alias(&'a Alias),
+    Alias(Alias<'a>),
     Operator(&'a CustomTag),
     Other((char, FilePosition)),
     EscapedCharacter((char, FilePosition)),
@@ -48,56 +48,11 @@ enum PotentialChild {
 }
 
 
-struct Alias {
-    alias: &'static str,
-    tag_name: &'static str,
+struct Alias<'a> {
+    alias: &'a str,
+    tag_name: &'a str,
     is_infix: bool,
 }
-
-macro_rules! alias {
-    ($alias: literal, $tag_name: literal, $infix: expr) => {
-        Alias { alias: $alias, tag_name: $tag_name, is_infix: $infix }
-    };
-}
-
-
-/// HashMap of all aliases, each character maps to th corresponding default custom tag name 
-static ALIASES: [Alias; 34] = [
-    alias!("=", "equal", false),
-    alias!(",", "comma", false),
-    alias!("/", "frac", true),
-    alias!("+", "plus", false),
-    alias!("-", "minus", false),
-    alias!("€", "belongsto", false),
-    alias!("^", "exponent", true),
-    alias!("_", "subscript", true),
-    alias!("^^", "overset", true),
-    alias!("__", "underset", true),
-    alias!("|", "normalfont", false),
-    alias!("->", "rightarrow", false),
-    alias!("=>", "rightdoublearrow", false),
-    alias!("-->", "longrightarrow", false),
-    alias!("==>", "longrightdoublearrow", false),
-    alias!("<-", "leftarrow", false),
-    alias!("<=", "leftdoublearrow", false),
-    alias!("<--", "longleftarrow", false),
-    alias!("<==", "longleftdoublearrow", false),
-    alias!("<-->", "longleftrightarrow", false),
-    alias!("<=>", "leftrightdoublearrow", false),
-    alias!("<==>", "longleftrightdoublearrow", false),
-    alias!("~", "equiv", false),
-    alias!("<", "less", false),
-    alias!(">", "greater", false),
-    alias!(">=", "geq", false),
-    alias!("=<", "leq", false),
-    alias!("<<", "mless", false),
-    alias!(">>", "mgreater", false),
-    alias!("^.", "overdot", false),
-    alias!("^..", "overddot", false),
-    alias!("^...", "overdddot", false),
-    alias!("~=", "simeq", false),
-    alias!("!=", "noteq", false),
-];
 
 
 /// Create math! Called after tags are parsed. Will replace the provided Node's contents by math.
@@ -492,7 +447,7 @@ pub fn parse_all_math(node: &mut Node, root_is_math: bool, context: &Context) ->
 /// Advances `index` past the next found thing
 fn match_next_thing_in_math<'a>(node: &mut Node, index: &mut usize, children: &Vec<PotentialChild>, context: &'a Context) -> Result<MathToken<'a>, ParseError> {
     // See if there is an alias (if necessary)
-    let alias = if context.ignore_aliases { None } else { check_for_alias(&node.content, *index) };
+    let alias = if context.ignore_aliases { None } else { check_for_alias(&node.content, *index, context) };
 
     match alias {
         Some(alias) => return Ok(MathToken::Alias(alias)),
@@ -743,11 +698,22 @@ fn get_file_pos_of_node_char(node: &Node, content_id: usize) -> FilePosition {
 }
 
 
-// OPTI: that's O(n²) because of chars().nth(). Also a lot of vec allocations
+// OPTI: that's O(n²) because of chars().nth(). Also a lot of vec and Alias allocations
 /// Returns the longest possible alias at specified position, returns None if no alias found 
-fn check_for_alias(node_content: &Vec<NodeContent>, index: usize) -> Option<&'static Alias> {
-    let mut potential_matchs: Vec<usize> = Vec::with_capacity(ALIASES.len());
-    for i in 0..ALIASES.len() {
+fn check_for_alias<'a>(node_content: &Vec<NodeContent>, index: usize, context: &'a Context) -> Option<Alias<'a>> {
+    let mut all_aliases: Vec<Alias> = Vec::new();
+    for (_name, tag) in &context.custom_tags {
+        if tag.alias != None {
+            all_aliases.push(Alias {
+                alias: &tag.alias.as_ref().unwrap(),
+                tag_name: &tag.content.name,
+                is_infix: tag.infix_alias,
+            });
+        }
+    }
+
+    let mut potential_matchs: Vec<usize> = Vec::with_capacity(all_aliases.len());
+    for i in 0..all_aliases.len() {
         potential_matchs.push(i);
     }
 
@@ -757,7 +723,7 @@ fn check_for_alias(node_content: &Vec<NodeContent>, index: usize) -> Option<&'st
     loop {
         let mut new_vec = Vec::new();
         for i in potential_matchs.iter() {
-            let opt_char = ALIASES[*i].alias.chars().nth(pos);
+            let opt_char = all_aliases[*i].alias.chars().nth(pos);
 
             match opt_char {
                 Some(alias_char) => {
@@ -781,7 +747,7 @@ fn check_for_alias(node_content: &Vec<NodeContent>, index: usize) -> Option<&'st
                     }
                 },
                 None => { // End of the alias
-                    res = Some(&ALIASES[*i]); // Set the result
+                    res = Some(*i); // Set the result
                 },
             }
 
@@ -795,7 +761,10 @@ fn check_for_alias(node_content: &Vec<NodeContent>, index: usize) -> Option<&'st
         pos += 1;
     }
 
-    return res;
+    return match res {
+        Some(i) => Some(all_aliases.swap_remove(i)),
+        None => None,
+    };
 }
 
 

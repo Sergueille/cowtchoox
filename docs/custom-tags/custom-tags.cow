@@ -101,5 +101,14 @@
         ``
 
         `<:inner/>` will be replaced by `The value is here!`
+
+        <h2>Aliases</h2>
+
+        You can set aliases for math operators, by adding an `alias` attribute on the custom tag definition.
+        You can also use the `infix-alias` attribute with no value to set it as an infix alias.
+        <br/>
+        Be careful when using these: use short aliases that doesn't use the same characters as others, otherwise it may
+        introduce weird behavior. 
+
     </body>
 </document>

@@ -12,7 +12,7 @@
 </my_tag>
 
 // A math symbol
-<?my_op :x>
+<?my_op :x alias="¤">
     ?a <:x/> € A,
 </my_op>
 

@@ -479,13 +479,15 @@ closingsquarebracket>div {
 }
 
 openingparenthesis:first-child>div,
-openingsquarebracket:first-child>div closingsquarebracket:first-child>div,
+openingsquarebracket:first-child>div,
+closingsquarebracket:first-child>div,
 closingparenthesis:first-child>div {
     left: 0.2em;
 }
 
 openingparenthesis:last-child>div,
-openingsquarebracket:last-child>div closingsquarebracket:last-child>div,
+openingsquarebracket:last-child>div,
+closingsquarebracket:last-child>div,
 closingparenthesis:last-child>div {
     right: 0.15em;
 }

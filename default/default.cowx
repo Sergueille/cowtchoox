@@ -82,18 +82,18 @@
 </x>
 
 
-// Horizontal fraction. Infix alias /
+// Horizontal fraction.
 // up: the thing over the bar
 // down: the thing under the bar
-<?frac :up :down nonbreaking>
+<?frac :up :down nonbreaking alias="/" infix-alias>
     <%div class="frac-up"><:up/></div>
     <%div class="frac-bar"></div>
     <%div class="frac-down"><:down/></div>
 </frac>
 
 
-// Makes inner not use math font. Alias |
-<?normalfont :inner> 
+// Makes inner not use math font.
+<?normalfont :inner alias="|"> 
     <:inner/>
 </normalfont>
 
@@ -104,54 +104,54 @@
 </txt>
 
 
-// Exponent. Infix alias ^
-<?exponent :before :inner nonbreaking>
+// Exponent.
+<?exponent :before :inner nonbreaking alias="^" infix-alias>
     <%span class="exponent-before"><:before/></span>
     <%span class="exponent-inner"><:inner/></span>
 </exponent>
 
 
-// Subscript. Infix alias _
-<?subscript :before :inner nonbreaking>
+// Subscript.
+<?subscript :before :inner nonbreaking alias="_" infix-alias>
     <%span class="subscript-before"><:before/></span>
     <%span class="subscript-inner"><:inner/></span>
 </subscript>
 
 
-// Put down under middle. Infix alias __
-<?underset :middle :down nonbreaking> 
+// Put down under middle.
+<?underset :middle :down nonbreaking alias="__" infix-alias> 
     <:middle/>
     <%div class="underset-under"><:down/></div>
 </underset>
 
 
-// Put up over middle. Infix alias ^^
-<?overset :middle :up nonbreaking> 
+// Put up over middle.
+<?overset :middle :up nonbreaking alias="^^" infix-alias> 
     <:middle/>
     <%div class="overset-over"><:up/></div>
 </overset>
 
 
-// Properly spaced comma. Alias ,
-<?comma stickbefore>
+// Properly spaced comma.
+<?comma stickbefore alias=",">
     ,
 </comma>
 
 
-// Properly spaced equal. Alias =
-<?equal stickafter stickbefore>
+// Properly spaced equal.
+<?equal stickafter stickbefore alias="=">
     =
 </equal>
 
 
-// A minus sign. (U+2013) Alias -
-<?minus stickafter>
+// A minus sign. (U+2013)
+<?minus stickafter alias="-">
     <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="127.1008" height="6.94833" viewBox="0,0,127.1008,6.94833"><%g transform="translate(-176.44984,-176.52584)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M299.04658,183.47416h-118.33498c0,0 -4.22502,-0.14828 -4.26147,-3.38502c-0.04092,-3.63331 4.26147,-3.56321 4.26147,-3.56321h118.33498c0,0 4.50406,0.52356 4.50406,3.44783c0,3.10377 -4.50406,3.5004 -4.50406,3.5004z"/></g></g></svg>
 </minus>
 
 
-// A plus sign. Alias +
-<?plus stickafter>
+// A plus sign.
+<?plus stickafter alias="+">
     <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="127.10079" height="127.10079" viewBox="0,0,127.10079,127.10079"><%g transform="translate(-176.44985,-116.4496)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M299.04658,183.47416h-118.33498c0,0 -4.22502,-0.14828 -4.26147,-3.38502c-0.04092,-3.63331 4.26147,-3.56321 4.26147,-3.56321h118.33498c0,0 4.50406,0.52356 4.50406,3.44783c0,3.10377 -4.50406,3.5004 -4.50406,3.5004z"/><%path d="M243.47416,120.95366l0,118.33498c0,0 -0.14827,4.22501 -3.38502,4.26146c-3.63331,0.04092 -3.56321,-4.26146 -3.56321,-4.26146l0,-118.33497c0,0 0.52356,-4.50406 3.44783,-4.50406c3.10377,0 3.50039,4.50406 3.50039,4.50406z"/></g></g></svg>
 </plus>
 
@@ -174,8 +174,8 @@
 </e>
 
 
-// Belongs to. (U+2208) Alias €
-<?belongsto>
+// Belongs to. (U+2208)
+<?belongsto alias="€">
     ∈
 </belongsto>
 
@@ -186,67 +186,67 @@
 </inf>
 
 
-// Right arrow. Alias ->
-<?rightarrow>
+// Right arrow.
+<?rightarrow alias="->">
     <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="149.02564" height="81.10927" viewBox="0,0,149.02564,81.10927"><%g transform="translate(-165.48718,-139.44536)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M165.48718,184.25553v-8.51106h139.2207v8.51106z"/><%path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -10.8284,1.14073 -15.12599,-1.11341c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M299.38683,181.0816c4.29759,-2.25414 15.12599,-1.1134 15.12599,-1.1134c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
 </rightarrow>
 
 
-// Left arrow. (U+2190) Alias <-
-<?leftarrow>
+// Left arrow. (U+2190)
+<?leftarrow alias="<-">
     <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="149.02564" height="81.10927" viewBox="0,0,149.02564,81.10927"><%g transform="translate(-165.48718,-139.44536)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M165.48718,184.25553v-8.51106h139.2207v8.51106z"/><%path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -10.8284,1.14073 -15.12599,-1.11341c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M299.38683,181.0816c4.29759,-2.25414 15.12599,-1.1134 15.12599,-1.1134c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
 </leftarrow>
 
 
-// Long right arrow. Alias -->
-<?longrightarrow>
+// Long right arrow.
+<?longrightarrow alias="-->">
     <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="216.52304" height="81.10929" viewBox="0,0,216.52304,81.10929"><%g transform="translate(-97.98978,-139.44536)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M97.98978,184.25553v-8.51106h206.7181v8.51106z"/><%path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -10.8284,1.14073 -15.12599,-1.11341c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M299.38683,181.0816c4.29759,-2.25414 15.12599,-1.1134 15.12599,-1.1134c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
 </longrightarrow>
 
 
-// Long left arrow. Alias <--
-<?longleftarrow>
+// Long left arrow.
+<?longleftarrow alias="<--">
     <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="216.52304" height="81.10929" viewBox="0,0,216.52304,81.10929"><%g transform="translate(-97.98978,-139.44536)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M97.98978,184.25553v-8.51106h206.7181v8.51106z"/><%path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -10.8284,1.14073 -15.12599,-1.11341c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M299.38683,181.0816c4.29759,-2.25414 15.12599,-1.1134 15.12599,-1.1134c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
 </longleftarrow>
 
 
-// Right double arrow. Alias =>
-<?rightdoublearrow>
+// Right double arrow.
+<?rightdoublearrow alias="=>">
     <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="148.4565" height="81.10929" viewBox="0,0,148.4565,81.10929"><%g transform="translate(-166.05632,-139.44536)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -4.18181,2.56226 -9.0059,1.97458c-1.69695,-0.20673 -5.00174,-2.50141 -6.12009,-3.08799c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M299.38683,181.0816c1.45789,-0.76468 4.05495,-3.07667 6.33829,-3.23705c4.4475,-0.31239 8.7877,2.12365 8.7877,2.12365c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><%path d="M166.05632,176.58886v-8.51106h131.2207v8.51106z"/><%path d="M166.05632,191.9222v-8.51106h131.2207v8.51106z"/></g></g></svg>
 </rightdoublearrow>
 
 
-// Left double arrow. Alias <=
-<?leftdoublearrow>
+// Left double arrow.
+<?leftdoublearrow alias="<=">
     <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="148.4565" height="81.10929" viewBox="0,0,148.4565,81.10929"><%g transform="translate(-166.05632,-139.44536)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -4.18181,2.56226 -9.0059,1.97458c-1.69695,-0.20673 -5.00174,-2.50141 -6.12009,-3.08799c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M299.38683,181.0816c1.45789,-0.76468 4.05495,-3.07667 6.33829,-3.23705c4.4475,-0.31239 8.7877,2.12365 8.7877,2.12365c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><%path d="M166.05632,176.58886v-8.51106h131.2207v8.51106z"/><%path d="M166.05632,191.9222v-8.51106h131.2207v8.51106z"/></g></g></svg>
 </leftdoublearrow>
 
 
-// Long right double arrow. Alias ==>
-<?longrightdoublearrow>
+// Long right double arrow.
+<?longrightdoublearrow alias="==>">
     <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="216.47311" height="81.10929" viewBox="0,0,216.47311,81.10929"><%g transform="translate(-98.0397,-139.44536)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -4.18181,2.56226 -9.0059,1.97458c-1.69695,-0.20673 -5.00174,-2.50141 -6.12009,-3.08799c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M299.38683,181.0816c1.45789,-0.76468 4.05495,-3.07667 6.33829,-3.23705c4.4475,-0.31239 8.7877,2.12365 8.7877,2.12365c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><%path d="M98.0397,176.58886v-8.51106h199.23731v8.51106z"/><%path d="M98.0397,191.9222v-8.51106h199.23731v8.51106z"/></g></g></svg>
 </longrightdoublearrow>
 
 
-// Long left double arrow. Alias <==
-<?longleftdoublearrow>
+// Long left double arrow.
+<?longleftdoublearrow alias="<==">
     <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="216.47311" height="81.10929" viewBox="0,0,216.47311,81.10929"><%g transform="translate(-98.0397,-139.44536)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M266.58938,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -4.18181,2.56226 -9.0059,1.97458c-1.69695,-0.20673 -5.00174,-2.50141 -6.12009,-3.08799c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M299.38683,181.0816c1.45789,-0.76468 4.05495,-3.07667 6.33829,-3.23705c4.4475,-0.31239 8.7877,2.12365 8.7877,2.12365c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><%path d="M98.0397,176.58886v-8.51106h199.23731v8.51106z"/><%path d="M98.0397,191.9222v-8.51106h199.23731v8.51106z"/></g></g></svg>
 </longleftdoublearrow>
 
 
-// Long left right arrow. Alias <-->
-<?longleftrightarrow>
+// Long left right arrow.
+<?longleftrightarrow alias="<-->">
     <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="226.20039" height="81.10929" viewBox="0,0,226.20039,81.10929"><%g transform="translate(-126.8998,-139.44535)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M136.64095,184.25553v-8.51106h206.7181v8.51106z"/><%path d="M305.17676,144.00897l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -10.8284,1.14073 -15.12599,-1.11341c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M337.97421,181.0816c4.29759,-2.25414 15.12599,-1.1134 15.12599,-1.1134c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><%path d="M174.82324,215.99103l-6.58856,4.56362c0,0 -9.33105,-14.48283 -16.66811,-21.47729c-10.67149,-10.17319 -24.66677,-19.10916 -24.66677,-19.10916c0,0 10.8284,-1.14073 15.12599,1.11341c17.64742,9.25631 32.79745,34.90942 32.79745,34.90942z"/><%path d="M142.02579,178.91841c-4.29759,2.25414 -15.12599,1.1134 -15.12599,1.1134c0,0 13.99528,-8.93596 24.66677,-19.10916c7.33706,-6.99446 16.66811,-21.47729 16.66811,-21.47729l6.58856,4.56362c0,0 -15.15003,25.65311 -32.79745,34.90942z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
 </longleftrightarrow>
 
 
-// Left right double arrow. Alias <=>
-<?leftrightdoublearrow>
+// Left right double arrow.
+<?leftrightdoublearrow alias="<=>">
     <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="167.17683" height="81.1093" viewBox="0,0,167.17683,81.1093"><%g transform="translate(-156.41159,-139.44535)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M275.66497,144.00898l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -4.18181,2.56226 -9.0059,1.97458c-1.69695,-0.20673 -5.00174,-2.50141 -6.12009,-3.08799c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M308.46242,181.0816c1.45789,-0.76468 4.05495,-3.07667 6.33829,-3.23705c4.4475,-0.31239 8.7877,2.12365 8.7877,2.12365c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><%path d="M174.38965,176.58886v-8.51106h131.2207v8.51106z"/><%path d="M174.38965,191.9222v-8.51106h131.2207v8.51106z"/><%path d="M204.33503,215.99102l-6.58856,4.56362c0,0 -9.33105,-14.48283 -16.66811,-21.47729c-10.67149,-10.17319 -24.66677,-19.10916 -24.66677,-19.10916c0,0 4.18181,-2.56226 9.0059,-1.97458c1.69695,0.20673 5.00174,2.50141 6.12009,3.08799c17.64742,9.25631 32.79745,34.90942 32.79745,34.90942z"/><%path d="M171.53758,178.9184c-1.45789,0.76468 -4.05495,3.07667 -6.33829,3.23705c-4.4475,0.31239 -8.7877,-2.12365 -8.7877,-2.12365c0,0 13.99528,-8.93596 24.66677,-19.10916c7.33706,-6.99446 16.66811,-21.47729 16.66811,-21.47729l6.58856,4.56362c0,0 -15.15003,25.65311 -32.79745,34.90942z" data-paper-data="{&quot;index&quot;:null}"/></g></g></svg>
 </leftrightdoublearrow>
 
-// Long left right double arrow. Alias <==>
-<?longleftrightdoublearrow>
+// Long left right double arrow.
+<?longleftrightdoublearrow alias="<==>">
     <%svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="226.2004" height="81.1093" viewBox="0,0,226.2004,81.1093"><%g transform="translate(-126.8998,-139.44535)"><%g data-paper-data="{&quot;isPaintingLayer&quot;:true}" fill="#000000" fill-rule="nonzero" stroke="none" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal"><%path d="M305.17676,144.00897l6.58856,-4.56362c0,0 9.33105,14.48283 16.66811,21.47729c10.67149,10.17319 24.66677,19.10916 24.66677,19.10916c0,0 -6.28754,1.77082 -11.27851,0.80124c-1.09168,-0.21208 -3.07617,-1.51009 -3.84748,-1.91465c-17.64742,-9.25631 -32.79745,-34.90942 -32.79745,-34.90942z"/><%path d="M337.97421,181.0816c1.11455,-0.58459 2.66835,-2.14422 4.35861,-2.35126c4.82721,-0.59129 10.76738,1.23786 10.76738,1.23786c0,0 -13.99528,8.93596 -24.66677,19.10916c-7.33706,6.99446 -16.66811,21.47729 -16.66811,21.47729l-6.58856,-4.56362c0,0 15.15003,-25.65311 32.79745,-34.90942z" data-paper-data="{&quot;index&quot;:null}"/><%path d="M174.82324,215.99103l-6.58856,4.56362c0,0 -9.33105,-14.48283 -16.66811,-21.47729c-10.67149,-10.17319 -24.66677,-19.10916 -24.66677,-19.10916c0,0 3.93018,-1.63853 8.10164,-1.44021c2.58247,0.12278 5.3811,1.69171 7.02435,2.55362c17.64742,9.25631 32.79745,34.90942 32.79745,34.90942z"/><%path d="M142.02579,178.91841c-1.68413,0.88335 -3.76951,3.0504 -6.41481,3.16401c-4.10502,0.1763 -8.71118,-2.05061 -8.71118,-2.05061c0,0 13.99528,-8.93596 24.66677,-19.10916c7.33706,-6.99446 16.66811,-21.47729 16.66811,-21.47729l6.58856,4.56362c0,0 -15.15003,25.65311 -32.79745,34.90942z" data-paper-data="{&quot;index&quot;:null}"/><%path d="M145.83306,176.58886v-8.51106h188.33388v8.51106z"/><%path d="M145.83306,191.9222v-8.51106h188.33388v8.51106z"/></g></g></svg>
 </longleftrightdoublearrow>
 
@@ -257,56 +257,56 @@
 </un>
 
 
-// Almost equal. (U+2243) Alias ~=
-<?simeq>
+// Almost equal. (U+2243)
+<?simeq alias="~=">
     ≃
 </simeq>
 
 
-// Not equal. (U+2260) Alias !=
-<?noteq>
+// Not equal. (U+2260)
+<?noteq alias="!=">
     ≠
 </noteq>
 
 
-// Equivalent / tilde operator. (U+223C) Alias ~
-<?equiv>
+// Equivalent / tilde operator. (U+223C)
+<?equiv alias="~">
     ∼
 </equiv>
 
 
-// Less than. Alias <
-<?less>
+// Less than.
+<?less alias="<">
     <
 </less>
 
 
-// Greater than. Alias >
-<?greater>
+// Greater than.
+<?greater alias=">">
     >
 </greater>
 
 
-// Less than or equal. (U+2264) Alias =<
-<?leq>
+// Less than or equal. (U+2264)
+<?leq alias="=<">
     ≤
 </leq>
 
 
-// Greater than. (U+2265) Alias >=
-<?geq>
+// Greater than. (U+2265)
+<?geq alias=">=">
     ≥
 </geq>
 
 
-// Much less than. (U+226A) Alias <<
-<?mless>
+// Much less than. (U+226A)
+<?mless alias="<<">
     ≪
 </mless>
 
 
-// Much greater than. (U+226B) Alias >>
-<?mgreater>
+// Much greater than. (U+226B)
+<?mgreater alias=">>">
     ≫
 </mgreater>
 
@@ -405,8 +405,8 @@
 </vert-flex>
 
 
-// Put a dot over argument. Alias ^.
-<?overdot :inner>
+// Put a dot over argument.
+<?overdot :inner alias="^.">
     <%span class="overdot-dots">
         <%span class="overdot-dot"></span>
     </span>
@@ -414,8 +414,8 @@
 </overdot>
 
 
-// Put two dots over argument. Alias ^..
-<?overddot :inner>
+// Put two dots over argument.
+<?overddot :inner alias="^..">
     <%span class="overdot-dots">
         <%span class="overdot-dot"></span>
         <%span class="overdot-dot"></span>
@@ -424,8 +424,8 @@
 </overddot>
 
 
-// Put two dots over argument. Alias ^...
-<?overdddot :inner>
+// Put two dots over argument.
+<?overdddot :inner alias="^...">
     <%span class="overdot-dots">
         <%span class="overdot-dot"></span>
         <%span class="overdot-dot"></span>
@@ -458,10 +458,34 @@
 </cos>
 
 
+// Acos function
+<?acos :inner>
+    ?space ?normalfont{acos}<:inner/>
+</acos>
+
+
 // Sine function
 <?sin :inner>
     ?space ?normalfont{sin}<:inner/>
 </sin>
+
+
+// Asin function
+<?asin :inner>
+    ?space ?normalfont{asin}<:inner/>
+</asin>
+
+
+// Tangent function
+<?tan :inner>
+    ?space ?normalfont{tan}<:inner/>
+</tan>
+
+
+// Atan function
+<?atan :inner>
+    ?space ?normalfont{atan}<:inner/>
+</atan>
 
 
 // Show the name of an equation

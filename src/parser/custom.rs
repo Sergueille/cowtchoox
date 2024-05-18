@@ -11,6 +11,8 @@ pub struct CustomTag {
     pub arguments: Vec<String>,
     pub is_math: bool,
     pub content: Node,
+    pub alias: Option<String>,
+    pub infix_alias: bool
 }
 
 
@@ -40,6 +42,9 @@ pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: TagHa
         // Parse math immediately
         super::math::parse_all_math(&mut node, is_math, &context)?;
 
+        let mut alias = None;
+        let mut infix_alias = false;
+
         let mut arguments = Vec::with_capacity(node.attributes.len());
         for attr in &node.attributes {
 
@@ -60,6 +65,30 @@ pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: TagHa
                 let arg_name = chars.collect();
                 arguments.push(arg_name);
             }
+            else if attr.name == "alias" { // "alias" attribute
+
+                // Prevent two alias attributes
+                if alias != None {
+                    return Err(ParseError {
+                        message: String::from("Custom tag can have only 1 alias. Two alias attributes were found."),
+                        position: attr.position.clone().expect("Error probably because the attribute is created by internal code..."),
+                        length: attr.name.chars().count(),
+                    });
+                }
+
+                match &attr.value {
+                    Some(value) => alias = Some(value.clone()),
+                    // Throw error if no value
+                    None => return Err(ParseError {
+                        message: String::from("The attribute alias is used to define an alias for the tag, so the attribute should have a value."),
+                        position: attr.position.clone().expect("Error probably because the attribute is created by internal code..."),
+                        length: attr.name.chars().count(),
+                    }),
+                }
+            }
+            else if attr.name == "infix-alias" {
+                infix_alias = true;
+            }
             else {
                 // Real attribute: do nothing
             }
@@ -72,6 +101,8 @@ pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: TagHa
             arguments,
             is_math,
             content: node,
+            alias,
+            infix_alias,
         }); 
 
         match super::advance_until_non_whitespace(file, pos) {
