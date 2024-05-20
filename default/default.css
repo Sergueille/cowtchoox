@@ -59,6 +59,21 @@ a {
     src: url("../fonts/CascadiaCode.ttf");
 }
 
+@font-face {
+    font-family: bb;
+    src: url("../fonts/jsmath-bbold.ttf");
+}
+
+@font-face {
+    font-family: cal;
+    src: url("../fonts/jsmath-cal.ttf");
+    unicode-range: U+0041-005A;
+}
+
+@font-face {
+    font-family: frak;
+    src: url("../fonts/jsmath-frak.ttf");
+}
 
 /* Footer */
 doc-footer {
@@ -697,6 +712,19 @@ int-left {
 int>int-symbol>svg {
     height: 3em;
     overflow: visible;
+}
+
+/* ?bb, ?cal, ?frak */
+bb {
+    font-family: bb;
+}
+
+cal {
+    font-family: cal;
+}
+
+frak {
+    font-family: frak;
 }
 
 

@@ -517,3 +517,21 @@
     </int-symbol>
     <:inner/>
 </int>
+
+
+// Calligraphic math font
+<?cal :inner alias="£">
+    <:inner/>
+</cal> 
+
+
+// Fraktur math font
+<?frak :inner>
+    <:inner/>
+</frak>
+
+
+// Blackboard bold math font
+<?bb :inner alias="||">
+    <:inner/>
+</bb>
