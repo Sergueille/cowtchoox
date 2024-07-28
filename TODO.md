@@ -1,18 +1,11 @@
 
 Additional things to do (other ars scattered in the source file):
 
-TODO: <%tags> in math??
-
-HACK: currently, when failing to parse a tag in maths, it represents it a regular text
-    - because if in maths there is for example <=>, it shouldn't be a tag
-    - problematic because if user uses large tags, they can't see where is the error
-
 TODO: change the way code is parsed
     -> allow full `<code>` block with attributes
     -> escape n x \` with (n+1) * \`
 
 TODO: integrate highlight.js
-TODO: the plots
 
 TODO: ship a version of [mini-chromium](https://github.com/chromium/mini_chromium)
     -> will be always same version, and lighter than chrome
@@ -34,6 +27,10 @@ TODO: more warnings for head tags
     -> no duplicates
     ...
 
+TODO: tool to make headers of table repeat
+
+FIXME: visible bar with plotly 
+FIXME: problems with footer position on page
 FIXME: stickbefore produces incorrect behavior:
     -> if the element before fits entirely, but not with the stickbefore element
        it puts both on next page. It should instead cut the element before if possible.

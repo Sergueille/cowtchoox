@@ -535,3 +535,9 @@
 <?bb :inner alias="||">
     <:inner/>
 </bb>
+
+
+// Plus or minus (U+00B1)
+<?pm>
+    ±
+</pm>

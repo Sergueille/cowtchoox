@@ -26,12 +26,18 @@ fn main() {
     println!("Moving files");
 
     fs::create_dir_all("./build").expect("Failed to create build dir");
-    fs::copy(format!("./target/{}/release/cowtchoox.exe", args[1]), "./build/cowtchoox.exe").expect("Failed to copy exe");
     fs::copy("./README.md", "./build/README.md").expect("Failed to copy readme");
     copy_dir("./default", "./build/default").expect("Failed to copy default dir");
     copy_dir("./fonts", "./build/fonts").expect("Failed to copy default dir");
     copy_dir("./js", "./build/js").expect("Failed to copy js dir");
     copy_dir("./examples", "./build/examples").expect("Failed to copy js dir");
+
+    // Try to move the executable file both on Windows and Linux and report error if both fails
+    let windows_res = fs::copy(format!("./target/{}/release/cowtchoox.exe", args[1]), "./build/cowtchoox.exe");
+    let other_res = fs::copy(format!("./target/{}/release/cowtchoox", args[1]), "./build/cowtchoox");
+    if windows_res.is_err() && other_res.is_err() {
+        println!("Failed to copy exe file. Consider moving it manually from `target/{}/release` to `build` folder", args[1])
+    }
 
     let origin = PathBuf::from("./build");
     let dest = PathBuf::from("./");

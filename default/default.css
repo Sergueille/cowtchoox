@@ -721,6 +721,8 @@ bb {
 
 cal {
     font-family: cal;
+    height: 1.3em;
+    font-weight: lighter;
 }
 
 frak {
