@@ -276,7 +276,12 @@ pub fn get_node_html(node: &Node, no_text_tags: bool, context: &Context) -> Stri
                         current_text_tag = String::new();
                     }
 
-                    inner_html.push_str(&get_node_html(&node.children[*id], no_text_tags || node.children[*id].name == "svg" || node.children[*id].name == "pre", context))
+                    inner_html.push_str(&get_node_html(&node.children[*id], 
+                        no_text_tags 
+                        || node.children[*id].name == "svg" 
+                        || node.children[*id].name == "pre" 
+                        || node.children[*id].name == "script", 
+                        context))
                 },
             }
         }
