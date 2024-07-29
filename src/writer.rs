@@ -155,6 +155,7 @@ fn parse_math_and_replace_tags(node: Node, context: &Context) -> Result<Node, ()
 pub fn write_head(options: &doc_options::DocOptions, context: &Context) -> String {
     let mut res = String::with_capacity(200);
     res.push_str("<head>");
+    res.push_str("<meta charset=\"utf-8\">");
 
     // Document title
     res.push_str(format!("<title>{}</title>", options.title).as_str());
