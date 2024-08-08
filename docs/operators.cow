@@ -23,7 +23,7 @@ Will be replaced by the page number <br/>
 
 <h3>`<evaluate>` </h3>
 ``<!evaluate > </evaluate>``
-Will be replaced by the result of the provided js expression (useful to display the current date) <br/>
+Will be replaced by the result of the provided js expression. The safest way of adding JS to the page, as it will run AFTER the elements are placed on the page. Very useful to show the current date, copy an element's contents... Notes: <br/> - Custom tag parameters can be included in JS code, because it is considered as text by cowtchoox, and colon tags will be replaced <br/> - You can access the evaluate document element with `this` <br/> - To do thing and replace the evaluate tag by nothing at the end, just put `""` on the last line <br/>
 
 
 <h3>`<figure>` </h3>
@@ -350,15 +350,39 @@ Nth derivative (fraction notation) <br/>
 
 
 <h3>`cos` </h3>
-``?cos``
-<mathnode class="center">?cos</mathnode>
+``?cos{inner}``
+<mathnode class="center">?cos{inner}</mathnode>
 Cosine function <br/>
+
+
+<h3>`acos` </h3>
+``?acos{inner}``
+<mathnode class="center">?acos{inner}</mathnode>
+Acos function <br/>
 
 
 <h3>`sin` </h3>
 ``?sin{inner}``
 <mathnode class="center">?sin{inner}</mathnode>
 Sine function <br/>
+
+
+<h3>`asin` </h3>
+``?asin{inner}``
+<mathnode class="center">?asin{inner}</mathnode>
+Asin function <br/>
+
+
+<h3>`tan` </h3>
+``?tan{inner}``
+<mathnode class="center">?tan{inner}</mathnode>
+Tangent function <br/>
+
+
+<h3>`atan` </h3>
+``?atan{inner}``
+<mathnode class="center">?atan{inner}</mathnode>
+Atan function <br/>
 
 
 <h3>`eqname` </h3>
@@ -374,6 +398,30 @@ Integral <br/>
 `down`: the thing at the bottom of the integral <br/>
 `up`: the thing at the top of the integral <br/>
 `inner`: the content inside the integral <br/>
+
+
+<h3>`cal` <div class="alias">Alias `£`</div></h3>
+``?cal{inner}``
+<mathnode class="center">?cal{inner}</mathnode>
+Calligraphic math font <br/>
+
+
+<h3>`frak` </h3>
+``?frak{inner}``
+<mathnode class="center">?frak{inner}</mathnode>
+Fraktur math font <br/>
+
+
+<h3>`bb` <div class="alias">Alias `||`</div></h3>
+``?bb{inner}``
+<mathnode class="center">?bb{inner}</mathnode>
+Blackboard bold math font <br/>
+
+
+<h3>`pm` </h3>
+``?pm``
+<mathnode class="center">?pm</mathnode>
+Plus or minus (U+00B1) <br/>
 
 
 </body></document>

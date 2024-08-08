@@ -3,11 +3,11 @@ use std::fs;
 
 fn main() {
     let math_head = regex::Regex::new(
-        r"(?mU)// (?P<desc>.*) ?(Alias (?P<alias>.*))?(Infix alias (?P<inf_alias>.*))?\n(?P<args>(//(.*)\n)*)<\?(?P<name>[^:=<>]+)(?P<attr> .*)?>"
+        r"(?mU)// (?P<desc>.*) ?\n(?P<args>(//(.*)\n)*)<\?(?P<name>[^:=<>]+)(?P<attr> .*)?> *\n"
     ).unwrap();
 
     let tag_head = regex::Regex::new(
-        r"(?mU)// (?P<desc>.*) ?(Alias (?P<alias>.*))?(Infix alias (?P<inf_alias>.*))?\n(?P<args>(//(.*)\n)*)<!(?P<name>[^:=<>]+)(?P<attr> .*)?>"
+        r"(?mU)// (?P<desc>.*) ?\n(?P<args>(//(.*)\n)*)<!(?P<name>[^:=<>]+)(?P<attr> .*)?> *\n"
     ).unwrap();
 
     let file_desc = regex::Regex::new(
@@ -87,18 +87,15 @@ fn parse_tag(capture: regex::Captures, math: bool) -> String {
         r":(?P<arg>\w*)"
     ).unwrap();
 
+    let alias_match = regex::Regex::new(
+        r#"alias="(?P<alias>[^"]*)""#
+    ).unwrap();
+
     let desc = capture.name("desc").expect("No description.").as_str();
-    let alias = capture.name("alias");
-    let inf_alias = capture.name("inf_alias");
+
     let args = capture.name("args").expect("Uuh?").as_str();
     let name = capture.name("name").expect("No name.").as_str();
     let attr = capture.name("attr");
-
-    let alias_text = match (alias, inf_alias) {
-        (None, None) => String::new(),
-        (None, Some(inf_alias)) => format!("<div class=\"alias\">Infix alias `{}`</div>", inf_alias.as_str()),
-        (Some(alias), _) => format!("<div class=\"alias\">Alias `{}`</div>", alias.as_str()),
-    };
 
     let mut args_text = String::new();
     let mut inline_args_text = String::new();
@@ -111,8 +108,27 @@ fn parse_tag(capture: regex::Captures, math: bool) -> String {
         args_text.push_str(&format!("`{}`: {} <br/>\n", arg_name, arg_desc));
     }
 
+    let alias_text;
+
     match attr {
         Some(attr) => {
+            let alias = match alias_match.captures_iter(attr.as_str()).next() {
+                None => None,
+                Some(c) => match c.name("alias") {
+                    None => None,
+                    Some(val) => Some(val.as_str())
+                }
+            };
+
+            let infix_alias = attr.as_str().contains("infix-alias");
+
+            alias_text = match (alias, infix_alias) {
+                (None, true) => panic!("Infix alias but no alias?!"),
+                (None, false) => String::new(),
+                (Some(alias), true) => format!("<div class=\"alias\">Infix alias `{}`</div>", alias),
+                (Some(alias), _) => format!("<div class=\"alias\">Alias `{}`</div>", alias),
+            };
+            
             for arg_capture in inline_arg_match.captures_iter(attr.as_str()) {
                 let arg_name = arg_capture.name("arg").unwrap().as_str();
 
@@ -129,7 +145,9 @@ fn parse_tag(capture: regex::Captures, math: bool) -> String {
                 }
             }
         },
-        None => {},
+        None => {
+            alias_text = String::new();
+        },
     };
 
     if !math {

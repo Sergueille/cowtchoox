@@ -97,12 +97,13 @@ async function main() {
  @param {HTMLElement} parent
  */
 function replaceEvaluate(parent) {
-    // Search for get tags
-    for (let tag of parent.querySelectorAll("evaluate > inner")) {
+    // Search for eval tags
+    for (let evalTag of parent.querySelectorAll("evaluate")) {
+        let tag = evalTag.querySelector("inner");
         let expression = tag.textContent;
 
         try {
-            let result = eval(expression);
+            let result = function() { return eval(expression) }.call(evalTag);
             tag.innerHTML = result;
         } catch (err) {
             logError(`Failed to parse the evaluate tag that contains "${tag.textContent}". The error is: "${err.message}"`)

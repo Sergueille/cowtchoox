@@ -1,7 +1,7 @@
 
 FIXME: fix currentcolor
+FIXME: fix SVG moving everywhere
 
-TODO: allow this in evaluate (+docs)
 TODO: summary 
 
 
