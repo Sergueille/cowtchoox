@@ -16,3 +16,12 @@
     ?a <:x/> € A,
 </my_op>
 
+
+<!recursive-bug-test-1>
+    <!recursive-bug-test-2 :arg-1="" :arg-2="test"/>
+</recursive-bug-test-1>
+
+<!recursive-bug-test-2 :arg-1 :arg-2>
+</recursive-bug-test-2>
+
+

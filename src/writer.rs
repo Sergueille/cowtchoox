@@ -361,7 +361,9 @@ pub fn instantiate_all_custom_tags(mut node: Node, only_children: bool, context:
                         let mut val_pos = attr.value_position.clone().expect("The tag argument does not come from source file!");
 
                         // HACK: put a space after to prevent the parser from complaining it gets the end of the string
+                        // [5 monts later]: Apparently one space isn't enough, so here is a second space
                         let mut padded_val = val.clone();
+                        padded_val.push(' ');
                         padded_val.push(' ');
                         let node = crate::parser::get_tag_from_raw_text(&padded_val, custom_tag.is_math, &mut val_pos, context)?;
                         arguments.push((chars.collect(), node));
@@ -409,7 +411,7 @@ pub fn instantiate_all_custom_tags(mut node: Node, only_children: bool, context:
         }
 
         // OPTI: this may be very slow, and can even crash if there is a loop in custom tags dependencies 
-        // Insantiate custom tags inside the custom tags
+        // Instantiate custom tags inside the custom tags
         let mut tag_to_instantiate = (*custom_tag).clone();
         tag_to_instantiate.content = instantiate_all_custom_tags(tag_to_instantiate.content, true, context)?;
 

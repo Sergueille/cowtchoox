@@ -192,5 +192,7 @@
         <span stickbefore> Stickbefore! <br/></span>
         <!page-number/> <br/>
 
+        <!recursive-bug-test-1/>
+
     </body>
 </document>

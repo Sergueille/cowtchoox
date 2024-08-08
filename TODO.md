@@ -1,5 +1,9 @@
 
-Additional things to do (other ars scattered in the source file):
+FIXME: fix currentcolor
+
+TODO: allow this in evaluate (+docs)
+TODO: summary 
+
 
 TODO: change the way code is parsed
     -> allow full `<code>` block with attributes

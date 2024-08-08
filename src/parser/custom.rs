@@ -122,7 +122,7 @@ pub fn parse_custom_tags(file: &Vec::<char>, pos: &mut FilePosition, hash: TagHa
 /// * `arguments`: a list of argument values, provided in the right order
 /// 
 pub fn instantiate_tag(tag: &CustomTag, arguments: Vec<Node>) -> Node {
-    return instantiate_tag_inner(tag, &tag.content, &arguments);
+    return instantiate_tag_inner(tag, &tag.content, &arguments, true);
 }
 
 
@@ -167,21 +167,21 @@ pub fn instantiate_tag_with_named_parameters(tag: &CustomTag, arguments: Vec<(St
         }
     }
 
-    let res = instantiate_tag_inner(tag, &tag.content, &final_arguments);
+    let res = instantiate_tag_inner(tag, &tag.content, &final_arguments, true);
     return Ok(res);
 }
 
 
-fn instantiate_tag_inner(tag: &CustomTag, node: &Node, arguments: &Vec<Node>) -> Node {
+fn instantiate_tag_inner(tag: &CustomTag, node: &Node, arguments: &Vec<Node>, copy_arguments_into_attributes: bool) -> Node {
     // Copy argument values in attributes
     let mut res_attibutes = Vec::new();
     for i in 0..node.attributes.len() {
         let attr = &node.attributes[i];
 
-        if attr.name.chars().next() == Some(':') {
+        if attr.name.chars().next() == Some(':') && copy_arguments_into_attributes {
             res_attibutes.push(TagAttribute {
                 name: attr.name.clone(),
-                value: Some(crate::parser::get_node_content_as_str(&arguments[i])), // TEST!
+                value: Some(crate::parser::get_node_content_as_str(&arguments[i])),
                 position: attr.position.clone(),
                 value_position: attr.value_position.clone(),
             });
@@ -229,7 +229,7 @@ fn instantiate_tag_inner(tag: &CustomTag, node: &Node, arguments: &Vec<Node>) ->
                 res.content.push(super::NodeContent::Child(*child_id));
 
                 if !replaced_argument {
-                    let new_child = instantiate_tag_inner(tag, child, arguments);
+                    let new_child = instantiate_tag_inner(tag, child, arguments, false);
                     res.children[*child_id] = new_child;
                 }
             },
