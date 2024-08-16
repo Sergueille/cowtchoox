@@ -5,14 +5,14 @@
 
 L<sup>A</sup>T<sub>E</sub>X sucks.
 
-Create small `pdf` documents, that hopefully looks tike latex.
+Create small `pdf` documents, that hopefully looks like latex.
 It's currently an alpha version, so nothing is working properly.
 
 ## What is it?
 
 - Cowtchoox use a syntax that looks like html, with math that looks like latex
 - It use a browser to render documents. So you can style you document easily with CSS
-- Easier to debug: documented (not yet), clear error messages (not yet), and you can use th devtools of a browser to inspect your document
+- Easier to debug: documented (not yet), clear error messages (not yet), and you can use the devtools of a browser to inspect your document
 
 ## How do I use that?
 
