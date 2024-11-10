@@ -24,16 +24,6 @@ pub fn log_position(message: &str, start_pos: &FilePosition, length: usize) {
     print_line(start_pos, length, LogLevel::Log);
 }
 
-
-/// Prints a log that will be erased by the next output
-pub fn erase_previous_line() {
-    let mut t = term::stdout().unwrap();
-    t.cursor_up().unwrap(); // TEST
-    t.carriage_return().unwrap();
-    t.delete_line().unwrap();
-}
-
-
 /// Prints a warning
 pub fn warning(message: &str) {
     println!("{} {}", "warning:".yellow(), message);

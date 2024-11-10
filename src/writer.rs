@@ -7,24 +7,14 @@ use crate::log;
 use crate::Context;
 use crate::parser::{Node, NodeContent, ParseError};
 use crate::parser::custom;
-use crate::doc_options::{self, DocOptions};
+use crate::doc_options;
 
 // Transform the struct back to raw HTML
 // NOTE: all text will be wrapped in <text> tags
 
-
 // Get the entire text of the document, ready for being displayed
-pub fn get_file_text(mut document: Node, context: &mut Context) -> Result<(String, DocOptions), ()> {
+pub fn get_file_text(document: Node, context: &mut Context, options: &doc_options::DocOptions) -> Result<String, ()> {
     let mut res = String::new();
-
-    let head = match try_get_children_with_name(&mut document, "head") {
-        Ok(head) => head,
-        Err(()) => {
-            log::error("The document has no head.");
-            return Err(());
-        }
-    };
-    let options = doc_options::get_options_form_head(head);
 
     // Look for additional cowx files listed in head
     for cowx_file in &options.cowx_files {
@@ -49,7 +39,7 @@ pub fn get_file_text(mut document: Node, context: &mut Context) -> Result<(Strin
             std::mem::replace(&mut context.custom_tags, std::collections::HashMap::new()),
             &context.args, 
             false,
-            context.default_dir,
+            &context.default_dir,
             &path
         ) {
             Ok(res) => context.custom_tags = res,
@@ -93,7 +83,7 @@ pub fn get_file_text(mut document: Node, context: &mut Context) -> Result<(Strin
 
     res.push_str("</html>");
 
-    return Ok((res, options));
+    return Ok(res);
 }
 
 
@@ -153,6 +143,8 @@ fn parse_math_and_replace_tags(node: Node, context: &Context) -> Result<Node, ()
 
 
 pub fn write_head(options: &doc_options::DocOptions, context: &Context) -> String {
+    let file_prefix = if options.is_slides { "" } else { "file:///" };
+
     let mut res = String::with_capacity(200);
     res.push_str("<head>");
     res.push_str("<meta charset=\"utf-8\">");
@@ -166,29 +158,36 @@ pub fn write_head(options: &doc_options::DocOptions, context: &Context) -> Strin
 
     // Link additional JS scripts
     for file_path in &options.js_files {
-        let path_str = crate::util::get_browser_path_string(file_path.get_full_path(context));
+        let path_str = crate::util::get_browser_path_string(file_path.get_full_path(context), !options.is_slides);
         res.push_str(&format!("<script defer=\"defer\" src=\"{}\"></script>", path_str));
     }
     
     // Link JS script, so that it executes when the page loads
-    res.push_str(&format!("<script defer=\"defer\" src=\"file:///{}/js/main.js\"></script>", default_resources_path));
+    res.push_str(&format!("<script defer=\"defer\" src=\"{}{}/js/main.js\"></script>", file_prefix, default_resources_path));
     
     // Link default CSS
-    res.push_str(&format!("<link rel=\"stylesheet\" href=\"file:///{}/default/util.css\"/>", default_resources_path));
-    res.push_str(&format!("<link rel=\"stylesheet\" href=\"file:///{}/default/default.css\"/>", default_resources_path));
+    res.push_str(&format!("<link rel=\"stylesheet\" href=\"{}{}/default/util.css\"/>", file_prefix, default_resources_path));
+    res.push_str(&format!("<link rel=\"stylesheet\" href=\"{}{}/default/default.css\"/>", file_prefix, default_resources_path));
 
     // Link additional CSS
     for file_path in &options.css_files {
-        let path_str = crate::util::get_browser_path_string(file_path.get_full_path(context));
+        let path_str = crate::util::get_browser_path_string(file_path.get_full_path(context), !options.is_slides);
         res.push_str(&format!("<link rel=\"stylesheet\" href=\"{}\"/>", path_str));
     }
 
     // IMPORTANT NOTE: make sure this tag is the last CSS tag, to make sure users don't accidentally change critical CSS rules (such as pag elements) 
-    res.push_str(&format!("<link rel=\"stylesheet\" href=\"file:///{}/default/critical.css\"/>", default_resources_path));
+    res.push_str(&format!("<link rel=\"stylesheet\" href=\"{}{}/default/critical.css\"/>", file_prefix, default_resources_path));
 
     // Page size
     res.push_str(&format!("<meta name=\"pagewidth\" content=\"{}\"/>", options.format.width));
     res.push_str(&format!("<meta name=\"pageheight\" content=\"{}\"/>", options.format.height));
+
+    // Slides indicator
+    if options.is_slides {
+        res.push_str("<meta name=\"slides\" content=\"true\"/>");
+        res.push_str(&format!("<link rel=\"stylesheet\" href=\"{}{}/default/slides_default.css\"/>", file_prefix, default_resources_path));
+        res.push_str(&format!("<link rel=\"stylesheet\" href=\"{}{}/default/slides.css\"/>", file_prefix, default_resources_path));
+    }
 
     res.push_str("</head>");
     return res;
@@ -196,7 +195,7 @@ pub fn write_head(options: &doc_options::DocOptions, context: &Context) -> Strin
 
 
 /// Looks for the head of a document, returns Err if not found
-fn try_get_children_with_name<'a>(document: &'a mut Node, name: &str) -> Result<&'a mut Node, ()> {
+pub fn try_get_children_with_name<'a>(document: &'a mut Node, name: &str) -> Result<&'a mut Node, ()> {
     for child in &mut document.children {
         if child.name == name {
             return Ok(child);
@@ -281,6 +280,7 @@ pub fn get_node_html(node: &Node, no_text_tags: bool, context: &Context) -> Stri
                         no_text_tags 
                         || node.children[*id].name == "svg" 
                         || node.children[*id].name == "pre" 
+                        || node.children[*id].name == "style" 
                         || node.children[*id].name == "script", 
                         context))
                 },

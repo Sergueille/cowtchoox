@@ -23,6 +23,8 @@ pub struct DocOptions {
     pub cowx_files: Vec<DocumentPath>,
     pub footer_file: Option<DocumentPath>,
     pub header_file: Option<DocumentPath>,
+    pub is_slides: bool,
+    pub slides_resource: Option<DocumentPath>,
 }
 
 
@@ -39,6 +41,19 @@ pub enum PathType {
     RelativeToDefaultDir
 }
 
+/// Calls get_options_form_head on the head.
+pub fn get_file_options(document: &mut Node) -> Result<DocOptions, ()> {
+    let head = match crate::writer::try_get_children_with_name(document, "head") {
+        Ok(head) => head,
+        Err(()) => {
+            log::error("The document has no head.");
+            return Err(());
+        }
+    };
+    let options = get_options_form_head(head);
+
+    return Ok(options);
+}
 
 /// Takes the raw head node form the document, and extract the options
 /// 
@@ -58,6 +73,8 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
         cowx_files: Vec::new(),
         footer_file: None,
         header_file: None,
+        is_slides: false,
+        slides_resource: None,
     };
     
     for child in &head.children {
@@ -129,6 +146,12 @@ pub fn get_options_form_head(head: &Node) -> DocOptions {
             },
             "header" => {
                 res.header_file = Some(get_doc_path_from_tag(child, inner_text));
+            },
+            "slides" => {
+                res.is_slides = true;
+            },
+            "slides-resources" => {
+                res.slides_resource = Some(get_doc_path_from_tag(child, inner_text));
             },
             tag_name => {
                 log::warning_position(
@@ -233,9 +256,7 @@ impl DocumentPath {
     pub fn get_full_path(&self, context: &Context) -> PathBuf {
         match self.path_type {
             PathType::RelativeToFile => {
-                let mut res = context.main_file_path.parent().unwrap().to_path_buf();
-                res.push(PathBuf::from(self.path.clone()));
-                return res;
+                return PathBuf::from(self.path.clone());
             },
             PathType::Absolute => {
                 return PathBuf::from(self.path.clone());

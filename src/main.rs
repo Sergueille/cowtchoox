@@ -27,10 +27,9 @@ pub struct Context<'a> {
     pub args: &'a crate::Args, // Command line arguments
     pub custom_tags: TagHash,
     pub ignore_aliases: bool,
-    pub default_dir: &'a PathBuf,
-    pub main_file_path: &'a PathBuf,
+    pub default_dir: PathBuf,
+    pub main_file_path: PathBuf,
 }
-
 
 fn main() -> Result<(), ()> {
     log::override_panic_message();
@@ -108,8 +107,8 @@ fn main() -> Result<(), ()> {
                 args: &args,
                 custom_tags: custom_tags_hash,
                 ignore_aliases: false,
-                default_dir: &exe_path,
-                main_file_path: &path,
+                default_dir: exe_path,
+                main_file_path: path,
             };
 
             let res = compile_file(content, context);
@@ -132,16 +131,24 @@ fn main() -> Result<(), ()> {
 
 fn compile_file(content: String, mut context: Context) -> Result<(), ()> {
     log::log("Parsing document...");
-    let document = match parser::parse_file(context.main_file_path, &content.chars().collect(), &context) {
+    let mut document = match parser::parse_file(&context.main_file_path, &content.chars().collect(), &context) {
         Ok(node) => node,
         Err(err) => {
             log::error_position(&err.message, &err.position, err.length);
             return Err(());
         },
     };
+
+    let options = doc_options::get_file_options(&mut document)?;
+
+    let cow_res_path = PathBuf::from("./cowtchoox_res");
+    let original_default_dir = context.default_dir.clone();
+    if options.is_slides {
+        context.default_dir = cow_res_path;
+    }
     
     log::log("Creating HTML...");
-    let (text, options) = match writer::get_file_text(document, &mut context) {
+    let text = match writer::get_file_text(document, &mut context, &options) {
         Ok(res) => res,
         Err(_) => {
             return Err(());
@@ -150,7 +157,70 @@ fn compile_file(content: String, mut context: Context) -> Result<(), ()> {
 
     // Remove filename form path and add
     let mut out_path = context.main_file_path.parent().unwrap().to_path_buf();
-    out_path.push("out.html");
+
+    if options.is_slides {
+        let _ = fs::remove_dir_all("out"); // Try to remove the folder, it it exists 
+
+        match fs::create_dir_all("out/cowtchoox_res") {
+            Ok(()) => (),
+            Err(err) => {
+                log::error(&format!("Failed to create out folder. Make sure cowtchoox have necessary permissions. {:?}", &err));
+                return Err(());
+            },
+        }
+
+        out_path.push("out/out.html");
+
+        // Copy resource folder
+        if let Some(ref res_folder) = options.slides_resource {
+            let mut res_out_folder = out_path.parent().unwrap().to_path_buf();
+            res_out_folder.push("resources");
+
+            match copy_dir::copy_dir(res_folder.get_full_path(&context), res_out_folder) {
+                Ok(_) => (),
+                Err(err) => {
+                    log::error(&format!("Failed to move your resource folder. Make sure cowtchoox have necessary permissions. {:?}", &err));
+                    return Err(());
+                },
+            }
+        }
+
+        let mut cow_res_folder = out_path.parent().unwrap().to_path_buf();
+        cow_res_folder.push("cowtchoox_res");
+
+        let mut default_dist = cow_res_folder.clone();
+        default_dist.push("default");
+        let mut js_dist = cow_res_folder.clone();
+        js_dist.push("js");
+        let mut fonts_dist = cow_res_folder.clone();
+        fonts_dist.push("fonts");
+
+        let mut default_dir = original_default_dir.clone();
+        default_dir.push("default");
+        let mut default_js_dir = original_default_dir.clone();
+        default_js_dir.push("js");
+        let mut default_fonts_dir = original_default_dir.clone();
+        default_fonts_dir.push("fonts");
+
+        // Copy cowtchoox-res folder
+        let err = copy_dir::copy_dir(default_dir, &default_dist).and(
+            copy_dir::copy_dir(default_js_dir, &js_dist).and(
+                copy_dir::copy_dir(default_fonts_dir, &fonts_dist)
+            )
+        );
+
+        match err {
+            Ok(_) => (),
+            Err(err) => {
+                log::error(&format!("Failed to move internal resource folder. Make sure cowtchoox have necessary permissions. {:?}", &err));
+                return Err(());
+            },
+        }
+    }
+    else {
+        out_path.push("out.html");
+    }
+
     fs::write(out_path.clone(), text).unwrap();
 
     // Render to pdf!

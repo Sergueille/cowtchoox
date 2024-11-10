@@ -1,0 +1,42 @@
+
+/* Default styling for slides, can be modified */
+
+.slides page {
+    background-color: #000;
+    color: #fff;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.slides page-inside {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.slides page-inside > * {
+    display: block;
+}
+
+.slides page-inside > span {
+    text-align: center;
+}
+
+.slides {
+    font-size: 1.5rem;
+}
+
+.slides h1 {
+    font-size: 4rem;
+}
+
+.slides pre,
+.slides code {
+    border-color: #222;
+    background-color: transparent;
+}
+
+.slides pre {
+    margin: 2em;
+}

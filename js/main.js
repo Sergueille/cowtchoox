@@ -15,6 +15,10 @@ const defaultStickafter = [
  */
 let errors = [];
 
+/** The id of the current slide (only for presentations)
+ */
+let currentSlide = 0;
+
 
 main().then(() => {}).catch(err => {
     errors.push(err.message);
@@ -30,11 +34,21 @@ async function main() {
     replaceEvaluate(document);
     replaceLastValues(document);
 
+
     // Gather all document elements
     let children = Array.from(document.body.children);
 
     // Removes them all
     document.body.innerText = "";
+
+    // Handle slides
+    let isSlides = document.querySelector('meta[name="slides"]').content === "true";
+    if (isSlides) {
+        document.body.classList.add("slides");
+
+        // Add info page
+        document.body.appendChild(getSlidesInfoPage());
+    }
 
     let pageNumber = 1;
     while (true) {
@@ -88,7 +102,16 @@ async function main() {
         pageNumber++;
     }
 
+    if (isSlides) {
+        document.body.appendChild(getSlidesEndPage(pageNumber));
+    }
+
     createErrorElement();
+
+    if (isSlides) {
+        updateCurrentSlide(0);
+        setupSlidesEvents();
+    }
 }
 
 
@@ -449,3 +472,57 @@ function findHeader() {
 
     return res;
 }
+
+function getSlidesInfoPage() {
+    let pageElement = getPage(0);
+    pageElement.classList.add("info");
+
+    pageElement.innerHTML = `
+        <span class=\"cow-info-help\">You're about to start your presentation.</span>
+        <span class=\"cow-info-help\"><span class=\"cow-key\">F11</span>: Toggle full screen</span>
+        <span class=\"cow-info-help\"><span class=\"cow-key\">Space</span>, <span class=\"cow-key\">→</span>, <span class=\"cow-key\">↓</span>: Next slide</span>
+        <span class=\"cow-info-help\"><span class=\"cow-key\">←</span>, <span class=\"cow-key\">↑</span>: Previous slide</span>
+    `;
+
+    return pageElement;
+}
+
+function getSlidesEndPage(pageId) {
+    let pageElement = getPage(pageId);
+    pageElement.classList.add("end");
+
+    pageElement.innerHTML = `(End of the presentation)`;
+
+    return pageElement;
+}
+
+function updateCurrentSlide(newValue) {
+    if (newValue < 0) {
+        newValue = 0;
+    }
+
+    if (newValue >= document.body.childElementCount - 1) {
+        newValue = document.body.childElementCount - 2;
+    }
+        
+    let prev = document.body.children[currentSlide];
+    let newSlide = document.body.children[newValue];
+    
+    prev.classList.remove("active");
+    newSlide.classList.add("active");
+    
+    currentSlide = newValue;
+}
+
+function setupSlidesEvents() {
+    document.addEventListener("keyup", ev => {
+        if (ev.key === " " || ev.key === "ArrowRight" || ev.key === "ArrowDown") {
+            updateCurrentSlide(currentSlide + 1);
+        }
+        else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp") {
+            updateCurrentSlide(currentSlide - 1);
+        }
+    });
+}
+
+

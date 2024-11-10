@@ -1,0 +1,48 @@
+
+/* DO NOT MODIFY THESE RULES */
+/* Slides-related styling (interface and printing style) */
+
+@media screen {
+    .slides page {
+        box-sizing: border-box;
+
+        width: 100vw !important;
+        height: 100vh !important;
+        margin: 0;
+    }
+
+    page.info, page.end {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        color: #aaa;
+        font-size: 1rem;
+    }
+
+    page:not(.active) {
+        display: none !important;
+    }
+
+    .cow-key {
+        font-family: monospace;
+        font-size: 0.8em;
+        background-color: #222;
+        border: 1px;
+
+        padding: 0.2em 0.4em;
+        margin: 0.2em 0.3em;
+        border-radius: 0.1em;
+
+        display: inline-block;
+    }
+
+}
+
+@media print {
+    #page-0.info {
+        display: none;
+    }
+}
+
+
