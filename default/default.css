@@ -38,6 +38,10 @@ mathnode amp-split {
     text-align: left;
 }
 
+mathnode text {
+    transform: translateX(-0.05em);
+}
+
 a {
     font-family: cascadia-code;
     font-size: 0.85em;
@@ -215,7 +219,7 @@ sqrt>svg {
 frac {
     display: inline-block;
     text-align: center;
-    vertical-align: 7%;
+    vertical-align: 0.15em;
     /* https://xymaths.fr/Informatique-Programmation/html-css/ecrire-maths-fractions.php#frac */
     margin: 0 0.1em;
     font-size: var(--frac-shrink);
@@ -345,7 +349,7 @@ x {
     margin-left: 0.18em;
     margin-right: 0.15em;
     height: 0.8em;
-    vertical-align: -10%;
+    vertical-align: -0.09em;
 }
 
 plus>svg,
@@ -424,8 +428,6 @@ longrightdoublearrow,
 longleftdoublearrow,
 longleftrightarrow {
     display: inline-flex !important;
-    flex-direction: column;
-    justify-content: flex-end;
     height: 1.2em;
     margin-left: 0.5em;
     margin-right: 0.5em;
@@ -436,9 +438,7 @@ longleftarrow,
 rightarrow,
 longrightarrow {
     display: inline-flex !important;
-    flex-direction: column;
-    justify-content: flex-end;
-    height: 1.2em;
+    height: 0.7em;
     margin-left: 0.2em;
     margin-right: 0.2em;
 }

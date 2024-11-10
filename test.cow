@@ -24,7 +24,7 @@
         <!cowtchoox/>
 
         $$
-            ¤y x = 1 / 2 // Tests custom aliases
+            ¤y x - 5b = 1 / 2x // Tests custom aliases
         $$
 
         <!my_tag :number="1">
@@ -90,8 +90,8 @@
             } / {
                 1 / 2
             },
-            |{lim}__x \  f(x),
-            |{lim}__{v/ x} \  f(v/ x),
+            |{lim}__x ?space f(x),
+            |{lim}__{v/ x} ?space f(v/ x),
             ?abs{-5},
             ?abs{v/§p},
             1/{
