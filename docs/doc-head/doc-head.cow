@@ -30,7 +30,13 @@
             Must contain the width of the paper, in mm. &&
 
             `<paper-height>` &
-            Must contain the height of the paper, in mm.
+            Must contain the height of the paper, in mm. &&
+
+            `<slides>` &
+            Indicates that is a slides file. &&
+
+            `<slides-resources>` &
+            Must contain the path to the folder that contains all resources needed for the slides.
         </cowtable>
 
         <h2>Link files</h2>

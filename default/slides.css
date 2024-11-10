@@ -3,6 +3,10 @@
 /* Slides-related styling (interface and printing style) */
 
 @media screen {
+    body {
+        overflow: hidden;
+    }
+
     .slides page {
         box-sizing: border-box;
 

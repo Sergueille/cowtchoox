@@ -1,6 +1,10 @@
 
 /* Default styling for slides, can be modified */
 
+body {
+    background-color: #000;
+}
+
 .slides page {
     background-color: #000;
     color: #fff;
@@ -39,4 +43,21 @@
 
 .slides pre {
     margin: 2em;
+}
+
+@media screen {
+    .slides page {
+        animation: appear 0.2s forwards;
+    }
+}
+
+@keyframes appear {
+    from {
+        transform: translateX(40px);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 100;
+    }
 }
