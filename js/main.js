@@ -42,7 +42,8 @@ async function main() {
     document.body.innerText = "";
 
     // Handle slides
-    let isSlides = document.querySelector('meta[name="slides"]').content === "true";
+    let slidesMetaTag = document.querySelector('meta[name="slides"]');
+    let isSlides = slidesMetaTag && slidesMetaTag.content === "true";
     if (isSlides) {
         document.body.classList.add("slides");
 

@@ -159,9 +159,13 @@ fn compile_file(content: String, mut context: Context) -> Result<(), ()> {
     let mut out_path = context.main_file_path.parent().unwrap().to_path_buf();
 
     if options.is_slides {
-        let _ = fs::remove_dir_all("out"); // Try to remove the folder, it it exists 
+        out_path.push("out");
 
-        match fs::create_dir_all("out/cowtchoox_res") {
+        let _ = fs::remove_dir_all(out_path.clone()); // Try to remove the folder, it it exists 
+
+        let mut cowtchoox_res_path = out_path.clone();
+        cowtchoox_res_path.push("cowtchoox_res");
+        match fs::create_dir_all(cowtchoox_res_path) {
             Ok(()) => (),
             Err(err) => {
                 log::error(&format!("Failed to create out folder. Make sure cowtchoox have necessary permissions. {:?}", &err));
@@ -169,23 +173,26 @@ fn compile_file(content: String, mut context: Context) -> Result<(), ()> {
             },
         }
 
-        out_path.push("out/out.html");
-
         // Copy resource folder
         if let Some(ref res_folder) = options.slides_resource {
-            let mut res_out_folder = out_path.parent().unwrap().to_path_buf();
+            let mut res_out_folder = out_path.clone();
             res_out_folder.push("resources");
 
-            match copy_dir::copy_dir(res_folder.get_full_path(&context), res_out_folder) {
+            match copy_dir::copy_dir(res_folder.get_full_path(&context), res_out_folder.clone()) {
                 Ok(_) => (),
                 Err(err) => {
-                    log::error(&format!("Failed to move your resource folder. Make sure cowtchoox have necessary permissions. {:?}", &err));
+                    log::error(&format!(
+                        "Failed to move your resource folder from {:?} to {:?}. Make sure cowtchoox have necessary permissions. {:?}", 
+                        res_folder.get_full_path(&context), 
+                        res_out_folder, 
+                        &err
+                    ));
                     return Err(());
                 },
             }
         }
 
-        let mut cow_res_folder = out_path.parent().unwrap().to_path_buf();
+        let mut cow_res_folder = out_path.clone();
         cow_res_folder.push("cowtchoox_res");
 
         let mut default_dist = cow_res_folder.clone();
@@ -217,9 +224,8 @@ fn compile_file(content: String, mut context: Context) -> Result<(), ()> {
             },
         }
     }
-    else {
-        out_path.push("out.html");
-    }
+
+    out_path.push("out.html");
 
     fs::write(out_path.clone(), text).unwrap();
 

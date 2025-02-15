@@ -8,8 +8,8 @@ body {
 .slides page {
     background-color: #000;
     color: #fff;
-    padding-left: 10%;
-    padding-right: 10%;
+    margin: 0;
+    padding: 0;
 }
 
 .slides page-inside {
@@ -28,11 +28,11 @@ body {
 }
 
 .slides {
-    font-size: 1.5rem;
+    font-size: 2rem;
 }
 
 .slides h1 {
-    font-size: 4rem;
+    font-size: 8rem;
 }
 
 .slides pre,
@@ -43,6 +43,59 @@ body {
 
 .slides pre {
     margin: 2em;
+}
+
+.big {
+    font-size: 3rem;
+}
+
+.img-bg {
+    position: absolute;
+    z-index: -10;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 100vw;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.img-bg-blur {
+    position: absolute;
+    z-index: -15;
+    left: -10vw;
+    top: -10vh;
+    height: 120vh;
+    width: 120vw;
+    background-size: cover;
+    background-position: center;
+    filter: blur(30px);
+}
+
+.bottom-text {
+    position: absolute;
+    left: 0vw;
+    bottom: 0vh;
+    height: 400px;
+    width: 100vw;
+    background: linear-gradient(transparent 0%, black 100%);
+
+    display: flex !important;
+    flex-direction: column;
+    align-items: start;
+    justify-content: end;
+
+    padding: 50px;
+}
+
+.bottom-text .title {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+}
+
+.bottom-text .caption {
+    font-size: 1.5rem;
 }
 
 @media screen {

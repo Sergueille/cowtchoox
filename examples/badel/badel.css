@@ -1,4 +1,18 @@
 
+/*
+Entête:
+
+<div class="top">
+    <div class="title-box">MP2I 861, Lycée du Parc</div>
+    <div class="title-box">2023-24</div>
+</div>
+<h1>
+    DL 19 - Mouvements de particules chargées
+    <span>Pour le 19 mars 2024</span>
+    <span>N?om</span>
+</h1>
+*/
+
 body {
     --counter-reset: h2;
 }
