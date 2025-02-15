@@ -270,6 +270,7 @@ exponent {
 
 .exponent-before {
     padding-top: 0.05em;
+    margin-right: 0.1em;
 }
 
 .exponent-inner {
@@ -348,16 +349,16 @@ minus,
 x {
     margin-left: 0.18em;
     margin-right: 0.15em;
-    height: 0.8em;
-    vertical-align: -0.09em;
+    height: 0.6em;
+    vertical-align: -0.03em;
 }
 
 plus>svg,
 minus>svg,
 x>svg {
     display: inline;
-    width: 0.7em;
-    height: 0.7em;
+    width: 0.6em;
+    height: 0.6em;
     overflow: visible;
 }
 
@@ -368,7 +369,7 @@ x {
 /* ?inf */
 inf {
     height: 1em;
-    vertical-align: 0%;
+    vertical-align: -2%;
 }
 
 inf>svg {
@@ -467,11 +468,13 @@ div:has(> openingparenthesis, > closingparenthesis, > openingsquarebracket, > cl
 openingparenthesis,
 openingsquarebracket {
     margin-left: 0.2em;
+    margin-right: 0.1em;
 }
 
 closingparenthesis,
 closingsquarebracket {
     margin-right: 0.15em;
+    margin-left: 0.1em;
 }
 
 openingparenthesis,
@@ -488,9 +491,9 @@ closingparenthesis>div,
 openingsquarebracket>div,
 closingsquarebracket>div {
     position: absolute;
-    top: 0.05em;
-    width: 0.25em;
-    height: 90%;
+    top: 0.15em;
+    width: 0.20em;
+    height: calc(100% - 0.3em);
 }
 
 openingparenthesis:first-child>div,

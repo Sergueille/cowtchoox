@@ -57,7 +57,7 @@
         This is a fraction: $1 / 2$
 
         <br/>
-        $(1, 2), (1 / 2, v/5), (|{lim}__{n -> +?inf} u_n), [a, b], [0, §p / 2], !]1 / 2; b![, [a; 1 / 2![, (a; 1 / 2!(, !)1 / 2; b!($
+        $(1, 2), (1 / 2, v/5), (|{lim}__{n -> +?inf} u_n), [a, b], [0, §p / 2], !]1 / 2, b![, [a, 1 / 2![, (a, 1 / 2!(, !)1 / 2, b!($
 
         <br/>
         <!page-number/> <br/>
@@ -140,6 +140,16 @@
             It ignores everything except double backticks: no need for backslash!
             <tag>, \ ` $ 
         ``
+
+        <!cowtable :caption="A table">
+            $$
+            X               & ||E(X)        & ||V(X)        & G_X(t)               & R       &&
+            £B (p)          & p             & p(1-p)        & 1-p + tp             & +?inf   &&
+            £B (n, p)       & np            & np(1-p)       & (1-p + tp)^n         & +?inf   &&
+            £G (p)          & 1/p           & {1-p}/{p^2}   & {pt}/{1 - (1-p)t}    & 1/{1-p} &&
+            £P (§l)         & §l            & §l            & e^{§l(t - 1)}        & +?inf   &&
+            $$
+        </cowtable>
 
         <div style="border: 0.3mm solid black;">
             See you on next page!
