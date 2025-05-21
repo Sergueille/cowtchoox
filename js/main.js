@@ -3,7 +3,7 @@
 
 // Tags that have default properties by default by default
 const defaultNonbreaking = [
-    "H1", "H2", "H3", "H4", "H5", "H6", "SVG", "PRE", "AMP-SPLIT", "DOUBLE-AMP-SPLIT"
+    "H1", "H2", "H3", "H4", "H5", "H6", "SVG", "AMP-SPLIT", "DOUBLE-AMP-SPLIT"
 ];
 const defaultStickafter = [
     "H1", "H2", "H3", "H4", "H5", "H6",
@@ -235,7 +235,7 @@ async function fillUntilOverflow(pageElement, parentElement) {
             } else if (isNonbreaking(top)) { // Finished!
                 parentElement.removeChild(top);
                 children.push(top);
-            } else if (top.tagName == "TEXT") { // Split text
+            } else if (top.tagName == "TEXT" || top.tagName == "PRE") { // Split text
                 let text = top.textContent;
                 top.textContent = "";
 

@@ -6,6 +6,7 @@ use zip_archive::Archiver;
 // This file builds the project for windows.
 // Usage: "cargo run --bin build-dir [target]"
 // To build for windows, use "cargo run --bin build-dir x86_64-pc-windows-msvc"
+// To build for x86 linux, use "cargo run --bin build-dir x86_64-unknown-linux-gnu"
 
 fn main() {
     println!("Building");
