@@ -156,14 +156,15 @@ pub fn write_head(options: &doc_options::DocOptions, context: &Context) -> Strin
     //        but too lazy to do that
     let default_resources_path = context.default_dir.to_str().expect("Failed to get resources dir string").to_string().replace("\\", "/");
 
+    // Link JS script, so that it executes when the page loads
+    // Load it first to make sure other scripts can access functions
+    res.push_str(&format!("<script defer=\"defer\" src=\"{}{}/js/main.js\"></script>", file_prefix, default_resources_path));
+    
     // Link additional JS scripts
     for file_path in &options.js_files {
         let path_str = crate::util::get_browser_path_string(file_path.get_full_path(context), !options.is_slides);
         res.push_str(&format!("<script defer=\"defer\" src=\"{}\"></script>", path_str));
     }
-    
-    // Link JS script, so that it executes when the page loads
-    res.push_str(&format!("<script defer=\"defer\" src=\"{}{}/js/main.js\"></script>", file_prefix, default_resources_path));
     
     // Link default CSS
     res.push_str(&format!("<link rel=\"stylesheet\" href=\"{}{}/default/util.css\"/>", file_prefix, default_resources_path));
