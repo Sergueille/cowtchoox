@@ -10,10 +10,13 @@
     <body>
         // Contents of the rest of the document
 
-        <div style="font-size: 5em;">
+        <!index :tags="h1 h2" />
+
+        <h1>
             <!cowtchoox/><sub style="font-size: 0.5em; color: #d99;">α</sub>
-        </div>
-        <br/>
+        </h1>
+
+        <h2>Random tests</h2>
 
         Hello, world!
         <br/>
@@ -44,6 +47,8 @@
 
         <test></test>
 
+        <h2>Escape test</h2>
+
         Also escaping in math $\$ \< \{ \\ \} 123456789Δ$
 
         <br/>
@@ -57,12 +62,14 @@
         This is a fraction: $1 / 2$
 
         <br/>
-        $(1, 2), (1 / 2, v/5), (|{lim}__{n -> +?inf} u_n), [a, b], [0, §p / 2], !]1 / 2, b![, [a, 1 / 2![, (a, 1 / 2!(, !)1 / 2, b!($
-
-        <br/>
         <!page-number/> <br/>
         <!evaluate>new Date().getFullYear()</evaluate> <br/>
         <!evaluate>new Date()</evaluate> <br/>
+
+        <h1>Math test</h1>
+        <h2>Basic math</h2>
+        $(1, 2), (1 / 2, v/5), (|{lim}__{n -> +?inf} u_n), [a, b], [0, §p / 2], !]1 / 2, b![, [a, 1 / 2![, (a, 1 / 2!(, !)1 / 2, b!($
+
 
         <br/>
         More math:
@@ -108,6 +115,9 @@
         $$
             %{ %{1, 2, 3%}, %{1, 2%}, !%}1!%{ %}
         $$
+
+        <h2>Math layout</h2>
+
         $$
             <!system>
                  a &+ &2b &= c &&
@@ -125,6 +135,7 @@
         $
             {overset\ test}^^{above}
         $
+
 
         <br/>
 
@@ -175,6 +186,8 @@
                       &          & 1
             $
         </cowtable>
+
+        <h1>Page layout tests</h1>
 
         <!pagebreak/>
 

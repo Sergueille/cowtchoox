@@ -23,7 +23,7 @@ Will be replaced by the page number <br/>
 
 <h3>`<evaluate>` </h3>
 ``<!evaluate > </evaluate>``
-Will be replaced by the result of the provided js expression. The safest way of adding JS to the page, as it will run AFTER the elements are placed on the page. Very useful to show the current date, copy an element's contents... Notes: <br/> - Custom tag parameters can be included in JS code, because it is considered as text by cowtchoox, and colon tags will be replaced <br/> - You can access the evaluate document element with `this` <br/> - To do thing and replace the evaluate tag by nothing at the end, just put `""` on the last line <br/>
+Will be replaced by the inner JS expression. The safest way of adding JS to the page, as it is executed before the layout is made. Very useful to show the current date, copy an element's contents... Notes: <br/> - Custom tag parameters can be included in JS code, because it is considered as text by cowtchoox, and colon tags will be replaced. However, some characters must be escaped such as \<, \>, \`... <br/> - The eval HTML element can be accessed by the code with `this` <br/> - If you just want to execute JS code, and jou wand no output value in the document, just put `""` on the last line <br/>
 
 
 <h3>`<figure>` </h3>
@@ -39,6 +39,12 @@ A table with a caption <br/>
 <h3>`<last-tag-value>` </h3>
 ``<!last-tag-value :name=""/>``
 Will be replaced by the inner content of the last encountered tag with hat name. <br/>
+
+
+<h3>`<index>` </h3>
+``<!index :tags=""/>``
+An index of the document. Work in progress. <br/>
+`tags`: The tag names that will be present in the index, separated by a space. For example "h1 h2 h3"  <br/>
 
 
 <h3>`<system>` </h3>
@@ -82,7 +88,7 @@ Makes inner not use math font. <br/>
 <h3>`txt` </h3>
 ``?txt{inner}``
 <mathnode class="center">?txt{inner}</mathnode>
-Same as normalfont, but with additionnal margins. <br/>
+Same as normalfont, but with additional margins. <br/>
 
 
 <h3>`exponent` <div class="alias">Infix alias `^`</div></h3>

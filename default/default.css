@@ -732,6 +732,65 @@ frak {
     font-family: frak;
 }
 
+/* Index */
+.index evaluate {
+    display: none;
+}
+
+.index {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    padding: 0 20%;
+    margin: 10mm 0;
+}
+
+index-entry {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: end;
+    justify-content: stretch;
+}
+
+index-entry::before {
+    position: absolute;
+    width: 100%;
+    height: 0;
+    bottom: 0.35em;
+    border-bottom: 0.3mm dashed #999;
+    content: "";
+}
+
+index-name {
+    flex-grow: 1;
+}
+
+index-page, index-name text {
+    position: relative;
+    display: inline-block;
+    background-color: #fff;
+    z-index: 1;
+}
+
+index-page {
+    padding-left: 1em;
+}
+
+index-name text {
+    padding-right: 1em;
+}
+
+.index-depth-1 {
+    font-size: 0.8em;
+    width: calc(100% - 1em);
+    margin-left: 1em;
+}
+
+
 
 /* Additional styling for html viewing */
 @media screen {

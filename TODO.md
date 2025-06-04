@@ -2,9 +2,6 @@
 FIXME: fix currentcolor
 FIXME: fix SVG moving everywhere
 
-TODO: summary 
-
-
 TODO: change the way code is parsed
     -> allow full `<code>` block with attributes
     -> escape n x \` with (n+1) * \`

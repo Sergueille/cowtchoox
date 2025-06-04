@@ -19,7 +19,7 @@
 </page-number>
 
 
-// Will be replaced by the result of the provided js expression. The safest way of adding JS to the page, as it will run AFTER the elements are placed on the page. Very useful to show the current date, copy an element's contents... Notes: <br/> - Custom tag parameters can be included in JS code, because it is considered as text by cowtchoox, and colon tags will be replaced <br/> - You can access the evaluate document element with `this` <br/> - To do thing and replace the evaluate tag by nothing at the end, just put `""` on the last line
+// Will be replaced by the inner JS expression. The safest way of adding JS to the page, as it is executed before the layout is made. Very useful to show the current date, copy an element's contents... Notes: <br/> - Custom tag parameters can be included in JS code, because it is considered as text by cowtchoox, and colon tags will be replaced. However, some characters must be escaped such as \<, \>, \`... <br/> - The eval HTML element can be accessed by the code with `this` <br/> - If you just want to execute JS code, and jou wand no output value in the document, just put `""` on the last line
 <!evaluate :inner>
     <:inner/>
 </evaluate>
@@ -51,6 +51,57 @@
 <!last-tag-value :name>
     <:name/>
 </last-tag-value>
+
+
+// An index of the document. Work in progress. 
+// tags: The tag names that will be present in the index, separated by a space. For example "h1 h2 h3" 
+<!index :tags>
+    <div class="index">
+
+    </div>
+
+    <!evaluate>
+
+let tags = this.parentElement.getAttribute(":tags").toLowerCase().trim().split(" ");
+let container = this.parentElement.children[0];
+
+document.querySelectorAll(tags.join(",")).forEach(el =\> {
+    let entry = document.createElement("index-entry");
+
+    let tag_id = tags.indexOf(el.tagName.toLowerCase());
+    entry.classList.add(\`index-depth-\${tag_id}\`);
+    
+    let name_el = document.createElement("index-name");
+    let page_el = document.createElement("index-page");
+    
+    name_el.innerHTML = el.innerHTML;
+    
+    onCompleteLayout(() => {
+        page_el.textContent = getPageNumber(el);
+    });
+    
+    entry.appendChild(name_el);
+    entry.appendChild(page_el);
+    container.appendChild(entry);
+});
+
+function getPageNumber(el) {
+    console.log(el.tagName.toLowerCase());
+    if (el.tagName.toLowerCase() == "page") { return el.id.split("-")[1]; }
+
+    if (el.parentElement != null) {
+        return getPageNumber(el.parentElement);
+    }
+    else {
+        logError("A summary element was found out of the page");
+        return "??";
+    }
+}
+
+""
+
+    </evaluate>
+</index>
 
 
 // Square root.
@@ -98,7 +149,7 @@
 </normalfont>
 
 
-// Same as normalfont, but with additionnal margins.
+// Same as normalfont, but with additional margins.
 <?txt :inner>
     <:inner/>
 </txt>

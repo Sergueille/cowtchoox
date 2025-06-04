@@ -1,7 +1,7 @@
 // This file will create nice page elements, and fil them with the content of the document
 // This allows to place headers and to have specific rules for page layout
 
-// Tags that have default properties by default by default
+// Tags that have default properties by default
 const defaultNonbreaking = [
     "H1", "H2", "H3", "H4", "H5", "H6", "SVG", "AMP-SPLIT", "DOUBLE-AMP-SPLIT"
 ];
@@ -10,7 +10,7 @@ const defaultStickafter = [
 ];
 
 
-/** Errors will be stored here until cowtchoox evaluate this to show them in the terminal
+/** Errors will be stored here until cowtchoox evaluate this to show them in the terminal. Do not modify directly, use logError() instead.
  * @type{Array<String>}
  */
 let errors = [];
@@ -18,6 +18,12 @@ let errors = [];
 /** The id of the current slide (only for presentations)
  */
 let currentSlide = 0;
+
+
+/** Functions to call when finished splitting pages. Do not modify directly, use onCompleteLayout() instead. 
+ * @type{Array<function>}
+ */
+let onCompleteLayoutCallbacks = [];
 
 
 main().then(() => {}).catch(err => {
@@ -107,6 +113,10 @@ async function main() {
         document.body.appendChild(getSlidesEndPage(pageNumber));
     }
 
+    for (let callback of onCompleteLayoutCallbacks) {
+        callback();
+    }
+
     createErrorElement();
 
     if (isSlides) {
@@ -121,17 +131,16 @@ async function main() {
  @param {HTMLElement} parent
  */
 function replaceEvaluate(parent) {
-    // Search for eval tags
     for (let evalTag of parent.querySelectorAll("evaluate")) {
         let tag = evalTag.querySelector("inner");
         let expression = tag.textContent;
 
         try {
             let result = function() { return eval(expression) }.call(evalTag);
-            tag.innerHTML = result;
+            evalTag.innerHTML = result;
         } catch (err) {
             logError(`Failed to parse the evaluate tag that contains "${tag.textContent}". The error is: "${err.message}"`)
-            tag.innerHTML = "Evaluation failed.";
+            evalTag.innerHTML = "Evaluation failed.";
         }
     }
 }
@@ -473,6 +482,17 @@ function findHeader() {
 
     return res;
 }
+
+
+/**
+ * Call the function when finished splitting pages.
+ * Be cautious with this, if the callback modifies the size of an element, the page won't be split again and there is a risk for a page overflow.
+ * @param {function} callback 
+ */
+function onCompleteLayout(callback) {
+    onCompleteLayoutCallbacks.push(callback);
+}
+
 
 function getSlidesInfoPage() {
     let pageElement = getPage(0);
